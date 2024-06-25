@@ -1,0 +1,22 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+using UnrealBuildTool;
+
+public class TPS_ListenServer : ModuleRules
+{
+	public TPS_ListenServer(ReadOnlyTargetRules Target) : base(Target)
+	{
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+		PublicDependencyModuleNames.AddRange(new string[]
+        {
+            "Core",
+            "CoreUObject",
+            "Engine",
+            "InputCore",
+            "HeadMountedDisplay",
+            "OnlineSubsystem",
+            "OnlineSubsystemSteam"
+        });
+	}
+}
