@@ -1,5 +1,6 @@
 #include "Components/MoveComponent.h"
 #include "Global.h"
+#include "Engine/LocalPlayer.h"
 #include "GameFramework/Character.h"
 #include "ListenServerProjectCharacter.h"
 
@@ -22,22 +23,44 @@ void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 }
 
-void UMoveComponent::MoveForward(float InAxis)
+void UMoveComponent::Move(const FInputActionValue& Value)
 {
-	FRotator rotator = FRotator(0, Character->GetControlRotation().Yaw, 0);
-	FVector direction = FQuat(rotator).GetForwardVector();
+	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	direction = FVector::XAxisVector;
+	if (Character != nullptr)
+	{
+		const FRotator Rotation = Character->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-	Character->AddMovementInput(direction, InAxis);
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		Character->AddMovementInput(ForwardDirection, MovementVector.Y);
+		Character->AddMovementInput(RightDirection, MovementVector.X);
+	}
 }
 
-void UMoveComponent::MoveRight(float InAxis)
+void UMoveComponent::Look(const FInputActionValue& Value)
 {
-	FRotator rotator = FRotator(0, Character->GetControlRotation().Yaw, 0);
-	FVector direction = FQuat(rotator).GetRightVector();
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	direction = FVector::YAxisVector;
-
-	Character->AddMovementInput(direction, InAxis);
+	if (Character != nullptr)
+	{
+		Character->AddControllerYawInput(LookAxisVector.X);
+		Character->AddControllerPitchInput(LookAxisVector.Y);
+	}
 }
+
+void UMoveComponent::StartJump()
+{
+	Character->Jump();
+	
+}
+
+void UMoveComponent::StopJump()
+{
+	Character->StopJumping();
+}
+
+
