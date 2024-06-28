@@ -15,11 +15,12 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
-UCLASS(config=Game)
+UCLASS()
 class AListenServerProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -44,14 +45,18 @@ class AListenServerProjectCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+private:
+	UPROPERTY(VisibleAnywhere)
+	class UMoveComponent* Move;
+
 public:
 	AListenServerProjectCharacter();
 	
 
 protected:
 
-	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
+	///** Called for movement input */
+	//void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
