@@ -39,9 +39,15 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UInputAction* JumpAction;
 
+	UPROPERTY(VisibleAnywhere)
+	UInputAction* EquipAction;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	class UMoveComponent* Move;
+
+	UPROPERTY(VisibleAnywhere)
+	class UWeaponComponent* Weapon;
 
 public:
 	AListenServerProjectCharacter();

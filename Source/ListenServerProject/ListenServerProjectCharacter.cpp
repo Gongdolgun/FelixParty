@@ -12,12 +12,14 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Components/MoveComponent.h"
+#include "Components/WeaponComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AListenServerProjectCharacter::AListenServerProjectCharacter()
 {
 	Helpers::CreateActorComponent<UMoveComponent>(this, &Move, "Move");
+	Helpers::CreateActorComponent<UWeaponComponent>(this, &Weapon, "Weapon");
 
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -71,6 +73,8 @@ void AListenServerProjectCharacter::SetupPlayerInputComponent(UInputComponent* P
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, Move, &UMoveComponent::StartJump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, Move, &UMoveComponent::StopJump);
+
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, Weapon, &UWeaponComponent::Equip);
 
 	}
 
