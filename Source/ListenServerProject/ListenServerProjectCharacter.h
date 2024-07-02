@@ -17,37 +17,40 @@ UCLASS()
 class AListenServerProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* CameraBoom;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FollowCamera;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputMappingContext* DefaultMappingContext;
+//
+//private:
+//	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+//	USpringArmComponent* CameraBoom;
+//
+//	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+//	UCameraComponent* FollowCamera;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+//	UInputMappingContext* DefaultMappingContext;
 
 	///////////////////////// Å°ÀÔ·Â
-private: 
-	UPROPERTY(VisibleAnywhere)
-	UInputAction* MoveAction;
+//private: 
+//	UPROPERTY(VisibleAnywhere)
+//	UInputAction* MoveAction;
+//
+//	UPROPERTY(VisibleAnywhere)
+//	UInputAction* LookAction;
+//
+//	UPROPERTY(VisibleAnywhere)
+//	UInputAction* JumpAction;
+//
+//	UPROPERTY(VisibleAnywhere)
+//	UInputAction* EquipAction;
+//
+//	UPROPERTY(VisibleAnywhere)
+//	UInputAction* FireAction;
 
-	UPROPERTY(VisibleAnywhere)
-	UInputAction* LookAction;
-
-	UPROPERTY(VisibleAnywhere)
-	UInputAction* JumpAction;
-
-	UPROPERTY(VisibleAnywhere)
-	UInputAction* EquipAction;
-
-private:
-	UPROPERTY(VisibleAnywhere)
-	class UMoveComponent* Move;
-
-	UPROPERTY(VisibleAnywhere)
-	class UWeaponComponent* Weapon;
+//private:
+//	UPROPERTY(VisibleAnywhere)
+//	class UMoveComponent* Move;
+//
+//	UPROPERTY(VisibleAnywhere)
+//	class UWeaponComponent* Weapon;
 
 public:
 	AListenServerProjectCharacter();
@@ -57,7 +60,7 @@ protected:
 
 	virtual void BeginPlay();
 
-public:
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+//public:
+//	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+//	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };

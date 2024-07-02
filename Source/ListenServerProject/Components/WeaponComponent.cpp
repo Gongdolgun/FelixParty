@@ -1,5 +1,7 @@
 #include "Components/WeaponComponent.h"
 #include "Global.h"
+#include "ListenServerProjectCharacter.h"
+#include "Weapon/Weapon.h"
 
 UWeaponComponent::UWeaponComponent()
 {
@@ -11,7 +13,21 @@ UWeaponComponent::UWeaponComponent()
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	Owner = Cast<AListenServerProjectCharacter>(GetOwner());
+
+	FActorSpawnParameters params;
+	params.Owner = Owner;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	for (TSubclassOf<AWeapon> weaponClass : WeaponClass)
+	{
+		if (weaponClass)
+		{
+			AWeapon* weapon = Owner->GetWorld()->SpawnActor<AWeapon>(weaponClass, params);
+			Weapons.Add(weapon);
+		}
+	}
 }
 
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -20,10 +36,31 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 }
 
-void UWeaponComponent::Equip()
+AWeapon* UWeaponComponent::GetCurrWeapon()
 {
-	printf("부모 Equip 호출");
-	UE_LOG(LogTemp, Warning, TEXT("부모 Equip 호출"));
+	return Weapons[(int32)Type];
+}
+
+void UWeaponComponent::Begin_Equip()
+{
+	GetCurrWeapon()->Begin_Equip();
+}
+
+void UWeaponComponent::End_Equip()
+{
+
+}
+
+void UWeaponComponent::Begin_Fire()
+{
+	if (Weapon)
+	{
+		Weapon->Fire();
+	}
+}
+
+void UWeaponComponent::End_Fire()
+{
 
 }
 
@@ -32,9 +69,9 @@ void UWeaponComponent::SetPistolMode()
 	SetMode(EWeaponType::Pistol);
 }
 
-void UWeaponComponent::SetARMode()
+void UWeaponComponent::SetRifleMode()
 {
-	SetMode(EWeaponType::AR);
+	SetMode(EWeaponType::Rifle);
 }
 
 void UWeaponComponent::SetShotgunMode()
