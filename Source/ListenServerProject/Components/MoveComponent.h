@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputActionValue.h"
 #include "Components/ActorComponent.h"
 #include "MoveComponent.generated.h"
 
@@ -19,9 +20,12 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void MoveForward(float InAxis);
-	void MoveRight(float InAxis);
+	void Move(const FInputActionValue& Value);
 
+	void Look(const FInputActionValue& Value);
+
+	void StartJump();
+	void StopJump();
 
 private:
 	class ACharacter* Character;
