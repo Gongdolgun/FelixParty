@@ -1,2 +1,43 @@
 #include "Controllers/LobbyController.h"
+#include "Global.h"
+#include "GameFramework/PlayerState.h"
+#include "GameInstances/OnlineGameInstance.h"
+
+ALobbyController::ALobbyController()
+{
+}
+
+void ALobbyController::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ALobbyController::ChangeCharacter_Implementation(TSubclassOf<ADefaultCharacter> NewCharacter)
+{
+	FTransform SpawnTransform = GetPawn()->GetActorTransform();
+	GetPawn()->Destroy();
+
+	FActorSpawnParameters param;
+	ADefaultCharacter* SpawnedCharacter = GetWorld()->SpawnActor<ADefaultCharacter>(NewCharacter, SpawnTransform, param);
+
+	if(SpawnedCharacter)
+	{
+		Possess(SpawnedCharacter);
+
+		// Game Instance의 Player Data 편집 요청 로그 작성
+		UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+		if(GameInstance)
+		{
+			FString PlayerID = FString::FromInt(GetPlayerState<APlayerState>()->GetUniqueID());
+			if(GameInstance->PlayerDatas.Contains(PlayerID))
+			{
+				FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(PlayerID);
+
+				PlayerData.CharacterClass = NewCharacter;
+
+				GameInstance->SavePlayerInfo(PlayerID, PlayerData);
+			}
+		}
+	}
+}
 
