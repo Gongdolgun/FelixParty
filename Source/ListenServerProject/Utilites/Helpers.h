@@ -63,4 +63,24 @@ public:
 		}
 		return nullptr;
 	}
+
+	template<typename T>
+	static void GetAsset(T** OutObject, FString InPath)
+	{
+		ConstructorHelpers::FObjectFinder<T> asset(*InPath);
+		*OutObject = asset.Object;
+	}
+
+	template<typename T>
+	static void GetClass(TSubclassOf<T>* OutClass, FString InPath)
+	{
+		ConstructorHelpers::FClassFinder<T> asset(*InPath);
+		*OutClass = asset.Class;
+	}
+	
+	static void AttachTo(AActor* InActor, USceneComponent* InParent, FName InSocketName)
+	{
+		InActor->AttachToComponent(InParent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), InSocketName);
+	}
+
 };

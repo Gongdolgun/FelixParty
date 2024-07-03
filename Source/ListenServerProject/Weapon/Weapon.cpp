@@ -1,18 +1,27 @@
 #include "Weapon/Weapon.h"
 #include "Global.h"
+#include "ListenServerProjectCharacter.h"
 #include "Components/WeaponComponent.h"
 
 AWeapon::AWeapon()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	Helpers::CreateActorComponent<UWeaponComponent>(this, &WeaponComponent, "WeaponComponent");
+	Helpers::CreateComponent<USceneComponent>(this, &Root, "Root");
+	Helpers::CreateComponent<USkeletalMeshComponent>(this, &Mesh, "Mesh", Root);
+
+
 }
 
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	Owner = Cast<AListenServerProjectCharacter>(GetOwner());
+
+	if (HolsterSocketName.IsValid())
+		Helpers::AttachTo(this, Owner->GetMesh(), HolsterSocketName);
+
 }
 
 void AWeapon::Tick(float DeltaTime)
@@ -21,26 +30,29 @@ void AWeapon::Tick(float DeltaTime)
 
 }
 
-void AWeapon::Equip()
+void AWeapon::Attack()
 {
-	if (WeaponComponent)
-	{
-		WeaponComponent->Equip();
-	}
+
 }
 
-void AWeapon::AllEquip()
+void AWeapon::Fire_Implementation()
 {
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWeapon::StaticClass(), FoundActors);
 
-	for (AActor* Actor : FoundActors)
-	{
-		AWeapon* Child = Cast<AWeapon>(Actor);
-		if (Child)
-		{
-			Child->Equip();
-		}
-	}
+}
+
+void AWeapon::Equip()
+{
+	if (EquipMontage)
+		Owner->PlayAnimMontage(EquipMontage, Montage_PlayRate);
+}
+
+void AWeapon::Begin_Equip()
+{
+
+}
+
+void AWeapon::End_Equip()
+{
+
 }
 
