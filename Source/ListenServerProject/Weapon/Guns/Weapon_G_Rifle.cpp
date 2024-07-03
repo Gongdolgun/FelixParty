@@ -2,7 +2,6 @@
 #include "Global.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "ListenServerProjectCharacter.h"
 #include "Utilites/Helpers.h"
 
 AWeapon_G_Rifle::AWeapon_G_Rifle()

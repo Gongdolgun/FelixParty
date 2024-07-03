@@ -1,6 +1,5 @@
 #include "Components/WeaponComponent.h"
 #include "Global.h"
-#include "ListenServerProjectCharacter.h"
 #include "Weapon/Weapon.h"
 
 UWeaponComponent::UWeaponComponent()
@@ -14,7 +13,7 @@ void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Owner = Cast<AListenServerProjectCharacter>(GetOwner());
+	Owner = Cast<ACharacter>(GetOwner());
 
 	FActorSpawnParameters params;
 	params.Owner = Owner;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon/Weapon_Guns.h"
+#include "Weapon/WeaponCategory/Weapon_Guns.h"
 #include "Weapon_G_Rifle.generated.h"
 
 UCLASS()

@@ -21,9 +21,7 @@ public:
 
 public:
 	void Move(const FInputActionValue& Value);
-
 	void Look(const FInputActionValue& Value);
-
 	void StartJump();
 	void StopJump();
 

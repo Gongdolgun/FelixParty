@@ -1,6 +1,5 @@
 #include "Weapon/Weapon.h"
 #include "Global.h"
-#include "ListenServerProjectCharacter.h"
 #include "Components/WeaponComponent.h"
 
 AWeapon::AWeapon()
@@ -17,7 +16,7 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Owner = Cast<AListenServerProjectCharacter>(GetOwner());
+	Owner = Cast<ACharacter>(GetOwner());
 
 	if (HolsterSocketName.IsValid())
 		Helpers::AttachTo(this, Owner->GetMesh(), HolsterSocketName);

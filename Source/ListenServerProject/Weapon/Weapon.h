@@ -56,6 +56,6 @@ public:
 	virtual void End_Equip();
 
 protected:
-	class AListenServerProjectCharacter* Owner;
+	class ACharacter* Owner;
 
 };

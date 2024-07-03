@@ -1,8 +1,9 @@
 #include "Components/MoveComponent.h"
+
+#include "EnhancedInputSubsystems.h"
 #include "Global.h"
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/Character.h"
-#include "ListenServerProjectCharacter.h"
 
 UMoveComponent::UMoveComponent()
 {
@@ -13,7 +14,6 @@ UMoveComponent::UMoveComponent()
 void UMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	Character = Cast<ACharacter>(GetOwner());
 }
 

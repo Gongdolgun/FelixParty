@@ -57,7 +57,7 @@ public:
 	FWeaponTypeChanged OnWeaponTypeChange;
 
 private:
-	class AListenServerProjectCharacter* Owner;
+	class ACharacter* Owner;
 
 	AWeapon* Weapon;
 
