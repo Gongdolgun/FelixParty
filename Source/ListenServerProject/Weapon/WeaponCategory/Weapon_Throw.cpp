@@ -14,8 +14,9 @@ void AWeapon_Throw::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-void AWeapon_Throw::Equip_Implementation()
+void AWeapon_Throw::Equip()
 {
-	Super::Equip_Implementation();
+	Super::Equip();
 }
+
 

@@ -18,16 +18,16 @@ void AWeapon_G_Rifle::End_Equip()
 {
 	Super::End_Equip();
 }
-//
-//void AWeapon_G_Rifle::Equip_Implementation()
-//{
-//	Super::Equip_Implementation();
-//
-//}
 
-void AWeapon_G_Rifle::Fire_Implementation()
+void AWeapon_G_Rifle::Equip()
 {
-	Super::Fire_Implementation();
+	Super::Equip();
+
+}
+
+void AWeapon_G_Rifle::Fire()
+{
+	Super::Fire();
 
 	UCameraComponent* camera = Helpers::GetComponent<UCameraComponent>(Owner);
 	FVector direction = camera->GetForwardVector();

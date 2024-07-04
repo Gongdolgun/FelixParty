@@ -19,8 +19,8 @@ public:
 	void Tick(float DeltaSeconds) override;
 
 public:
-	virtual void Equip_Implementation() override;
+	void Equip() override;
 
-	virtual void Fire_Implementation() override;
+	void Fire() override;
 
 };

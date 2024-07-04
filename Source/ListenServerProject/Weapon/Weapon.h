@@ -46,12 +46,10 @@ public:
 	virtual void Attack();
 
 	UFUNCTION(BlueprintCallable)
-	void Equip();
-	virtual void Equip_Implementation();
+	virtual void Equip();
 
 	UFUNCTION(BlueprintCallable)
-	void Fire();
-	virtual void Fire_Implementation();
+	virtual void Fire();
 
 public:
 	virtual void Begin_Equip();

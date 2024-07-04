@@ -27,8 +27,6 @@ void UWeaponComponent::BeginPlay()
 			Weapons.Add(weapon);
 		}
 	}
-
-
 }
 
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -47,13 +45,6 @@ void UWeaponComponent::Begin_Equip(int num)
 		{
 			Weapon->Equip();
 		}
-	}*/
-
-	/*Weapon = Weapons[num];
-
-	if (Weapon)
-	{
-		Weapon->Equip_Implementation();
 	}*/
 
 	Weapon = Weapons[num];
@@ -79,16 +70,6 @@ void UWeaponComponent::EquipWeapon_1()
 	Begin_Equip(0);
 }
 
-void UWeaponComponent::EquipWeapon_2()
-{
-	Begin_Equip(1);
-}
-
-//void UWeaponComponent::EquipWeapon_3()
-//{
-//	Begin_Equip(2);
-//}
-
 void UWeaponComponent::Begin_Fire()
 {
 	if (Weapon)
@@ -106,22 +87,6 @@ void UWeaponComponent::End_Fire()
 {
 
 }
-
-void UWeaponComponent::SetGunMode()
-{
-	SetMode(WeaponType::Gun);
-}
-
-void UWeaponComponent::SetMeleeMode()
-{
-	SetMode(WeaponType::Melee);
-}
-
-void UWeaponComponent::SetThrowMode()
-{
-	SetMode(WeaponType::Throw);
-}
-
 
 void UWeaponComponent::SetMode(WeaponType InType)
 {

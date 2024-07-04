@@ -53,16 +53,9 @@ public:
 	void End_Equip();
 
 	void EquipWeapon_1();
-	void EquipWeapon_2();
-	//void EquipWeapon_3();
 
 	void Begin_Fire();
 	void End_Fire();
-
-public:
-	void SetGunMode();
-	void SetMeleeMode();
-	void SetThrowMode();
 
 private:
 	void SetMode(WeaponType InType);

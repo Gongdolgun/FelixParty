@@ -36,26 +36,17 @@ void AWeapon::Attack()
 
 void AWeapon::Equip()
 {
-	printf("Equip On");
-
-}
-
-void AWeapon::Equip_Implementation()
-{
 	if (Equip_Montage)
 		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);
 
 	printf("Equip On");
+
 }
 
 void AWeapon::Fire()
 {
 }
 
-void AWeapon::Fire_Implementation()
-{
-
-}
 
 void AWeapon::Begin_Equip()
 {

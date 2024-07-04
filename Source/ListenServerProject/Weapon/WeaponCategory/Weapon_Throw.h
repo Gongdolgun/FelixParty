@@ -19,6 +19,6 @@ public:
 	void Tick(float DeltaSeconds) override;
 
 public:
-	virtual void Equip_Implementation() override;
+	void Equip() override;
 
 };
