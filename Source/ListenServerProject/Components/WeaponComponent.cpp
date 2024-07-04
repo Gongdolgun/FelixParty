@@ -53,11 +53,6 @@ void UWeaponComponent::Begin_Equip(int num)
 	{
 		Weapon->Equip();
 	}
-
-	//if (Weapon)
-	//{
-	//	Weapon->Equip_Implementation();
-	//}
 }
 
 void UWeaponComponent::End_Equip()
@@ -76,11 +71,6 @@ void UWeaponComponent::Begin_Fire()
 	{
 		Weapon->Fire();
 	}
-
-	//if (Weapon)
-	//{
-	//	Weapon->Fire_Implementation();
-	//}
 }
 
 void UWeaponComponent::End_Fire()

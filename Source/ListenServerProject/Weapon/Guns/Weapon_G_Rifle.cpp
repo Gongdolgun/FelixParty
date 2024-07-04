@@ -34,10 +34,11 @@ void AWeapon_G_Rifle::Fire()
 	FTransform transform = camera->GetComponentToWorld();
 
 	FVector start = transform.GetLocation() + direction;
-	FVector end = transform.GetLocation() + direction + HitDistance;
+	FVector end = transform.GetLocation() + direction * HitDistance;
 
 	DrawDebugLine(GetWorld(), start, end, FColor::Red, true, 5);
 
 	printf("Fire On");
+
 }
 
