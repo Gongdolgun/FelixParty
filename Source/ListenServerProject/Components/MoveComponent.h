@@ -28,5 +28,4 @@ public:
 private:
 	class ACharacter* Character;
 
-
 };

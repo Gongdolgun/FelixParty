@@ -1,7 +1,9 @@
 #include "Controllers/LobbyController.h"
 #include "Global.h"
 #include "GameFramework/PlayerState.h"
+#include "Misc/Structures.h"
 #include "GameInstances/OnlineGameInstance.h"
+#include "GameModes/LobbyGameMode.h"
 
 ALobbyController::ALobbyController()
 {
@@ -10,6 +12,26 @@ ALobbyController::ALobbyController()
 void ALobbyController::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ALobbyController::UpdatePlayerList_Implementation(const TArray<FPlayerBaseInfo>& PlayerBaseInfos)
+{
+}
+
+void ALobbyController::SetReadyStatus_Implementation()
+{
+	PlayerInfo.IsReady = !PlayerInfo.IsReady;
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(World->GetAuthGameMode());
+		if (LobbyGameMode)
+		{
+			LobbyGameMode->UpdatePlayerLists();
+			return;
+		}
+	}
 }
 
 void ALobbyController::ChangeCharacter_Implementation(TSubclassOf<ADefaultCharacter> NewCharacter)

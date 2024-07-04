@@ -13,9 +13,15 @@ class LISTENSERVERPROJECT_API ALobbyGameMode : public AGameModeBase
 public:
 	virtual void OnPostLogin(AController* NewPlayer) override;
 
+	UFUNCTION(BlueprintCallable)
+	void UpdatePlayerLists();
+
 public:
+	// 로비 게임모드에서 관리할 플레이어 컨트롤러들과 기본 정보들
+	TArray<class ALobbyController*> ConnectedPlayers;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FPlayerBaseInfo> PlayerBaseInfo;
+	TArray<FPlayerBaseInfo> PlayerBaseInfos;
 
 	// 기본 플레이어 데이터 설정
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

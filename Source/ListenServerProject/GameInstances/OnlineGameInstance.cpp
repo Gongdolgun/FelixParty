@@ -10,7 +10,5 @@ void UOnlineGameInstance::SavePlayerInfo_Implementation(const FString& PlayerID,
 {
 	if(PlayerDatas.Contains(PlayerID))
 		PlayerDatas[PlayerID] = PlayerData;
-
-	CLog::Print(PlayerID);
-	CLog::Print(*PlayerDatas.Find(PlayerID)->CharacterClass->GetName());
+	
 }
