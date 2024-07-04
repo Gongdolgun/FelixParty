@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/MoveComponent.h"
+#include "Components/WeaponComponent.h"
 #include "Global.h"
 
 ADefaultCharacter::ADefaultCharacter()
@@ -16,6 +17,7 @@ ADefaultCharacter::ADefaultCharacter()
 	Helpers::CreateComponent<UCameraComponent>(this, &Camera, "Camera", SpringArm);
 
 	Helpers::CreateActorComponent<UMoveComponent>(this, &Move, "Move");
+	Helpers::CreateActorComponent<UWeaponComponent>(this, &Weapon, "Weapon");
 
 	SpringArm->SetRelativeLocation(FVector(0, 0, 60));
 	SpringArm->TargetArmLength = 400;
@@ -69,14 +71,12 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, Move, &UMoveComponent::StartJump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, Move, &UMoveComponent::StopJump);
 
-		/*EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, Weapon, &UWeaponComponent::Begin_Equip);
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, Weapon, &UWeaponComponent::EquipWeapon_1);
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, Weapon, &UWeaponComponent::EquipWeapon_2);
+		//EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, Weapon, &UWeaponComponent::EquipWeapon_3);
 
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, Weapon, &UWeaponComponent::Begin_Fire);*/
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, Weapon, &UWeaponComponent::Begin_Fire);
 
-	}
-
-	else
-	{
-		//UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
+

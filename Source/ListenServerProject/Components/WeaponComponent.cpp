@@ -1,12 +1,12 @@
 #include "Components/WeaponComponent.h"
 #include "Global.h"
 #include "Weapon/Weapon.h"
+#include "Characters/DefaultCharacter.h"
 
 UWeaponComponent::UWeaponComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	
 }
 
 void UWeaponComponent::BeginPlay()
@@ -27,6 +27,8 @@ void UWeaponComponent::BeginPlay()
 			Weapons.Add(weapon);
 		}
 	}
+
+
 }
 
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -35,14 +37,36 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 }
 
-AWeapon* UWeaponComponent::GetCurrWeapon()
+void UWeaponComponent::Begin_Equip(int num)
 {
-	return Weapons[(int32)Type];
-}
+	/*if (Weapons.IsValidIndex(num))
+	{
+		Weapon = Weapons[num];
 
-void UWeaponComponent::Begin_Equip()
-{
-	GetCurrWeapon()->Begin_Equip();
+		if (Weapon)
+		{
+			Weapon->Equip();
+		}
+	}*/
+
+	/*Weapon = Weapons[num];
+
+	if (Weapon)
+	{
+		Weapon->Equip_Implementation();
+	}*/
+
+	Weapon = Weapons[num];
+
+	if (Weapon)
+	{
+		Weapon->Equip();
+	}
+
+	//if (Weapon)
+	//{
+	//	Weapon->Equip_Implementation();
+	//}
 }
 
 void UWeaponComponent::End_Equip()
@@ -50,12 +74,32 @@ void UWeaponComponent::End_Equip()
 
 }
 
+void UWeaponComponent::EquipWeapon_1()
+{
+	Begin_Equip(0);
+}
+
+void UWeaponComponent::EquipWeapon_2()
+{
+	Begin_Equip(1);
+}
+
+//void UWeaponComponent::EquipWeapon_3()
+//{
+//	Begin_Equip(2);
+//}
+
 void UWeaponComponent::Begin_Fire()
 {
 	if (Weapon)
 	{
 		Weapon->Fire();
 	}
+
+	//if (Weapon)
+	//{
+	//	Weapon->Fire_Implementation();
+	//}
 }
 
 void UWeaponComponent::End_Fire()
@@ -63,27 +107,23 @@ void UWeaponComponent::End_Fire()
 
 }
 
-void UWeaponComponent::SetPistolMode()
+void UWeaponComponent::SetGunMode()
 {
-	SetMode(EWeaponType::Pistol);
+	SetMode(WeaponType::Gun);
 }
 
-void UWeaponComponent::SetRifleMode()
+void UWeaponComponent::SetMeleeMode()
 {
-	SetMode(EWeaponType::Rifle);
+	SetMode(WeaponType::Melee);
 }
 
-void UWeaponComponent::SetShotgunMode()
+void UWeaponComponent::SetThrowMode()
 {
-	SetMode(EWeaponType::Shotgun);
+	SetMode(WeaponType::Throw);
 }
 
-void UWeaponComponent::SetSniperMode()
-{
-	SetMode(EWeaponType::Sniper);
-}
 
-void UWeaponComponent::SetMode(EWeaponType InType)
+void UWeaponComponent::SetMode(WeaponType InType)
 {
 	if (Type == InType)
 		return;
@@ -94,9 +134,14 @@ void UWeaponComponent::SetMode(EWeaponType InType)
 	}
 }
 
-void UWeaponComponent::ChangeType(EWeaponType InType)
+void UWeaponComponent::SetCurrWeapon(AWeapon* NewWeapon)
 {
-	EWeaponType type = Type;
+	Weapon = NewWeapon;
+}
+
+void UWeaponComponent::ChangeType(WeaponType InType)
+{
+	WeaponType type = Type;
 	Type = InType;
 
 	if (OnWeaponTypeChange.IsBound())

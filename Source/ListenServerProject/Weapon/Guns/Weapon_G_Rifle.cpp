@@ -6,9 +6,7 @@
 
 AWeapon_G_Rifle::AWeapon_G_Rifle()
 {
-	USkeletalMesh* mesh;
-	Helpers::GetAsset<USkeletalMesh>(&mesh, "/Script/Engine.SkeletalMesh'/Game/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4'");
-	Mesh->SetSkeletalMesh(mesh);
+
 }
 
 void AWeapon_G_Rifle::Begin_Equip()
@@ -20,6 +18,12 @@ void AWeapon_G_Rifle::End_Equip()
 {
 	Super::End_Equip();
 }
+//
+//void AWeapon_G_Rifle::Equip_Implementation()
+//{
+//	Super::Equip_Implementation();
+//
+//}
 
 void AWeapon_G_Rifle::Fire_Implementation()
 {
@@ -33,5 +37,7 @@ void AWeapon_G_Rifle::Fire_Implementation()
 	FVector end = transform.GetLocation() + direction + HitDistance;
 
 	DrawDebugLine(GetWorld(), start, end, FColor::Red, true, 5);
+
+	printf("Fire On");
 }
 

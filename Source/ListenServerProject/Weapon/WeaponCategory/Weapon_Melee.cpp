@@ -14,6 +14,11 @@ void AWeapon_Melee::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
+void AWeapon_Melee::Equip_Implementation()
+{
+	Super::Equip_Implementation();
+}
+
 void AWeapon_Melee::Attack()
 {
 	Super::Attack();

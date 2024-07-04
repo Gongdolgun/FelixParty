@@ -2,15 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "Weapon/Weapon.h"
-#include "Weapon_Grenade.generated.h"
+#include "Weapon_Throw.generated.h"
 
 UCLASS()
-class LISTENSERVERPROJECT_API AWeapon_Grenade : public AWeapon
+class LISTENSERVERPROJECT_API AWeapon_Throw : public AWeapon
 {
 	GENERATED_BODY()
 
 public:
-	AWeapon_Grenade();
+	AWeapon_Throw();
 
 protected:
 	void BeginPlay() override;
@@ -19,6 +19,6 @@ public:
 	void Tick(float DeltaSeconds) override;
 
 public:
-	virtual void Throw();
+	virtual void Equip_Implementation() override;
 
 };
