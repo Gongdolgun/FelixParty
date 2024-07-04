@@ -17,7 +17,7 @@ protected:
 	FName RightHandSocketName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Equip")
-	class UAnimMontage* EquipMontage;
+	class UAnimMontage* Equip_Montage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Equip")
 	float Montage_PlayRate;
@@ -27,11 +27,11 @@ protected:
 	float HitDistance = 3000;
 
 private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	class USceneComponent* Root;
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	class USkeletalMeshComponent* Mesh;
 
 public:	
@@ -45,13 +45,13 @@ public:
 
 	virtual void Attack();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void Fire();
-	virtual void Fire_Implementation();
+	UFUNCTION(BlueprintCallable)
+	virtual void Equip();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void Fire();
 
 public:
-	void Equip();
-
 	virtual void Begin_Equip();
 	virtual void End_Equip();
 

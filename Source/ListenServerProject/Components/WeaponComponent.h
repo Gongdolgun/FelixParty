@@ -5,12 +5,30 @@
 #include "WeaponComponent.generated.h"
 
 UENUM(BlueprintType)
-enum class EWeaponType
+enum class WeaponType
+{
+	Gun, Melee, Throw, Max,
+};
+
+UENUM(BlueprintType)
+enum class GunType
 {
 	Pistol, Rifle, Shotgun, Sniper, Max,
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponTypeChanged, EWeaponType, PrevType, EWeaponType, NewType);
+UENUM(BlueprintType)
+enum class MeleeType
+{
+	Fist, Knife, Club, Max,
+};
+
+UENUM(BlueprintType)
+enum class Throw
+{
+	Grenade, Flashbang, Smokeshell, Max,
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponTypeChanged, WeaponType, PrevType, WeaponType, NewType);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LISTENSERVERPROJECT_API UWeaponComponent : public UActorComponent
@@ -30,28 +48,24 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-private:
-	class AWeapon* GetCurrWeapon();
-
 public:
-	void Begin_Equip();
+	void Begin_Equip(int num);
 	void End_Equip();
+
+	void EquipWeapon_1();
 
 	void Begin_Fire();
 	void End_Fire();
 
-public:
-	void SetPistolMode();
-	void SetRifleMode();
-	void SetShotgunMode();
-	void SetSniperMode();
+private:
+	void SetMode(WeaponType InType);
+
+	void SetCurrWeapon(AWeapon* NewWeapon);
+
+	void ChangeType(WeaponType InType);
 
 private:
-	void SetMode(EWeaponType InType);
-	void ChangeType(EWeaponType InType);
-
-private:
-	EWeaponType Type = EWeaponType::Max;
+	WeaponType Type = WeaponType::Max;
 
 public:
 	FWeaponTypeChanged OnWeaponTypeChange;
@@ -62,6 +76,5 @@ private:
 	AWeapon* Weapon;
 
 	TArray<class AWeapon*> Weapons;
-
 
 };

@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UMoveComponent* Move;
 
+	UPROPERTY(EditAnywhere)
+	class UWeaponComponent* Weapon;
+
 private:
 	UPROPERTY(EditAnywhere)
 	UInputAction* MoveAction;
@@ -50,4 +53,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	UInputAction* FireAction;
+
+
 };
