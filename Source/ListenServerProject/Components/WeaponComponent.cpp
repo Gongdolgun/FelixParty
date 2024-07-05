@@ -37,6 +37,8 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UWeaponComponent::Begin_Equip(int num)
 {
+	CLog::Print(num);
+
 	/*if (Weapons.IsValidIndex(num))
 	{
 		Weapon = Weapons[num];
@@ -47,12 +49,12 @@ void UWeaponComponent::Begin_Equip(int num)
 		}
 	}*/
 
-	Weapon = Weapons[num];
+	/*Weapon = Weapons[num];
 
 	if (Weapon)
 	{
 		Weapon->Equip();
-	}
+	}*/
 
 	//if (Weapon)
 	//{
