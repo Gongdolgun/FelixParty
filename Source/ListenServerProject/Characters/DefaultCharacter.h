@@ -33,26 +33,25 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class UMoveComponent* Move;
+	class UMoveComponent* MoveComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class UWeaponComponent* Weapon;
+	class UWeaponComponent* WeaponComponent;
 
 private:
 	UPROPERTY(EditAnywhere)
-	UInputAction* MoveAction;
+	UInputAction* IA_Move;
 
 	UPROPERTY(EditAnywhere)
-	UInputAction* LookAction;
+	UInputAction* IA_Look;
 
 	UPROPERTY(EditAnywhere)
-	UInputAction* JumpAction;
+	UInputAction* IA_Jump;
 
 	UPROPERTY(EditAnywhere)
-	UInputAction* EquipAction;
+	UInputAction* IA_Action;
 
-	UPROPERTY(EditAnywhere)
-	UInputAction* FireAction;
-
-
+public:
+	UFUNCTION(BlueprintCallable)
+	virtual void Action();
 };

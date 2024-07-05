@@ -16,8 +16,8 @@ ADefaultCharacter::ADefaultCharacter()
 	Helpers::CreateComponent<USpringArmComponent>(this, &SpringArm, "SpringArm", GetCapsuleComponent());
 	Helpers::CreateComponent<UCameraComponent>(this, &Camera, "Camera", SpringArm);
 
-	Helpers::CreateActorComponent<UMoveComponent>(this, &Move, "Move");
-	Helpers::CreateActorComponent<UWeaponComponent>(this, &Weapon, "Weapon");
+	Helpers::CreateActorComponent<UMoveComponent>(this, &MoveComponent, "MoveComponent");
+	Helpers::CreateActorComponent<UWeaponComponent>(this, &WeaponComponent, "Weapon");
 
 	SpringArm->SetRelativeLocation(FVector(0, 0, 60));
 	SpringArm->TargetArmLength = 400;
@@ -64,17 +64,18 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, Move, &UMoveComponent::Move);
+		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, MoveComponent, &UMoveComponent::Move);
 
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, Move, &UMoveComponent::Look);
+		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, MoveComponent, &UMoveComponent::Look);
 
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, Move, &UMoveComponent::StartJump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, Move, &UMoveComponent::StopJump);
-
-		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, Weapon, &UWeaponComponent::SetGunMode);
-
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, Weapon, &UWeaponComponent::Begin_Fire);
-
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, MoveComponent, &UMoveComponent::StartJump);
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Completed, MoveComponent, &UMoveComponent::StopJump);
+		
+		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Triggered, this, &ThisClass::Action);
 	}
 }
 
+void ADefaultCharacter::Action()
+{
+
+}
