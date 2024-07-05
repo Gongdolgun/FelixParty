@@ -17,9 +17,6 @@ void AWeapon::BeginPlay()
 
 	Owner = Cast<ACharacter>(GetOwner());
 
-	if (HolsterSocketName.IsValid())
-		Helpers::AttachTo(this, Owner->GetMesh(), HolsterSocketName);
-
 }
 
 void AWeapon::Tick(float DeltaTime)
@@ -35,8 +32,14 @@ void AWeapon::Attack()
 
 void AWeapon::Equip()
 {
+<<<<<<< HEAD
 	/*if (Equip_Montage)
 		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);*/
+=======
+	if (Equip_Montage)
+		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);
+
+>>>>>>> test
 
 	UE_LOG(LogTemp, Warning, TEXT("Equip_Montage 실행: %s"), *Equip_Montage->GetName());
 }
@@ -48,11 +51,18 @@ void AWeapon::Fire()
 
 void AWeapon::Begin_Equip()
 {
-
+	// 무기 장착 처음에 안보이게 변경해야함
+	if (HolsterSocketName.IsValid())
+		Helpers::AttachTo(this, Owner->GetMesh(), HolsterSocketName);
 }
 
 void AWeapon::End_Equip()
 {
 
+}
+
+void AWeapon::UnEquip()
+{
+	// TODO :: 장착해제 -> 무기 사라지게 만들기
 }
 

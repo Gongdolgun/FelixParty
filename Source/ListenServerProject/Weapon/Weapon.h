@@ -45,13 +45,21 @@ public:
 
 	virtual void Attack();
 
+<<<<<<< HEAD
 	virtual void Equip();
 
 	virtual void Fire();
+=======
+>>>>>>> test
 
 public:
 	virtual void Begin_Equip();
 	virtual void End_Equip();
+
+	virtual void Equip();
+	virtual void Fire();
+
+	void UnEquip();
 
 protected:
 	class ACharacter* Owner;

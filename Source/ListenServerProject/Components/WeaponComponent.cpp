@@ -35,12 +35,15 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 }
 
+<<<<<<< HEAD
 void UWeaponComponent::Begin_Equip(int32 WeaponIndex)
+=======
+void UWeaponComponent::SetGunMode()
+>>>>>>> test
 {
-	/*if (Weapons.IsValidIndex(num))
-	{
-		Weapon = Weapons[num];
+	SetMode(EWeaponType::Gun);
 
+<<<<<<< HEAD
 		if (Weapon)
 		{
 			Weapon->Equip();
@@ -71,6 +74,8 @@ void UWeaponComponent::SelectWeapon(int32 WeaponIndex)
 
 	//Begin_Equip(WeaponIndex);
 
+=======
+>>>>>>> test
 }
 
 void UWeaponComponent::Begin_Fire()
@@ -86,28 +91,38 @@ void UWeaponComponent::End_Fire()
 
 }
 
-void UWeaponComponent::SetMode(WeaponType InType)
-{
-	if (Type == InType)
-		return;
 
-	else
+void UWeaponComponent::SetMode(EWeaponType InType)
+{
+	// Weapon Type이 들어오면
+	if (Weapons[(int32)InType] != nullptr)
 	{
+		// 무기 타입 변경
+		Weapons[(int32)InType]->Equip();
 		ChangeType(InType);
 	}
+
+	
 }
 
-void UWeaponComponent::SetCurrWeapon(AWeapon* NewWeapon)
+void UWeaponComponent::ChangeType(EWeaponType InType)
 {
-	Weapon = NewWeapon;
-}
-
-void UWeaponComponent::ChangeType(WeaponType InType)
-{
-	WeaponType type = Type;
+	EWeaponType type = Type;
 	Type = InType;
 
 	if (OnWeaponTypeChange.IsBound())
 		OnWeaponTypeChange.Broadcast(type, InType);
 }
 
+void UWeaponComponent::SetCurrentWeapon(AWeapon* NewWeapon)
+{
+	Weapon = NewWeapon;
+}
+
+AWeapon* UWeaponComponent::GetCurrentWeapon()
+{
+	if(IsUnarmedMode())
+		return nullptr;
+
+	return Weapons[(int32)Type];
+}

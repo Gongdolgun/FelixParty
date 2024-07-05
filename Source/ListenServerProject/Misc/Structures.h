@@ -10,10 +10,10 @@ struct FPlayerBaseInfo
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName PlayerName;
+	FName PlayerName = FName(TEXT("Player Name"));
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsReady;
+	bool IsReady = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture2D* UserThumbnail;

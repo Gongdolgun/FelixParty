@@ -36,26 +36,34 @@ public:
 	class UInputMappingContext* DefaultMappingContext;
 
 public:
-	UPROPERTY(EditAnywhere)
-	class UMoveComponent* Move;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UMoveComponent* MoveComponent;
 
-	UPROPERTY(EditAnywhere)
-	class UWeaponComponent* Weapon;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UWeaponComponent* WeaponComponent;
 
 private:
 	UPROPERTY(EditAnywhere)
-	UInputAction* MoveAction;
+	UInputAction* IA_Move;
 
 	UPROPERTY(EditAnywhere)
-	UInputAction* LookAction;
+	UInputAction* IA_Look;
 
 	UPROPERTY(EditAnywhere)
-	UInputAction* JumpAction;
+	UInputAction* IA_Jump;
 
 	UPROPERTY(EditAnywhere)
+<<<<<<< HEAD
 	UInputAction* EquipAction;
 
 	UPROPERTY(EditAnywhere)
 	UInputAction* FireAction;
 
+=======
+	UInputAction* IA_Action;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	virtual void Action();
+>>>>>>> test
 };

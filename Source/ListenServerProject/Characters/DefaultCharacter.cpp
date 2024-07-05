@@ -16,8 +16,8 @@ ADefaultCharacter::ADefaultCharacter()
 	Helpers::CreateComponent<USpringArmComponent>(this, &SpringArm, "SpringArm", GetCapsuleComponent());
 	Helpers::CreateComponent<UCameraComponent>(this, &Camera, "Camera", SpringArm);
 
-	Helpers::CreateActorComponent<UMoveComponent>(this, &Move, "Move");
-	Helpers::CreateActorComponent<UWeaponComponent>(this, &Weapon, "Weapon");
+	Helpers::CreateActorComponent<UMoveComponent>(this, &MoveComponent, "MoveComponent");
+	Helpers::CreateActorComponent<UWeaponComponent>(this, &WeaponComponent, "Weapon");
 
 	SpringArm->SetRelativeLocation(FVector(0, 0, 60));
 	SpringArm->TargetArmLength = 400;
@@ -65,8 +65,9 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, Move, &UMoveComponent::Move);
+		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, MoveComponent, &UMoveComponent::Move);
 
+<<<<<<< HEAD
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, Move, &UMoveComponent::Look);
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, Move, &UMoveComponent::StartJump);
@@ -75,10 +76,18 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ADefaultCharacter::HandleEquipAction);
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, Weapon, &UWeaponComponent::Begin_Fire);
+=======
+		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, MoveComponent, &UMoveComponent::Look);
+>>>>>>> test
 
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, MoveComponent, &UMoveComponent::StartJump);
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Completed, MoveComponent, &UMoveComponent::StopJump);
+		
+		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Triggered, this, &ThisClass::Action);
 	}
 }
 
+<<<<<<< HEAD
 void ADefaultCharacter::HandleEquipAction(const FInputActionValue& Value)
 {
 	// Value의 실제 자료형과 값 출력
@@ -102,3 +111,9 @@ void ADefaultCharacter::HandleEquipAction(const FInputActionValue& Value)
 }
 
 
+=======
+void ADefaultCharacter::Action()
+{
+
+}
+>>>>>>> test

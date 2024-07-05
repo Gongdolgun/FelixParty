@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Characters/DefaultCharacter.h"
 #include "GameFramework/PlayerController.h"
+#include "Misc/Structures.h"
 #include "LobbyController.generated.h"
 
 UCLASS()
@@ -17,4 +18,17 @@ public:
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ChangeCharacter(TSubclassOf<ADefaultCharacter> NewCharacter);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void UpdatePlayerList(const TArray<FPlayerBaseInfo>& PlayerBaseInfos);
+	void UpdatePlayerList_Implementation(const TArray<FPlayerBaseInfo>& PlayerBaseInfos);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void SetReadyStatus();
+
+public:
+	FPlayerBaseInfo PlayerInfo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FPlayerBaseInfo> PlayerInfos;
 };
