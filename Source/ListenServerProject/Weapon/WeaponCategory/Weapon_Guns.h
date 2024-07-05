@@ -13,10 +13,10 @@ public:
 	AWeapon_Guns();
 
 protected:
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
 
 public:
-	void Tick(float DeltaSeconds) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 public:
 	void Equip() override;

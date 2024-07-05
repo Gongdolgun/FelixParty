@@ -30,6 +30,8 @@ void UWeaponComponent::BeginPlay()
 			Weapons.Add(weapon);
 		}
 	}
+
+	
 }
 
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -60,13 +62,17 @@ void UWeaponComponent::End_Fire()
 
 void UWeaponComponent::SetMode(EWeaponType InType)
 {
-	// Weapon Type이 들어오면
-	if (Weapons[(int32)InType] != nullptr)
+	if (Weapons.Num() > 0)
 	{
-		// 무기 타입 변경
-		Weapons[(int32)InType]->Equip();
-		ChangeType(InType);
+		// Weapon Type이 들어오면
+		if (Weapons[(int32)InType] != nullptr)
+		{
+			// 무기 타입 변경
+			Weapons[(int32)InType]->Equip();
+			ChangeType(InType);
+		}
 	}
+	
 
 	
 }
@@ -90,5 +96,11 @@ AWeapon* UWeaponComponent::GetCurrentWeapon()
 	if(IsUnarmedMode())
 		return nullptr;
 
-	return Weapons[(int32)Type];
+	if (Weapons.Num() > 0)
+	{
+		return Weapons[(int32)Type];
+	}
+
+	return nullptr;
+
 }

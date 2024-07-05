@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Components/WeaponComponent.h"
 #include "AnimInstance_DefaultCharacter.generated.h"
 
 UCLASS()
@@ -31,6 +32,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Value")
 	bool bUseControlYaw;
 
+protected:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "WeaponType")
+	EWeaponType WeaponType = EWeaponType::Gun;
+
 public:
 	void NativeBeginPlay() override;
 	void NativeUpdateAnimation(float DeltaSeconds) override;
@@ -38,5 +43,8 @@ public:
 protected:
 	class ADefaultCharacter* OwnerCharacter;
 
+private:
+	UFUNCTION()
+	void OnWeaponTypeChanged(EWeaponType InPrevType, EWeaponType InNewType);
 
 };
