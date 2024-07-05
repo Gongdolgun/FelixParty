@@ -1,10 +1,12 @@
 #include "Components/StateComponent.h"
+#include "Global.h"
 #include "GameFramework/Character.h"
 
 UStateComponent::UStateComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
+	
 }
 
 void UStateComponent::BeginPlay()
@@ -24,6 +26,8 @@ void UStateComponent::BeginAction()
 {
 	bInAction = true;
 	SetActionMode();
+
+	
 }
 
 void UStateComponent::EndAction()
