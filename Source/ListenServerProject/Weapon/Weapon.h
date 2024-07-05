@@ -45,10 +45,8 @@ public:
 
 	virtual void Attack();
 
-	UFUNCTION(BlueprintCallable)
 	virtual void Equip();
 
-	UFUNCTION(BlueprintCallable)
 	virtual void Fire();
 
 public:

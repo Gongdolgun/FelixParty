@@ -37,6 +37,7 @@ ADefaultCharacter::ADefaultCharacter()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+
 }
 
 void ADefaultCharacter::BeginPlay()
@@ -71,10 +72,33 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, Move, &UMoveComponent::StartJump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, Move, &UMoveComponent::StopJump);
 
-		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, Weapon, &UWeaponComponent::EquipWeapon_1);
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ADefaultCharacter::HandleEquipAction);
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, Weapon, &UWeaponComponent::Begin_Fire);
 
 	}
 }
+
+void ADefaultCharacter::HandleEquipAction(const FInputActionValue& Value)
+{
+	// Value의 실제 자료형과 값 출력
+	UE_LOG(LogTemp, Warning, TEXT("Received Value: %s"), *Value.ToString());
+
+	// float로 변환하고 int32로 캐스팅
+	float InputValue = Value.Get<float>();
+
+	UE_LOG(LogTemp, Warning, TEXT("Input Value: %f"), InputValue);
+
+	//int32 WeaponIndex = static_cast<int32>(InputValue);
+	int32 WeaponIndex = FMath::RoundToInt(InputValue);
+
+	UE_LOG(LogTemp, Warning, TEXT("Weapon Index: %f"), WeaponIndex);
+
+	if (Weapon)
+	{
+		Weapon->SelectWeapon(WeaponIndex);
+	}
+
+}
+
 

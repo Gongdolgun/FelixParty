@@ -23,6 +23,8 @@ void AWeapon_G_Rifle::Equip()
 {
 	Super::Equip();
 
+	if (Equip_Montage)
+		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);
 }
 
 void AWeapon_G_Rifle::Fire()
@@ -38,7 +40,6 @@ void AWeapon_G_Rifle::Fire()
 
 	DrawDebugLine(GetWorld(), start, end, FColor::Red, true, 5);
 
-	printf("Fire On");
 
 }
 

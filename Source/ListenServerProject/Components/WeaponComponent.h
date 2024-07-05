@@ -49,10 +49,10 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void Begin_Equip(int num);
+	void Begin_Equip(int32 WeaponIndex);
 	void End_Equip();
 
-	void EquipWeapon_1();
+	void SelectWeapon(int32 WeaponIndex);
 
 	void Begin_Fire();
 	void End_Fire();
@@ -70,7 +70,7 @@ private:
 public:
 	FWeaponTypeChanged OnWeaponTypeChange;
 
-private:
+public:
 	class ACharacter* Owner;
 
 	AWeapon* Weapon;

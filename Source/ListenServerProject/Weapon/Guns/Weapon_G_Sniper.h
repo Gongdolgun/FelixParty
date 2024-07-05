@@ -2,15 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "Weapon/WeaponCategory/Weapon_Guns.h"
-#include "Weapon_G_Pistol.generated.h"
+#include "Weapon_G_Sniper.generated.h"
 
 UCLASS()
-class LISTENSERVERPROJECT_API AWeapon_G_Pistol : public AWeapon_Guns
+class LISTENSERVERPROJECT_API AWeapon_G_Sniper : public AWeapon_Guns
 {
 	GENERATED_BODY()
 
 public:
-	AWeapon_G_Pistol();
+	AWeapon_G_Sniper();
 
 public:
 	void Begin_Equip() override;
@@ -19,5 +19,4 @@ public:
 	void Equip() override;
 
 	void Fire() override;
-
 };

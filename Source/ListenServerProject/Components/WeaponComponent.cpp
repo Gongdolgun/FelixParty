@@ -35,7 +35,7 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 }
 
-void UWeaponComponent::Begin_Equip(int num)
+void UWeaponComponent::Begin_Equip(int32 WeaponIndex)
 {
 	/*if (Weapons.IsValidIndex(num))
 	{
@@ -47,7 +47,7 @@ void UWeaponComponent::Begin_Equip(int num)
 		}
 	}*/
 
-	Weapon = Weapons[num];
+	Weapon = Weapons[WeaponIndex];
 
 	if (Weapon)
 	{
@@ -60,9 +60,17 @@ void UWeaponComponent::End_Equip()
 
 }
 
-void UWeaponComponent::EquipWeapon_1()
+void UWeaponComponent::SelectWeapon(int32 WeaponIndex)
 {
-	Begin_Equip(0);
+	if (WeaponIndex >= 0 && WeaponIndex < Weapons.Num())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Begin Equip: %f"), WeaponIndex);
+		Begin_Equip(WeaponIndex);
+
+	}
+
+	//Begin_Equip(WeaponIndex);
+
 }
 
 void UWeaponComponent::Begin_Fire()

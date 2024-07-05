@@ -9,7 +9,6 @@ AWeapon::AWeapon()
 	Helpers::CreateComponent<USceneComponent>(this, &Root, "Root");
 	Helpers::CreateComponent<USkeletalMeshComponent>(this, &Mesh, "Mesh", Root);
 
-
 }
 
 void AWeapon::BeginPlay()
@@ -36,11 +35,10 @@ void AWeapon::Attack()
 
 void AWeapon::Equip()
 {
-	if (Equip_Montage)
-		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);
+	/*if (Equip_Montage)
+		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);*/
 
-	printf("Equip On");
-
+	UE_LOG(LogTemp, Warning, TEXT("Equip_Montage ½ÇÇà: %s"), *Equip_Montage->GetName());
 }
 
 void AWeapon::Fire()
