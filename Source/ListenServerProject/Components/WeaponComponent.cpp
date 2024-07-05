@@ -35,24 +35,20 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 }
 
-void UWeaponComponent::Begin_Equip(int num)
+void UWeaponComponent::Begin_Equip()
 {
-	/*if (Weapons.IsValidIndex(num))
+	if (GetCurrentWeapon())
 	{
-		Weapon = Weapons[num];
-
-		if (Weapon)
-		{
-			Weapon->Equip();
-		}
-	}*/
-
-	Weapon = Weapons[num];
-
-	if (Weapon)
-	{
-		Weapon->Equip();
+		// 최근 장착한 무기에서 Equip 시작
+		GetCurrentWeapon()->Begin_Equip();
 	}
+
+	//Weapon = Weapons[num];
+
+	//if (Weapon)
+	//{
+	//	Weapon->Equip();
+	//}
 
 	//if (Weapon)
 	//{
@@ -65,9 +61,18 @@ void UWeaponComponent::End_Equip()
 
 }
 
-void UWeaponComponent::EquipWeapon_1()
+void UWeaponComponent::SetUnarmedMode()
 {
-	Begin_Equip(0);
+	// TODO :: UnarmedMode가 되기 위한 조건을 추가해ㅑㅇ함
+
+	GetCurrentWeapon()->UnEquip();
+	ChangeType(EWeaponType::Max);
+}
+
+void UWeaponComponent::SetGunMode()
+{
+	SetMode(EWeaponType::Gun);
+
 }
 
 void UWeaponComponent::Begin_Fire()
@@ -88,28 +93,52 @@ void UWeaponComponent::End_Fire()
 
 }
 
-void UWeaponComponent::SetMode(WeaponType InType)
-{
-	if (Type == InType)
-		return;
 
-	else
+void UWeaponComponent::SetMode(EWeaponType InType)
+{
+	// 같은 무기를 누르면 UnArmedMode로 변경
+	if (Type == InType)
 	{
+		SetUnarmedMode();
+
+		return;
+	}
+
+	else if (IsUnarmedMode() == false)
+	{
+		// 무기를 들고 있을 때, 일단 UnEquip으로 모드 변경
+		GetCurrentWeapon()->UnEquip();
+	}
+
+	// Weapon Type이 들어오면
+	if (Weapons[(int32)InType] != nullptr)
+	{
+		// 무기 타입 변경
+		Weapons[(int32)InType]->Equip();
 		ChangeType(InType);
 	}
+
+	
 }
 
-void UWeaponComponent::SetCurrWeapon(AWeapon* NewWeapon)
+void UWeaponComponent::ChangeType(EWeaponType InType)
 {
-	Weapon = NewWeapon;
-}
-
-void UWeaponComponent::ChangeType(WeaponType InType)
-{
-	WeaponType type = Type;
+	EWeaponType type = Type;
 	Type = InType;
 
 	if (OnWeaponTypeChange.IsBound())
 		OnWeaponTypeChange.Broadcast(type, InType);
 }
 
+void UWeaponComponent::SetCurrentWeapon(AWeapon* NewWeapon)
+{
+	Weapon = NewWeapon;
+}
+
+AWeapon* UWeaponComponent::GetCurrentWeapon()
+{
+	if(IsUnarmedMode())
+		return nullptr;
+
+	return Weapons[(int32)Type];
+}

@@ -14,32 +14,30 @@ void UNFS_Equip::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase
 
 	if (MeshComp && MeshComp->GetOwner())
 	{
-		/*UWeaponComponent* weapon = Helpers::GetComponent<UWeaponComponent>(MeshComp->GetOwner());
-
-		weapon->Begin_Equip(WeaponIndex);*/
-
+		UWeaponComponent* weapon = Helpers::GetComponent<UWeaponComponent>(MeshComp->GetOwner());
 		ADefaultCharacter* Player = Cast<ADefaultCharacter>(MeshComp->GetOwner());
 
-		if (Player)
+		if (weapon && Player)
 		{
-			Player->Weapon->Begin_Equip(WeaponIndex);
+			weapon->Begin_Equip();
 		}
-	}
-	printf("false");
 
-	//weapon->Begin_Equip();
+	}
 }
 
 void UNFS_Equip::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 	Super::NotifyEnd(MeshComp, Animation);
 
-	//if (!MeshComp && !MeshComp->GetOwner())
-	//	return;
+	if (MeshComp && MeshComp->GetOwner())
+	{
+		UWeaponComponent* weapon = Helpers::GetComponent<UWeaponComponent>(MeshComp->GetOwner());
 
-	//UWeaponComponent* weapon = Helpers::GetComponent<UWeaponComponent>(MeshComp->GetOwner());
-
-	//weapon->End_Equip();
+		if (weapon)
+		{
+			weapon->End_Equip();
+		}
+	}
 
 }
 

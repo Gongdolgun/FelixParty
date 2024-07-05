@@ -45,15 +45,15 @@ public:
 
 	virtual void Attack();
 
-	UFUNCTION(BlueprintCallable)
-	virtual void Equip();
-
-	UFUNCTION(BlueprintCallable)
-	virtual void Fire();
 
 public:
 	virtual void Begin_Equip();
 	virtual void End_Equip();
+
+	virtual void Equip();
+	virtual void Fire();
+
+	void UnEquip();
 
 protected:
 	class ACharacter* Owner;

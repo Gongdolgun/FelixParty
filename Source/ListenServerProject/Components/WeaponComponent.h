@@ -2,33 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Misc/Enums.h"
 #include "WeaponComponent.generated.h"
 
-UENUM(BlueprintType)
-enum class WeaponType
-{
-	Gun, Melee, Throw, Max,
-};
-
-UENUM(BlueprintType)
-enum class GunType
-{
-	Pistol, Rifle, Shotgun, Sniper, Max,
-};
-
-UENUM(BlueprintType)
-enum class MeleeType
-{
-	Fist, Knife, Club, Max,
-};
-
-UENUM(BlueprintType)
-enum class Throw
-{
-	Grenade, Flashbang, Smokeshell, Max,
-};
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponTypeChanged, WeaponType, PrevType, WeaponType, NewType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponTypeChanged, EWeaponType, PrevType, EWeaponType, NewType);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LISTENSERVERPROJECT_API UWeaponComponent : public UActorComponent
@@ -39,6 +16,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	TArray<TSubclassOf<class AWeapon>> WeaponClass;
 
+public:
+	FORCEINLINE bool IsUnarmedMode() { return Type == EWeaponType::Max; }
+	FORCEINLINE bool IsGunMode() { return Type == EWeaponType::Gun; }
+
+
 public:	
 	UWeaponComponent();
 
@@ -48,24 +30,31 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-public:
-	void Begin_Equip(int num);
-	void End_Equip();
 
-	void EquipWeapon_1();
+public:
+	void Begin_Equip();
+	void End_Equip();
 
 	void Begin_Fire();
 	void End_Fire();
 
-private:
-	void SetMode(WeaponType InType);
+public:
+	void SetUnarmedMode();
+	void SetGunMode();
 
-	void SetCurrWeapon(AWeapon* NewWeapon);
-
-	void ChangeType(WeaponType InType);
 
 private:
-	WeaponType Type = WeaponType::Max;
+	void SetMode(EWeaponType InType);
+	void ChangeType(EWeaponType InType);
+
+	void SetCurrentWeapon(AWeapon* NewWeapon);
+
+public:
+	UFUNCTION(BlueprintCallable)
+		class AWeapon* GetCurrentWeapon();
+
+private:
+	EWeaponType Type = EWeaponType::Max;
 
 public:
 	FWeaponTypeChanged OnWeaponTypeChange;
