@@ -45,7 +45,7 @@ private:
 	void SetCurrentWeapon(AWeapon* NewWeapon);
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 		class AWeapon* GetCurrentWeapon();
 
 private:

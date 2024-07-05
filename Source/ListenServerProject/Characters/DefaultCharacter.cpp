@@ -17,9 +17,9 @@ ADefaultCharacter::ADefaultCharacter()
 	Helpers::CreateComponent<UCameraComponent>(this, &Camera, "Camera", SpringArm);
 
 	Helpers::CreateActorComponent<UMoveComponent>(this, &MoveComponent, "MoveComponent");
-	Helpers::CreateActorComponent<UWeaponComponent>(this, &WeaponComponent, "Weapon");
+	Helpers::CreateActorComponent<UWeaponComponent>(this, &WeaponComponent, "WeaponComponent");
 
-	SpringArm->SetRelativeLocation(FVector(60, 0, 0));
+	SpringArm->SetRelativeLocation(FVector(60, 0, 60));
 	SpringArm->TargetArmLength = 270;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;

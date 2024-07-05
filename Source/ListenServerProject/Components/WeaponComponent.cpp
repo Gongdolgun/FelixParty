@@ -15,6 +15,9 @@ void UWeaponComponent::BeginPlay()
 
 	Owner = Cast<ACharacter>(GetOwner());
 
+	// 초기 세팅은 총을 들고 시작
+	Type = EWeaponType::Gun;
+
 	FActorSpawnParameters params;
 	params.Owner = Owner;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
