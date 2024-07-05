@@ -19,4 +19,36 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 
 		GameInstance->PlayerDatas.Add(PlayerID, DefaultPlayerData);
 	}
+
+	// Player Base Info ÃÊ±âÈ­
+	if(Controller)
+	{
+		ConnectedPlayers.Add(Controller);
+
+		if(Controller->IsLocalController())
+			Controller->PlayerInfo.IsReady = true;
+
+		else
+			Controller->PlayerInfo.IsReady = false;
+
+		Controller->PlayerInfo.PlayerName = FName(*FString::FromInt(Controller->GetPlayerState<APlayerState>()->GetUniqueID()));
+
+		PlayerBaseInfos.Add(Controller->PlayerInfo);
+
+		for(auto Player : ConnectedPlayers)
+		{
+			Player->UpdatePlayerList(PlayerBaseInfos);
+		}
+	}
+}
+
+void ALobbyGameMode::UpdatePlayerLists()
+{
+	PlayerBaseInfos.Empty();
+
+	for(auto Player : ConnectedPlayers)
+		PlayerBaseInfos.Add(Player->PlayerInfo);
+
+	for (auto Player : ConnectedPlayers)
+		Player->UpdatePlayerList(PlayerBaseInfos);
 }

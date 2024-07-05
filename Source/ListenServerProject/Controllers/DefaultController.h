@@ -8,5 +8,4 @@ UCLASS()
 class LISTENSERVERPROJECT_API ADefaultController : public APlayerController
 {
 	GENERATED_BODY()
-	
 };

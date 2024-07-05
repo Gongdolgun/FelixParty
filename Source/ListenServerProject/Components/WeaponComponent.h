@@ -32,16 +32,11 @@ public:
 
 
 public:
-	void Begin_Equip();
-	void End_Equip();
-
 	void Begin_Fire();
 	void End_Fire();
 
 public:
-	void SetUnarmedMode();
 	void SetGunMode();
-
 
 private:
 	void SetMode(EWeaponType InType);
@@ -60,10 +55,8 @@ public:
 	FWeaponTypeChanged OnWeaponTypeChange;
 
 private:
-	class ACharacter* Owner;
-
+	ACharacter* Owner;
 	AWeapon* Weapon;
-
 	TArray<class AWeapon*> Weapons;
 
 };
