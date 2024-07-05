@@ -32,10 +32,10 @@ public:
 	class UInputMappingContext* DefaultMappingContext;
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UMoveComponent* Move;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UWeaponComponent* Weapon;
 
 private:
