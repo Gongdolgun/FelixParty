@@ -23,6 +23,7 @@ ADefaultCharacter::ADefaultCharacter()
 	SpringArm->TargetArmLength = 270;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
+	SpringArm->bDoCollisionTest = false;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
