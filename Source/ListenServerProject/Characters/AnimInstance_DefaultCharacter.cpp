@@ -19,7 +19,7 @@ void UAnimInstance_DefaultCharacter::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	if (!OwnerCharacter) return;
+	if (!OwnerCharacter)	return;
 
 	Velocity = OwnerCharacter->GetVelocity();
 	Speed = OwnerCharacter->GetVelocity().Size2D();

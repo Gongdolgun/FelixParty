@@ -34,32 +34,57 @@ void ALobbyController::SetReadyStatus_Implementation()
 	}
 }
 
-void ALobbyController::ChangeCharacter_Implementation(TSubclassOf<ADefaultCharacter> NewCharacter)
+void ALobbyController::ChangeCharacter_Implementation(const TArray<UMaterialInterface*>& Materials)
 {
-	FTransform SpawnTransform = GetPawn()->GetActorTransform();
-	GetPawn()->Destroy();
+	ADefaultCharacter* MyCharacter = Cast<ADefaultCharacter>(GetPawn());
 
-	FActorSpawnParameters param;
-	ADefaultCharacter* SpawnedCharacter = GetWorld()->SpawnActor<ADefaultCharacter>(NewCharacter, SpawnTransform, param);
-
-	if(SpawnedCharacter)
+	if(MyCharacter)
 	{
-		Possess(SpawnedCharacter);
-
-		// Game Instance의 Player Data 편집 요청 로그 작성
-		UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
-		if(GameInstance)
+		for(int i = 0; i < Materials.Num(); i++)
 		{
-			//FString PlayerID = FString::FromInt(GetPlayerState<APlayerState>()->GetUniqueID());
-			if(GameInstance->PlayerDatas.Contains(MyUniqueID))
-			{
-				FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(MyUniqueID);
-
-				PlayerData.CharacterClass = NewCharacter;
-
-				GameInstance->SavePlayerInfo(MyUniqueID, PlayerData);
-			}
+			MyCharacter->GetMesh()->SetMaterial(i, Materials[i]);
 		}
 	}
+
+	// Game Instance의 Player Data 편집 요청 로그 작성
+	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+	if (GameInstance)
+	{
+		//FString PlayerID = FString::FromInt(GetPlayerState<APlayerState>()->GetUniqueID());
+		if (GameInstance->PlayerDatas.Contains(MyUniqueID))
+		{
+			FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(MyUniqueID);
+
+			PlayerData.CharacterMaterials = Materials;
+
+			GameInstance->SavePlayerInfo(MyUniqueID, PlayerData);
+		}
+	}
+
+	//FTransform SpawnTransform = GetPawn()->GetActorTransform();
+	//GetPawn()->Destroy();
+
+	//FActorSpawnParameters param;
+	//ADefaultCharacter* SpawnedCharacter = GetWorld()->SpawnActor<ADefaultCharacter>(NewCharacter, SpawnTransform, param);
+
+	//if(SpawnedCharacter)
+	//{
+	//	Possess(SpawnedCharacter);
+
+	//	// Game Instance의 Player Data 편집 요청 로그 작성
+	//	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+	//	if(GameInstance)
+	//	{
+	//		//FString PlayerID = FString::FromInt(GetPlayerState<APlayerState>()->GetUniqueID());
+	//		if(GameInstance->PlayerDatas.Contains(MyUniqueID))
+	//		{
+	//			FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(MyUniqueID);
+
+	//			PlayerData.CharacterClass = NewCharacter;
+
+	//			GameInstance->SavePlayerInfo(MyUniqueID, PlayerData);
+	//		}
+	//	}
+	//}
 }
 

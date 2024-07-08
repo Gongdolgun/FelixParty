@@ -12,5 +12,4 @@ void UOnlineGameInstance::SavePlayerInfo_Implementation(const FString& PlayerID,
 		PlayerDatas[PlayerID] = PlayerData;
 
 	CLog::Print(PlayerID);
-	CLog::Print(PlayerDatas[PlayerID].CharacterClass->GetName());
 }
