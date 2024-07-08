@@ -10,6 +10,10 @@ class LISTENSERVERPROJECT_API AOnlyUpCharacter : public ADefaultCharacter
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UParkourComponent* ParkourComponent;
+
+public:
 	AOnlyUpCharacter();
 
 protected:
@@ -20,5 +24,7 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
+protected:
+	virtual void Action() override;
+
 };

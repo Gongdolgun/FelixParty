@@ -19,5 +19,16 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+public:
+	void ParkourTrace(
+		float InitialTraceLength, float SecondaryTraceZOffset,float FallingHeightMultiplier,
+		FVector& InParkourPos1, FVector& InParkourPos2);
+
+private:
+	ACharacter* OwnerCharacter;
+
+	//FVector ParkourPos1 = FVector::ZeroVector;
+	//FVector ParkourPos2 = FVector::ZeroVector;
+
+	//bool CanParkour = false;
 };
