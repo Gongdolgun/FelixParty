@@ -21,17 +21,11 @@ void UWeaponComponent::BeginPlay()
 	FActorSpawnParameters params;
 	params.Owner = Owner;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	for (TSubclassOf<AWeapon> weaponClass : WeaponClass)
+	if (StartWeapon)
 	{
-		if (weaponClass)
-		{
-			AWeapon* weapon = Owner->GetWorld()->SpawnActor<AWeapon>(weaponClass, params);
-			Weapons.Add(weapon);
-		}
+		AWeapon* weapon = Owner->GetWorld()->SpawnActor<AWeapon>(StartWeapon, params);
+		SetCurrentWeapon(weapon);
 	}
-
-	
 }
 
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -40,41 +34,15 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 }
 
-void UWeaponComponent::SetGunMode()
-{
-	SetMode(EWeaponType::Gun);
-
-}
-
 void UWeaponComponent::Begin_Fire()
 {
-	if (Weapon)
-	{
-		Weapon->Fire();
-	}
+	if(CurWeapon)
+		CurWeapon->Fire();
 }
 
 void UWeaponComponent::End_Fire()
 {
 
-}
-
-
-void UWeaponComponent::SetMode(EWeaponType InType)
-{
-	if (Weapons.Num() > 0)
-	{
-		// Weapon Type이 들어오면
-		if (Weapons[(int32)InType] != nullptr)
-		{
-			// 무기 타입 변경
-			Weapons[(int32)InType]->Equip();
-			ChangeType(InType);
-		}
-	}
-	
-
-	
 }
 
 void UWeaponComponent::ChangeType(EWeaponType InType)
@@ -86,21 +54,7 @@ void UWeaponComponent::ChangeType(EWeaponType InType)
 		OnWeaponTypeChange.Broadcast(type, InType);
 }
 
-void UWeaponComponent::SetCurrentWeapon(AWeapon* NewWeapon)
+void UWeaponComponent::SetCurrentWeapon(class AWeapon* NewWeapon)
 {
-	Weapon = NewWeapon;
-}
-
-AWeapon* UWeaponComponent::GetCurrentWeapon()
-{
-	if(IsUnarmedMode())
-		return nullptr;
-
-	if (Weapons.Num() > 0)
-	{
-		return Weapons[(int32)Type];
-	}
-
-	return nullptr;
-
+	CurWeapon = NewWeapon;
 }

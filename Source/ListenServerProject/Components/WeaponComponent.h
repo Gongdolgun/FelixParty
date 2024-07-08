@@ -13,9 +13,7 @@ class LISTENSERVERPROJECT_API UWeaponComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Settings")
-	//TArray<TSubclassOf<class AWeapon>> WeaponClass;
-	TArray<TSubclassOf<class AWeapon>> WeaponClass;
+	ACharacter* Owner;
 
 public:
 	FORCEINLINE bool IsUnarmedMode() { return Type == EWeaponType::Max; }
@@ -36,18 +34,9 @@ public:
 	void Begin_Fire();
 	void End_Fire();
 
-public:
-	void SetGunMode();
-
 private:
-	void SetMode(EWeaponType InType);
 	void ChangeType(EWeaponType InType);
-
-	void SetCurrentWeapon(AWeapon* NewWeapon);
-
-public:
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-		class AWeapon* GetCurrentWeapon();
+	void SetCurrentWeapon(class AWeapon* NewWeapon);
 
 public:
 	EWeaponType Type = EWeaponType::Max;
@@ -55,9 +44,11 @@ public:
 public:
 	FWeaponTypeChanged OnWeaponTypeChange;
 
-private:
-	ACharacter* Owner;
-	AWeapon* Weapon;
-	TArray<class AWeapon*> Weapons;
+public:
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	TSubclassOf<class AWeapon> StartWeapon;
+
+	UPROPERTY(EditAnywhere)
+	AWeapon* CurWeapon;
 
 };

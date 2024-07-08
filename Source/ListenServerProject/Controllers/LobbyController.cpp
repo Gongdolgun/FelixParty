@@ -60,31 +60,4 @@ void ALobbyController::ChangeCharacter_Implementation(const TArray<UMaterialInte
 			GameInstance->SavePlayerInfo(MyUniqueID, PlayerData);
 		}
 	}
-
-	//FTransform SpawnTransform = GetPawn()->GetActorTransform();
-	//GetPawn()->Destroy();
-
-	//FActorSpawnParameters param;
-	//ADefaultCharacter* SpawnedCharacter = GetWorld()->SpawnActor<ADefaultCharacter>(NewCharacter, SpawnTransform, param);
-
-	//if(SpawnedCharacter)
-	//{
-	//	Possess(SpawnedCharacter);
-
-	//	// Game Instance의 Player Data 편집 요청 로그 작성
-	//	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
-	//	if(GameInstance)
-	//	{
-	//		//FString PlayerID = FString::FromInt(GetPlayerState<APlayerState>()->GetUniqueID());
-	//		if(GameInstance->PlayerDatas.Contains(MyUniqueID))
-	//		{
-	//			FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(MyUniqueID);
-
-	//			PlayerData.CharacterClass = NewCharacter;
-
-	//			GameInstance->SavePlayerInfo(MyUniqueID, PlayerData);
-	//		}
-	//	}
-	//}
 }
-

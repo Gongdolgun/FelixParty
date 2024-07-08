@@ -3,10 +3,11 @@
 #include "CoreMinimal.h"
 #include "InputAction.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/IDamage.h"
 #include "DefaultCharacter.generated.h"
 
 UCLASS()
-class LISTENSERVERPROJECT_API ADefaultCharacter : public ACharacter
+class LISTENSERVERPROJECT_API ADefaultCharacter : public ACharacter, public IIDamage
 {
 	GENERATED_BODY()
 
@@ -30,6 +31,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
+
+	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

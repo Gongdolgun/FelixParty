@@ -16,8 +16,4 @@ public:
 	void Begin_Equip() override;
 	void End_Equip() override;
 
-	void Equip() override;
-	 
-	void Fire() override;
-
 };

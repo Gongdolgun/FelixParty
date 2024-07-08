@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Misc/Structures.h"
 #include "Weapon.generated.h"
 
 UCLASS()
@@ -12,11 +13,6 @@ class LISTENSERVERPROJECT_API AWeapon : public AActor
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Equip")
 	FName AttachSocketName;
-
-
-protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Hit")
-	float HitDistance = 3000;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -35,8 +31,6 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Attack();
-
 
 public:
 	virtual void Begin_Equip();
@@ -50,4 +44,10 @@ public:
 protected:
 	class ACharacter* Owner;
 
+public:
+	UPROPERTY(EditAnywhere, Category = "Weapon Data")
+	FWeaponData WeaponData;
+
+	UPROPERTY(EditAnywhere, Category = "HitData")
+	FHitData HitData;
 };
