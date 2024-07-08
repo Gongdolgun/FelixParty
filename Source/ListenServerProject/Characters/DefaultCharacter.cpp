@@ -17,12 +17,13 @@ ADefaultCharacter::ADefaultCharacter()
 	Helpers::CreateComponent<UCameraComponent>(this, &Camera, "Camera", SpringArm);
 
 	Helpers::CreateActorComponent<UMoveComponent>(this, &MoveComponent, "MoveComponent");
-	Helpers::CreateActorComponent<UWeaponComponent>(this, &WeaponComponent, "Weapon");
+	Helpers::CreateActorComponent<UWeaponComponent>(this, &WeaponComponent, "WeaponComponent");
 
-	SpringArm->SetRelativeLocation(FVector(0, 0, 60));
-	SpringArm->TargetArmLength = 400;
+	SpringArm->SetRelativeLocation(FVector(60, 0, 60));
+	SpringArm->TargetArmLength = 270;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
+	SpringArm->bDoCollisionTest = false;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -37,6 +38,7 @@ ADefaultCharacter::ADefaultCharacter()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+
 }
 
 void ADefaultCharacter::BeginPlay()

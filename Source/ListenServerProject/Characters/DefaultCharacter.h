@@ -39,16 +39,16 @@ public:
 	class UWeaponComponent* WeaponComponent;
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Move;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Look;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Jump;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Action;
 
 public:

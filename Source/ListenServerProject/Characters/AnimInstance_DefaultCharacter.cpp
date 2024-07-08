@@ -43,3 +43,8 @@ void UAnimInstance_DefaultCharacter::NativeUpdateAnimation(float DeltaSeconds)
 		Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, Pitch);
 	}
 }
+
+void UAnimInstance_DefaultCharacter::OnWeaponTypeChanged(EWeaponType InPrevType, EWeaponType InNewType)
+{
+	WeaponType = InNewType;
+}

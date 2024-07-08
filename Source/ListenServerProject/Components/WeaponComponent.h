@@ -14,6 +14,7 @@ class LISTENSERVERPROJECT_API UWeaponComponent : public UActorComponent
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Settings")
+	//TArray<TSubclassOf<class AWeapon>> WeaponClass;
 	TArray<TSubclassOf<class AWeapon>> WeaponClass;
 
 public:
@@ -45,10 +46,10 @@ private:
 	void SetCurrentWeapon(AWeapon* NewWeapon);
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 		class AWeapon* GetCurrentWeapon();
 
-private:
+public:
 	EWeaponType Type = EWeaponType::Max;
 
 public:
