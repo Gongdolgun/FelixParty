@@ -26,7 +26,10 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetReadyStatus();
 
-public:
+public:public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString MyUniqueID;
+
 	FPlayerBaseInfo PlayerInfo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
