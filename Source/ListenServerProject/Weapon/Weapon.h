@@ -13,7 +13,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Equip")
 	FName AttachSocketName;
 
-
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Hit")
 	float HitDistance = 3000;
@@ -36,7 +35,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Attack();
-
 
 public:
 	virtual void Begin_Equip();

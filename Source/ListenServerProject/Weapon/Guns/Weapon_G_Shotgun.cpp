@@ -22,8 +22,6 @@ void AWeapon_G_Shotgun::Equip()
 {
 	Super::Equip();
 
-	if (Equip_Montage)
-		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);
 }
 
 void AWeapon_G_Shotgun::Fire()
