@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Materials/MaterialInterface.h"
 #include "Structures.generated.h"
 
 USTRUCT(BlueprintType)
@@ -25,5 +26,5 @@ struct FPlayerInGameData
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class ADefaultCharacter> CharacterClass;
+	TArray<UMaterialInterface*> CharacterMaterials;
 };

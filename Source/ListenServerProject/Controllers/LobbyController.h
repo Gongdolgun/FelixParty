@@ -17,7 +17,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void ChangeCharacter(TSubclassOf<ADefaultCharacter> NewCharacter);
+	void ChangeCharacter(const TArray<UMaterialInterface*>& Materials);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdatePlayerList(const TArray<FPlayerBaseInfo>& PlayerBaseInfos);

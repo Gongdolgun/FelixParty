@@ -12,4 +12,7 @@ class LISTENSERVERPROJECT_API ADefaultController : public APlayerController
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString MyUniqueID;
+
+public:
+	virtual void OnPossess(APawn* InPawn) override;
 };

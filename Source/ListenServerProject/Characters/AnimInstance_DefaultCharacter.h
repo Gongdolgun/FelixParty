@@ -40,7 +40,8 @@ public:
 	void NativeBeginPlay() override;
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 
-protected:
+public:
+	UPROPERTY(BlueprintReadWrite)
 	class ADefaultCharacter* OwnerCharacter;
 
 private:
