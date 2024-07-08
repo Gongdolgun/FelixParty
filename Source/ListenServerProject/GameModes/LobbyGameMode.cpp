@@ -15,9 +15,9 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 	// 인게임에서 사용할 플레이어 데이터 초기화 (Game Instance)
 	if(Controller && GameInstance)
 	{
-		FString PlayerID = FString::FromInt(Controller->GetPlayerState<APlayerState>()->GetUniqueID());
+		//FString PlayerID = FString::FromInt(Controller->GetPlayerState<APlayerState>()->GetUniqueID());
 
-		GameInstance->PlayerDatas.Add(PlayerID, DefaultPlayerData);
+		GameInstance->PlayerDatas.Add(Controller->MyUniqueID, DefaultPlayerData);
 	}
 
 	// Player Base Info 초기화
