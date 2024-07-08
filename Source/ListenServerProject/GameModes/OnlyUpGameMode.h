@@ -8,5 +8,6 @@ UCLASS()
 class LISTENSERVERPROJECT_API AOnlyUpGameMode : public ADefaultGameMode
 {
 	GENERATED_BODY()
-	
+
+protected:
 };

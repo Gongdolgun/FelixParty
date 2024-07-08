@@ -7,8 +7,6 @@
 
 APawn* ADefaultGameMode::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
 {
-	Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
-
 	ADefaultController* Controller = Cast<ADefaultController>(NewPlayer);
 	//FString PlayerID = FString::FromInt(NewPlayer->GetPlayerState<APlayerState>()->GetUniqueID());
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
