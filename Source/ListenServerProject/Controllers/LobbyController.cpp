@@ -50,14 +50,14 @@ void ALobbyController::ChangeCharacter_Implementation(TSubclassOf<ADefaultCharac
 		UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
 		if(GameInstance)
 		{
-			FString PlayerID = FString::FromInt(GetPlayerState<APlayerState>()->GetUniqueID());
-			if(GameInstance->PlayerDatas.Contains(PlayerID))
+			//FString PlayerID = FString::FromInt(GetPlayerState<APlayerState>()->GetUniqueID());
+			if(GameInstance->PlayerDatas.Contains(MyUniqueID))
 			{
-				FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(PlayerID);
+				FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(MyUniqueID);
 
 				PlayerData.CharacterClass = NewCharacter;
 
-				GameInstance->SavePlayerInfo(PlayerID, PlayerData);
+				GameInstance->SavePlayerInfo(MyUniqueID, PlayerData);
 			}
 		}
 	}

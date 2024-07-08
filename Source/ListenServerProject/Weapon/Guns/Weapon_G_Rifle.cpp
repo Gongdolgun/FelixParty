@@ -23,8 +23,6 @@ void AWeapon_G_Rifle::Equip()
 {
 	Super::Equip();
 
-	if (Equip_Montage)
-		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);
 }
 
 void AWeapon_G_Rifle::Fire()
@@ -36,10 +34,10 @@ void AWeapon_G_Rifle::Fire()
 	FTransform transform = camera->GetComponentToWorld();
 
 	FVector start = transform.GetLocation() + direction;
-	FVector end = transform.GetLocation() + direction * HitDistance;
+	FVector end = transform.GetLocation() + direction + HitDistance;
 
 	DrawDebugLine(GetWorld(), start, end, FColor::Red, true, 5);
 
-
+	printf("Fire On");
 }
 

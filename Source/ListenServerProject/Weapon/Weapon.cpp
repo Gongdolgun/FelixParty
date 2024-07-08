@@ -9,6 +9,7 @@ AWeapon::AWeapon()
 	Helpers::CreateComponent<USceneComponent>(this, &Root, "Root");
 	Helpers::CreateComponent<USkeletalMeshComponent>(this, &Mesh, "Mesh", Root);
 
+
 }
 
 void AWeapon::BeginPlay()
@@ -16,6 +17,10 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	Owner = Cast<ACharacter>(GetOwner());
+
+	// 초기 무기 Attach
+	if (AttachSocketName.IsValid())
+		Helpers::AttachTo(this, Owner->GetMesh(), AttachSocketName);
 
 }
 
@@ -32,16 +37,7 @@ void AWeapon::Attack()
 
 void AWeapon::Equip()
 {
-<<<<<<< HEAD
-	/*if (Equip_Montage)
-		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);*/
-=======
-	if (Equip_Montage)
-		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);
 
->>>>>>> test
-
-	UE_LOG(LogTemp, Warning, TEXT("Equip_Montage 실행: %s"), *Equip_Montage->GetName());
 }
 
 void AWeapon::Fire()
@@ -51,9 +47,8 @@ void AWeapon::Fire()
 
 void AWeapon::Begin_Equip()
 {
-	// 무기 장착 처음에 안보이게 변경해야함
-	if (HolsterSocketName.IsValid())
-		Helpers::AttachTo(this, Owner->GetMesh(), HolsterSocketName);
+
+
 }
 
 void AWeapon::End_Equip()

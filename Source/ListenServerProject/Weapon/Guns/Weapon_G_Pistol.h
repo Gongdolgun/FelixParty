@@ -12,12 +12,9 @@ class LISTENSERVERPROJECT_API AWeapon_G_Pistol : public AWeapon_Guns
 public:
 	AWeapon_G_Pistol();
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
-	void Begin_Equip() override;
-	void End_Equip() override;
-
-	void Equip() override;
-
-	void Fire() override;
-
+	virtual void Tick(float DeltaSeconds) override;
 };

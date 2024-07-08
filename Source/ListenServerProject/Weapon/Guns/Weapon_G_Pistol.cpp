@@ -1,32 +1,19 @@
 #include "Weapon/Guns/Weapon_G_Pistol.h"
-#include "Global.h"
-#include "Camera/CameraComponent.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "Utilites/Helpers.h"
 
 AWeapon_G_Pistol::AWeapon_G_Pistol()
 {
+
 }
 
-void AWeapon_G_Pistol::Begin_Equip()
+void AWeapon_G_Pistol::BeginPlay()
 {
-	Super::Begin_Equip();
+	Super::BeginPlay();
+
+
 }
 
-void AWeapon_G_Pistol::End_Equip()
+void AWeapon_G_Pistol::Tick(float DeltaSeconds)
 {
-	Super::End_Equip();
-}
+	Super::Tick(DeltaSeconds);
 
-void AWeapon_G_Pistol::Equip()
-{
-	Super::Equip();
-
-	if (Equip_Montage)
-		Owner->PlayAnimMontage(Equip_Montage, Montage_PlayRate);
-}
-
-void AWeapon_G_Pistol::Fire()
-{
-	Super::Fire();
 }

@@ -11,16 +11,8 @@ class LISTENSERVERPROJECT_API AWeapon : public AActor
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Equip")
-	FName HolsterSocketName;
+	FName AttachSocketName;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Equip")
-	FName RightHandSocketName;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Equip")
-	class UAnimMontage* Equip_Montage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Equip")
-	float Montage_PlayRate;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Hit")
@@ -45,12 +37,6 @@ public:
 
 	virtual void Attack();
 
-<<<<<<< HEAD
-	virtual void Equip();
-
-	virtual void Fire();
-=======
->>>>>>> test
 
 public:
 	virtual void Begin_Equip();

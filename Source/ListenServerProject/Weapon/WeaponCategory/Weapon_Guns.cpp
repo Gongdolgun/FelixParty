@@ -1,6 +1,4 @@
 #include "Weapon_Guns.h"
-#include "Global.h"
-#include "Camera/CameraComponent.h"
 
 AWeapon_Guns::AWeapon_Guns()
 {

@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "InputAction.h"
 #include "GameFramework/Character.h"
-#include "Weapon/Weapon.h"
 #include "DefaultCharacter.generated.h"
 
 UCLASS()
@@ -21,9 +20,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-private:
-	void HandleEquipAction(const FInputActionValue& Value);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -43,27 +39,19 @@ public:
 	class UWeaponComponent* WeaponComponent;
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Move;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Look;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Jump;
 
-	UPROPERTY(EditAnywhere)
-<<<<<<< HEAD
-	UInputAction* EquipAction;
-
-	UPROPERTY(EditAnywhere)
-	UInputAction* FireAction;
-
-=======
+	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Action;
 
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Action();
->>>>>>> test
 };
