@@ -18,6 +18,8 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	Owner = Cast<ACharacter>(GetOwner());
+	if (!Owner)
+		return;
 
 	// 초기 무기 Attach
 	if (AttachSocketName.IsValid())

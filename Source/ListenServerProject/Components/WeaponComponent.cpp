@@ -38,6 +38,8 @@ void UWeaponComponent::End_Fire()
 
 void UWeaponComponent::ChangeType(TSubclassOf<class AWeapon> NewWeapon)
 {
+	CLog::Print(NewWeapon);
+
 	FActorSpawnParameters params;
 	params.Owner = Owner;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -50,12 +52,15 @@ void UWeaponComponent::ChangeType(TSubclassOf<class AWeapon> NewWeapon)
 
 		if (OnWeaponTypeChange.IsBound())
 			OnWeaponTypeChange.Broadcast(type, Type);
-	}
 
-	SetCurrentWeapon(SpawnedWeapon);
+		SetCurrentWeapon(SpawnedWeapon);
+	}
 }
 
 void UWeaponComponent::SetCurrentWeapon(class AWeapon* NewWeapon)
 {
+	if(CurWeapon)
+		CurWeapon->Destroy();
+
 	CurWeapon = NewWeapon;
 }
