@@ -2,6 +2,9 @@
 #include "Utilites/Helpers.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/Character.h"
+#include "Components/ShapeComponent.h"
+#include "SpawnActor/Bomb.h"
 
 ABombCharacter::ABombCharacter()
 {
@@ -9,6 +12,11 @@ ABombCharacter::ABombCharacter()
 
 	/*Helpers::CreateComponent<USpringArmComponent>(this, &TopDownSpringArm, "TopDownSpringArm", GetCapsuleComponent());
 	Helpers::CreateComponent<UCameraComponent>(this, &TopDownCamera, "TopDownSpringArm", TopDownSpringArm);*/
+
+	HandSphere = CreateDefaultSubobject<USphereComponent>(TEXT("HandSphere"));
+	HandSphere->InitSphereRadius(20.0f);
+	HandSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	HandSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
 
 	TopDownSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TopDownSpringArm"));
 	TopDownCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
@@ -32,11 +40,24 @@ ABombCharacter::ABombCharacter()
 
 	//Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	//Camera->bUsePawnControlRotation = false;
+
 }
 
 void ABombCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlayerCharacter = Cast<ACharacter>(GetOwner());
+
+	// Hand_R_Sphere¿¡ SphereComponent ÀåÂø
+	if (USkeletalMeshComponent* MeshComp = GetMesh())
+	{
+		FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+		HandSphere->AttachToComponent(MeshComp, AttachmentRules, TEXT("Hand_R_Sphere"));
+	}
+
+	HandSphere->OnComponentBeginOverlap.AddDynamic(this, &ABombCharacter::OnSphereBeginOverlap);
+
 }
 
 void ABombCharacter::Tick(float DeltaTime)
@@ -53,3 +74,31 @@ void ABombCharacter::Action()
 {
 	Super::Action();
 }
+
+void ABombCharacter::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor != this && BombClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Collision Detected with %s"), *OtherActor->GetName());
+
+		FVector headLocation = OtherActor->GetActorLocation() + (OtherActor->GetActorUpVector() * 200);
+
+		FRotator spawnRotation = FRotator::ZeroRotator;
+
+		ABomb* spawnBomb = GetWorld()->SpawnActor<ABomb>(BombClass, headLocation, spawnRotation);
+
+		if (spawnBomb)
+		{
+			spawnBomb->AttachToComponent(OtherActor->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+
+			GetWorldTimerManager().SetTimer(BombTimerHandle, [spawnBomb]()
+				{
+					if (spawnBomb)
+					{
+						spawnBomb->Destroy();
+					}
+				}, 5.0f, false);
+		}
+	}
+}
+

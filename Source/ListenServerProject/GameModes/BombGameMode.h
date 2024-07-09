@@ -15,18 +15,4 @@ public:
 protected:
 	void BeginPlay() override;
 
-public:
-    UPROPERTY(EditAnywhere)
-    TSubclassOf<class ACharacter> CharacterClass;
-
-    UPROPERTY(EditAnywhere)
-    TArray<TSoftObjectPtr<AActor>> SpawnPoints;
-
-    UPROPERTY(EditAnywhere)
-    int32 NumberCharacters = 5;
-
-private:
-    void SpawnCharacters();
-
-
 };
