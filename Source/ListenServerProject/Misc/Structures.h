@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Materials/MaterialInterface.h"
+#include "Enums.h"
 #include "Structures.generated.h"
 
 USTRUCT(BlueprintType)
@@ -57,50 +58,53 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FWeaponData
+struct FWeaponData : public FTableRowBase
 {
     GENERATED_BODY()
 
 public:
     // 연사 속도
-    UPROPERTY(EditAnywhere, Category = "Fire")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     float FireRate;
 
     // 탄 튀는 정도
-    UPROPERTY(EditAnywhere, Category = "Fire")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     float RecoilAngle;
 
     // 카메라 셰이크
-    UPROPERTY(EditAnywhere, Category = "Fire")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     TSubclassOf<UCameraShakeBase> CameraShakeBase;
 
-    UPROPERTY(EditAnywhere, Category = "Fire")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     float ShakeVelocity = 1.f;
 
     // 플래쉬 파티클
-    UPROPERTY(EditAnywhere, Category = "Fire")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     UParticleSystem* FlashParticle;
 
     // 탄피 파티클
-    UPROPERTY(EditAnywhere, Category = "Fire")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     UParticleSystem* EjectionParticle;
 
     // 사물에 맞았을 때 생성될 파티클
-    UPROPERTY(EditAnywhere, Category = "Fire")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     UParticleSystem* HitParticle_Props;
 
     // 캐릭터에 맞았을 때 생성될 파티클
-    UPROPERTY(EditAnywhere, Category = "Fire")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     UParticleSystem* HitParticle_Character;
 
-    UPROPERTY(EditAnywhere, Category = "Bullet")
-    TSubclassOf<AActor> Bullet;
-
     // 트레이스 거리
-    UPROPERTY(EditAnywhere, Category = "Sound")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     float HitDistance = 3000.f;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
+    TSubclassOf<AActor> Bullet;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
+    int MaxBullet;
+
     // 사격 사운드
-    UPROPERTY(EditAnywhere, Category = "Sound")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     class USoundWave* Sound = nullptr;
 };

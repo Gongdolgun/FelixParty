@@ -43,10 +43,18 @@ public:
 
 protected:
 	class ACharacter* Owner;
+	FWeaponData WeaponData;
 
 public:
-	UPROPERTY(EditAnywhere, Category = "Weapon Data")
-	FWeaponData WeaponData;
+
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	UDataTable* WeaponDataTable;
+
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	FName WeaponName;
+
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	EWeaponType WeaponType;
 
 	UPROPERTY(EditAnywhere, Category = "HitData")
 	FHitData HitData;

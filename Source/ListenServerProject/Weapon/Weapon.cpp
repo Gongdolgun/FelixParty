@@ -23,6 +23,9 @@ void AWeapon::BeginPlay()
 	if (AttachSocketName.IsValid())
 		Helpers::AttachTo(this, Owner->GetMesh(), AttachSocketName);
 
+	if(WeaponDataTable)
+		WeaponData = *WeaponDataTable->FindRow<FWeaponData>(WeaponName, TEXT("Data Setting"));
+
 }
 
 void AWeapon::Tick(float DeltaTime)
@@ -78,12 +81,20 @@ void AWeapon::Fire()
 	if (WeaponData.EjectionParticle)
 		UGameplayStatics::SpawnEmitterAttached(WeaponData.EjectionParticle, Mesh, "Eject", FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset);
 
+	// 사운드 플레이
+	if (WeaponData.Sound)
+	{
+		FVector SoundLocation = Mesh->GetSocketLocation("Muzzle");
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), WeaponData.Sound, SoundLocation);
+	}
+
 	// 총알 생성
 	if (WeaponData.Bullet)
 	{
 		FVector location = Mesh->GetSocketLocation("Bullet");
 
 		FActorSpawnParameters params;
+		params.Owner = Owner;
 		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 		AActor* bullet = GetWorld()->SpawnActor<AActor>(WeaponData.Bullet, location, direction.Rotation(), params);

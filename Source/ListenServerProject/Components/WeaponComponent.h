@@ -34,12 +34,12 @@ public:
 	void Begin_Fire();
 	void End_Fire();
 
-private:
-	void ChangeType(EWeaponType InType);
+public:
+	void ChangeType(TSubclassOf<class AWeapon> NewWeapon);
 	void SetCurrentWeapon(class AWeapon* NewWeapon);
 
 public:
-	EWeaponType Type = EWeaponType::Max;
+	EWeaponType Type = EWeaponType::Max;	
 
 public:
 	FWeaponTypeChanged OnWeaponTypeChange;

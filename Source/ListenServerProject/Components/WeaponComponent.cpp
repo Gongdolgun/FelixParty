@@ -16,16 +16,7 @@ void UWeaponComponent::BeginPlay()
 	Owner = Cast<ACharacter>(GetOwner());
 
 	// 초기 세팅은 총을 들고 시작
-	Type = EWeaponType::Gun;
-
-	FActorSpawnParameters params;
-	params.Owner = Owner;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	if (StartWeapon)
-	{
-		AWeapon* weapon = Owner->GetWorld()->SpawnActor<AWeapon>(StartWeapon, params);
-		SetCurrentWeapon(weapon);
-	}
+	ChangeType(StartWeapon);
 }
 
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -45,13 +36,23 @@ void UWeaponComponent::End_Fire()
 
 }
 
-void UWeaponComponent::ChangeType(EWeaponType InType)
+void UWeaponComponent::ChangeType(TSubclassOf<class AWeapon> NewWeapon)
 {
-	EWeaponType type = Type;
-	Type = InType;
+	FActorSpawnParameters params;
+	params.Owner = Owner;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	AWeapon* SpawnedWeapon = Owner->GetWorld()->SpawnActor<AWeapon>(NewWeapon, params);
 
-	if (OnWeaponTypeChange.IsBound())
-		OnWeaponTypeChange.Broadcast(type, InType);
+	if(SpawnedWeapon)
+	{
+		EWeaponType type = Type;
+		Type = SpawnedWeapon->WeaponType;
+
+		if (OnWeaponTypeChange.IsBound())
+			OnWeaponTypeChange.Broadcast(type, Type);
+	}
+
+	SetCurrentWeapon(SpawnedWeapon);
 }
 
 void UWeaponComponent::SetCurrentWeapon(class AWeapon* NewWeapon)
