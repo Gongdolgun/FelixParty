@@ -12,7 +12,8 @@ void UAnimInstance_DefaultCharacter::NativeBeginPlay()
 	OwnerCharacter = Cast<ADefaultCharacter>(GetOwningActor());
 	if (!OwnerCharacter) return;
 
-
+	if(OwnerCharacter->WeaponComponent)
+		OwnerCharacter->WeaponComponent->OnWeaponTypeChange.AddDynamic(this, &UAnimInstance_DefaultCharacter::OnWeaponTypeChanged);
 }
 
 void UAnimInstance_DefaultCharacter::NativeUpdateAnimation(float DeltaSeconds)

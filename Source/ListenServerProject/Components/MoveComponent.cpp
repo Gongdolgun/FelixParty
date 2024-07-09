@@ -50,16 +50,3 @@ void UMoveComponent::Look(const FInputActionValue& Value)
 		Character->AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
-
-void UMoveComponent::StartJump()
-{
-	Character->Jump();
-	
-}
-
-void UMoveComponent::StopJump()
-{
-	Character->StopJumping();
-}
-
-

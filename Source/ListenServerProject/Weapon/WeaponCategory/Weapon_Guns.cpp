@@ -13,15 +13,3 @@ void AWeapon_Guns::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 }
-
-void AWeapon_Guns::Equip()
-{
-	Super::Equip();
-}
-
-void AWeapon_Guns::Fire()
-{
-	Super::Fire();
-}
-
-

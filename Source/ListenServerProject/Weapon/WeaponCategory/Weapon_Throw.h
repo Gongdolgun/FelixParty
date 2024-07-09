@@ -19,6 +19,5 @@ public:
 	void Tick(float DeltaSeconds) override;
 
 public:
-	void Equip() override;
 
 };

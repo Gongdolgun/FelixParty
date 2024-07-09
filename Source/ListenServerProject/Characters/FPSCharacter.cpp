@@ -1,5 +1,7 @@
 #include "Characters/FPSCharacter.h"
 #include "AnimInstance_DefaultCharacter.h"
+#include "Global.h"
+#include "Net/UnrealNetwork.h"
 
 AFPSCharacter::AFPSCharacter()
 {
@@ -8,14 +10,24 @@ AFPSCharacter::AFPSCharacter()
 void AFPSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	HP = MaxHP;
+}
 
-	USkeletalMeshComponent* SkeletalMesh = GetMesh();
-	if(SkeletalMesh)
-	{
-		SkeletalMesh->SetAnimInstanceClass(AnimInstance);
-		UAnimInstance_DefaultCharacter* FPSAnimInstance = Cast<UAnimInstance_DefaultCharacter>(SkeletalMesh->GetAnimInstance());
+void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
+{
+	Super::Hit(InActor, InHitData);
 
-		if(FPSAnimInstance)
-			FPSAnimInstance->OwnerCharacter = this;
-	}
+	HP = UKismetMathLibrary::Clamp(HP - InHitData.Damage, 0, MaxHP);
+}
+
+void AFPSCharacter::Action()
+{
+	WeaponComponent->Begin_Fire();
+}
+
+void AFPSCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, HP);
 }

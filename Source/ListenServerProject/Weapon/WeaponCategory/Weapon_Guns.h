@@ -17,10 +17,4 @@ protected:
 
 public:
 	virtual void Tick(float DeltaSeconds) override;
-
-public:
-	void Equip() override;
-
-	void Fire() override;
-
 };

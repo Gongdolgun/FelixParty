@@ -12,7 +12,7 @@ enum class EStateType : uint8
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	Gun = 0, Melee, Throw, Max
+	Gun = 0, Rifle, Shotgun, Max
 };
 
 UENUM(BlueprintType)
