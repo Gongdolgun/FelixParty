@@ -19,7 +19,7 @@ ADefaultCharacter::ADefaultCharacter()
 	Helpers::CreateActorComponent<UMoveComponent>(this, &MoveComponent, "MoveComponent");
 	Helpers::CreateActorComponent<UWeaponComponent>(this, &WeaponComponent, "WeaponComponent");
 
-	SpringArm->SetRelativeLocation(FVector(60, 0, 60));
+	SpringArm->SetRelativeLocation(FVector(0, 0, 60));
 	SpringArm->TargetArmLength = 270;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
@@ -70,10 +70,9 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, MoveComponent, &UMoveComponent::Look);
 
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, MoveComponent, &UMoveComponent::StartJump);
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Completed, MoveComponent, &UMoveComponent::StopJump);
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ThisClass::Jump);
 		
-		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Triggered, this, &ThisClass::Action);
+		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ThisClass::Action);
 	}
 }
 

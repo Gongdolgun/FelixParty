@@ -22,5 +22,7 @@ public class ListenServerProject : ModuleRules
         PublicDependencyModuleNames.Add("OnlineSubsystemUtils");
         PublicDependencyModuleNames.Add("OnlineSubsystemSteam");
 
+        PublicDependencyModuleNames.Add("MotionWarping");
+
     }
 }
