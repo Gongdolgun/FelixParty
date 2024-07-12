@@ -8,5 +8,13 @@ UCLASS()
 class LISTENSERVERPROJECT_API ADefaultGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void OnPostLogin(AController* NewPlayer) override;
+
+public:
+	TArray<class ADefaultController*> ConnectedPlayers;
+
+public:
+	void UpdatePlayer();
 };

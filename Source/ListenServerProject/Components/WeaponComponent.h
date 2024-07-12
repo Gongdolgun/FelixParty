@@ -48,7 +48,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	TSubclassOf<class AWeapon> StartWeapon;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AWeapon* CurWeapon;
 
 };

@@ -12,6 +12,7 @@ class LISTENSERVERPROJECT_API UOnlineGameInstance : public UGameInstance
 
 public:
 	UOnlineGameInstance();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

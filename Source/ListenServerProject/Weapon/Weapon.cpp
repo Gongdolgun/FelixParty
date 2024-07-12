@@ -2,8 +2,10 @@
 #include "Global.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/DefaultCharacter.h"
+#include "Characters/FPSCharacter.h"
 #include "Components/WeaponComponent.h"
 #include "Controllers/DefaultController.h"
+#include "Net/UnrealNetwork.h"
 
 AWeapon::AWeapon()
 {
@@ -17,15 +19,15 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Owner = Cast<ACharacter>(GetOwner());
-	if (!Owner)
+	Owner = Cast<AFPSCharacter>(GetOwner());
+	if (Owner == nullptr)
 		return;
 
 	// 초기 무기 Attach
 	if (AttachSocketName.IsValid())
 		Helpers::AttachTo(this, Owner->GetMesh(), AttachSocketName);
 
-	if(WeaponDataTable)
+	if(WeaponDataTable != nullptr)
 		WeaponData = *WeaponDataTable->FindRow<FWeaponData>(WeaponName, TEXT("Data Setting"));
 
 }
@@ -41,29 +43,46 @@ void AWeapon::Equip()
 
 }
 
+void AWeapon::BeginFire()
+{
+	if (Owner != nullptr)
+		Owner->SerperateServer(WeaponData, HitData);
+}
+
 void AWeapon::Fire()
 {
-	UCameraComponent* camera = Helpers::GetComponent<UCameraComponent>(Owner);
-	FVector direction = camera->GetForwardVector();
-	FTransform transform = camera->GetComponentToWorld();
+	
+}
 
-	FVector start = transform.GetLocation() + direction;
+void AWeapon::Fire_Event(FVector direction, FHitResult HitResult)
+{
+	// 피격된 대상에 따른 파티클 생성
+	ADefaultCharacter* HittedCharacter = Cast<ADefaultCharacter>(HitResult.GetActor());
+	if (HittedCharacter != nullptr)
+	{
+		FRotator rotator = UKismetMathLibrary::FindLookAtRotation(HitResult.Location, HitResult.TraceStart);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WeaponData.HitParticle_Character, HitResult.Location, rotator);
+	}
+	else
+	{
+		FRotator rotator = UKismetMathLibrary::FindLookAtRotation(HitResult.Location, HitResult.TraceStart);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WeaponData.HitParticle_Props, HitResult.Location, rotator);
+	}
 
-	direction = UKismetMathLibrary::RandomUnitVectorInConeInDegrees(direction, WeaponData.RecoilAngle);
-	FVector end = transform.GetLocation() + direction * WeaponData.HitDistance;
+	// 총알 생성
+	if (WeaponData.Bullet != nullptr)
+	{
+		FVector location = Mesh->GetSocketLocation("Bullet");
 
-	TArray<AActor*> ignores;
-	ignores.Add(Owner);
+		FActorSpawnParameters params;
+		params.Owner = Owner;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	FHitResult hitResult;
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTyps;
-	TEnumAsByte<EObjectTypeQuery> CharacterMesh = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1);
-	TEnumAsByte<EObjectTypeQuery> WorldStatic = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_EngineTraceChannel1);
-	ObjectTyps.Add(CharacterMesh);
-	ObjectTyps.Add(WorldStatic);
+		AActor* bullet = GetWorld()->SpawnActor<AActor>(WeaponData.Bullet, location, direction.Rotation(), params);
+	}
 
 	// 카메라 셰이크
-	if (WeaponData.CameraShakeBase)
+	if (WeaponData.CameraShakeBase != nullptr)
 	{
 		ADefaultController* Controller = Cast<ADefaultController>(Owner->GetController());
 
@@ -77,60 +96,17 @@ void AWeapon::Fire()
 	}
 
 	// 탄피, 플래쉬 파티클 생성
-	if (WeaponData.FlashParticle)
+	if (WeaponData.FlashParticle != nullptr)
 		UGameplayStatics::SpawnEmitterAttached(WeaponData.FlashParticle, Mesh, "Muzzle", FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset);
 
-	if (WeaponData.EjectionParticle)
+	if (WeaponData.EjectionParticle != nullptr)
 		UGameplayStatics::SpawnEmitterAttached(WeaponData.EjectionParticle, Mesh, "Eject", FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset);
 
 	// 사운드 플레이
-	if (WeaponData.Sound)
+	if (WeaponData.Sound != nullptr)
 	{
 		FVector SoundLocation = Mesh->GetSocketLocation("Muzzle");
 		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), WeaponData.Sound, SoundLocation);
-	}
-
-	// 총알 생성
-	if (WeaponData.Bullet)
-	{
-		FVector location = Mesh->GetSocketLocation("Bullet");
-
-		FActorSpawnParameters params;
-		params.Owner = Owner;
-		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		AActor* bullet = GetWorld()->SpawnActor<AActor>(WeaponData.Bullet, location, direction.Rotation(), params);
-	}
-
-	if (UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), start, end, ObjectTyps, false, ignores, EDrawDebugTrace::None, hitResult, true))
-	{
-		ADefaultCharacter* HittedCharacter = Cast<ADefaultCharacter>(hitResult.GetActor());
-
-		// 헤드 맞추면 데미지 100, 아니면 HitData의 Damage
-		if(HittedCharacter)
-		{
-			if(hitResult.BoneName == "head")
-			{
-				FHitData HeadShotData = HitData;
-				HeadShotData.Damage = 100.f;
-
-				HittedCharacter->Hit(Owner, HeadShotData);
-			}
-
-			else
-				HittedCharacter->Hit(Owner, HitData);
-
-			FRotator rotator = UKismetMathLibrary::FindLookAtRotation(hitResult.Location, hitResult.TraceStart);
-
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WeaponData.HitParticle_Character, hitResult.Location, rotator);
-		}
-
-		else
-		{
-			FRotator rotator = UKismetMathLibrary::FindLookAtRotation(hitResult.Location, hitResult.TraceStart);
-
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WeaponData.HitParticle_Props, hitResult.Location, rotator);
-		}
 	}
 }
 
@@ -150,3 +126,7 @@ void AWeapon::UnEquip()
 	// TODO :: 장착해제 -> 무기 사라지게 만들기
 }
 
+void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}

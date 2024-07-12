@@ -3,23 +3,21 @@
 #include "CoreMinimal.h"
 #include "InputAction.h"
 #include "GameFramework/Character.h"
-#include "Interfaces/IDamage.h"
-#include "DefaultCharacter.generated.h"
+#include "LobbyCharacter.generated.h"
 
 UCLASS()
-class LISTENSERVERPROJECT_API ADefaultCharacter : public ACharacter, public IIDamage
+class LISTENSERVERPROJECT_API ALobbyCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	ADefaultCharacter();
+	ALobbyCharacter();
 
 protected:
 	virtual void BeginPlay() override;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
@@ -32,14 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
 
-	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
-
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UMoveComponent* MoveComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class UWeaponComponent* WeaponComponent;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Input")
@@ -51,16 +44,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Jump;
 
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* IA_Action;
-
 public:
-	UFUNCTION(BlueprintCallable)
-	virtual void Action();
-
-public:
-	UFUNCTION(Server, Reliable)
-	void UpdatePlayer_Server();
+	void ChangeMaterial();
 
 	UFUNCTION(Server, Reliable)
 	void ChangeMaterial_Server();
@@ -68,6 +53,6 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void ChangeMaterial_NMC(const TArray<UMaterialInterface*>& InMaterials);
 
-	void ChangeMaterial();
-
+	UFUNCTION(Server, Reliable)
+	void UpdatePlayer_Server();
 };
