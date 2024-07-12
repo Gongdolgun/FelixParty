@@ -23,23 +23,29 @@ public:
 
 public:
 	FORCEINLINE bool GetAction() { return bInAction; }
+	FORCEINLINE bool IsIdleMode() const { return StateType == EStateType::Idle; }
+
 public:
 	void BeginAction();
 	void EndAction();
 
 	void SetIdleMode();
+
+	UFUNCTION(BlueprintCallable)
 	void SetActionMode();
+
 	void SetHittedMode();
 	void SetDeadMode();
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	EStateType GetCurrState();
 
 public:
-	EStateType StateType;
+	EStateType StateType = EStateType::Idle;
 	FStateTypeChanged OnStateTypeChanged;
 
 private:
 	void ChangeType(EStateType InType);
-
 
 
 private:

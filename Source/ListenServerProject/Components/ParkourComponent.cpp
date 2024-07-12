@@ -1,6 +1,7 @@
 #include "Components/ParkourComponent.h"
 #include "GameFramework/Character.h"
 #include "Global.h"
+#include "Net/UnrealNetwork.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 UParkourComponent::UParkourComponent()
@@ -14,12 +15,33 @@ void UParkourComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
+	if (!OwnerCharacter) return;
 }
 
 void UParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+}
+
+void UParkourComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, OwnerCharacter);
+
+	DOREPLIFETIME(ThisClass, bCanParkour);
+	DOREPLIFETIME(ThisClass, Correction_Height_Relative);
+	DOREPLIFETIME(ThisClass, last_TraceAdd1);
+	DOREPLIFETIME(ThisClass, last_TraceAdd2);
+
+	DOREPLIFETIME(ThisClass, ParkourPos1);
+	DOREPLIFETIME(ThisClass, ParkourPos1);
+
+	DOREPLIFETIME(ThisClass, AddPlayerLocationForward);
+	DOREPLIFETIME(ThisClass, AddPlayerLocationZ);
+
+	DOREPLIFETIME(ThisClass, falling_ImpactPoint);
 }
 
 FVector UParkourComponent::GetParkourPos1()
@@ -32,15 +54,32 @@ FVector UParkourComponent::GetParkourPos2()
 	return ParkourPos2;
 }
 
+void UParkourComponent::CorrectPlayerLocation()
+{
+	FVector location = OwnerCharacter->GetActorLocation();
+	FVector forward = OwnerCharacter->GetActorForwardVector();
+
+	falling_ImpactPoint = FVector(location.X, location.Y,
+		falling_ImpactPoint.Z + AddPlayerLocationZ) + FVector(forward * AddPlayerLocationForward);
+
+	OwnerCharacter->SetActorLocation(falling_ImpactPoint);
+}
+
 void UParkourComponent::SetCanParkour(bool bInCanParkour)
 {
 	bCanParkour = bInCanParkour;
 }
 
-void UParkourComponent::ParkourTrace(float InInitialTraceLength, float InSecondaryTraceZOffset, float InFallingHeightMultiplier)
+void UParkourComponent::ParkourTrace(FVector& OutLocation1, FVector& OutLocation2,
+	float InInitialTraceLength, float InSecondaryTraceZOffset, float InFallingHeightMultiplier)
 {
+	if (OwnerCharacter == nullptr) return;
 	// 초기 파쿠르 가능 값은 False일 것이다.
 	SetCanParkour(false);
+
+	//ParkourPos1 = FVector::ZeroVector;
+	//ParkourPos2 = FVector::ZeroVector;
+
 
 	FHitResult object_HitResult;
 	FVector object_Start = OwnerCharacter->GetActorLocation();
@@ -70,13 +109,16 @@ void UParkourComponent::ParkourTrace(float InInitialTraceLength, float InSeconda
 		FHitResult falling_HitResult;
 		TArray<AActor*> falling_ignores;
 
-		UKismetSystemLibrary::SphereTraceSingle(OwnerCharacter->GetWorld(), falling_Start, falling_End, 10.0f, TraceType, false, falling_ignores, DrawDebug_Parkour, falling_HitResult, true, FLinearColor::Blue, FLinearColor::Black);
+		UKismetSystemLibrary::SphereTraceSingle(OwnerCharacter->GetWorld(), falling_Start, falling_End, 10.0f, TraceType, false, falling_ignores, DrawDebug_Parkour, falling_HitResult, true,
+			FLinearColor::Blue, FLinearColor::Black);
 
 		// 추적에서 검출된 점을 사용하여 이동 워프할 위치 찾기
 		if (falling_HitResult.bBlockingHit)
 		{
 			ParkourPos1 = falling_HitResult.ImpactPoint + (OwnerCharacter->GetActorForwardVector() * -50.0f);
 			ParkourPos2 = falling_HitResult.ImpactPoint + (OwnerCharacter->GetActorForwardVector() * 120.0f);
+
+			falling_ImpactPoint = falling_HitResult.ImpactPoint;
 
 			SetCanParkour(true);
 
@@ -95,7 +137,7 @@ void UParkourComponent::ParkourTrace(float InInitialTraceLength, float InSeconda
 
 			else
 			{
-				// 워프위치
+				// 워프위치 50으로 고정
 				ParkourPos2 = falling_HitResult.ImpactPoint + (OwnerCharacter->GetActorForwardVector() * 50.0f);
 			}
 
@@ -124,9 +166,13 @@ void UParkourComponent::ParkourTrace(float InInitialTraceLength, float InSeconda
 				{
 					SetCanParkour(false);
 				}
+
 			}
 
+			OutLocation1 = ParkourPos1;
+			OutLocation2 = ParkourPos2;
 		}
+
 	}
 
 	else
@@ -135,6 +181,3 @@ void UParkourComponent::ParkourTrace(float InInitialTraceLength, float InSeconda
 		SetCanParkour(false);
 	}
 }
-
-
-
