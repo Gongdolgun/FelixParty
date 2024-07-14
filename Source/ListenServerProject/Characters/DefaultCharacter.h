@@ -41,7 +41,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UWeaponComponent* WeaponComponent;
 
-private:
+protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Move;
 

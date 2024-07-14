@@ -16,8 +16,6 @@ void UNFS_Equip::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase
 	{
 		UWeaponComponent* weapon = Helpers::GetComponent<UWeaponComponent>(MeshComp->GetOwner());
 		ADefaultCharacter* Player = Cast<ADefaultCharacter>(MeshComp->GetOwner());
-		
-
 	}
 }
 

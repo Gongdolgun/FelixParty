@@ -25,4 +25,19 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 	class UNiagaraComponent* Niagara;
 
+public:
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Bomb")
+	bool bBombReplicate;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Bomb")
+	bool bBombReplicateMovement;
+
+	UPROPERTY(ReplicatedUsing = OnRep_UpdateBombLocation, BlueprintReadOnly, Category = "Bomb")
+	FVector BombLocation;
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_UpdateBombLocation();
+
 };

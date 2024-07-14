@@ -5,17 +5,24 @@
 #include "GameFramework/Character.h"
 #include "Components/ShapeComponent.h"
 #include "SpawnActor/Bomb.h"
+#include "GameModes/BombGameMode.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "Global.h"
+#include "Net/UnrealNetwork.h"
 
 ABombCharacter::ABombCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	/*Helpers::CreateComponent<USpringArmComponent>(this, &TopDownSpringArm, "TopDownSpringArm", GetCapsuleComponent());
 	Helpers::CreateComponent<UCameraComponent>(this, &TopDownCamera, "TopDownSpringArm", TopDownSpringArm);*/
 
 	HandSphere = CreateDefaultSubobject<USphereComponent>(TEXT("HandSphere"));
 	HandSphere->InitSphereRadius(20.0f);
-	HandSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	HandSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	HandSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
 
 	TopDownSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TopDownSpringArm"));
@@ -41,13 +48,15 @@ ABombCharacter::ABombCharacter()
 	//Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	//Camera->bUsePawnControlRotation = false;
 
+	Bomb = nullptr;
+
 }
 
 void ABombCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerCharacter = Cast<ACharacter>(GetOwner());
+	PlayerCharacter = Cast<ABombCharacter>(GetOwner());
 
 	// Hand_R_Sphere에 SphereComponent 장착
 	if (USkeletalMeshComponent* MeshComp = GetMesh())
@@ -63,42 +72,210 @@ void ABombCharacter::BeginPlay()
 void ABombCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//if (HasAuthority() && bBomb && Bomb)
+	//{
+	//	// 서버에서 폭탄의 위치를 캐릭터의 머리 위로 계속 업데이트
+	//	FVector spawnLocation = GetActorLocation() + FVector(0, 0, 200);
+	//	Bomb->SetActorLocation(spawnLocation);
+	//	Bomb->BombLocation = spawnLocation; // 복제된 위치 속성
+	//	Bomb->OnRep_UpdateBombLocation(); // 직접 호출하여 서버에서도 위치 업데이트
+	//}
+
+	if (HasAuthority() && bBomb && Bomb)
+	{
+		// 서버에서 폭탄의 위치를 캐릭터의 머리 위로 계속 업데이트
+		FVector spawnLocation = GetActorLocation() + FVector(0, 0, 200);
+
+		// 위치가 변경될 경우에만 업데이트
+		if (Bomb->GetActorLocation() != spawnLocation)
+		{
+			Bomb->SetActorLocation(spawnLocation);
+			Bomb->BombLocation = spawnLocation; // 복제된 위치 속성
+			CLog::Log(*spawnLocation.ToString());
+
+			// 위치 업데이트를 클라이언트에 알림
+			Bomb->OnRep_UpdateBombLocation();
+		}
+	}
 }
 
 void ABombCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ABombCharacter::Action);
+	}
+
 }
 
 void ABombCharacter::Action()
 {
 	Super::Action();
+
+	if (HasAuthority())
+	{
+		MulticastAttack();
+	}
+
+	else
+	{
+		ServerAttack();
+	}
+}
+
+void ABombCharacter::Attack()
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		AnimInstance->Montage_Play(Attack_Montage);
+	}
+}
+
+void ABombCharacter::ServerAttack_Implementation()
+{
+	MulticastAttack();
+}
+
+void ABombCharacter::MulticastAttack_Implementation()
+{
+	Attack();
+}
+
+// 서버에서 폭탄을 생성
+void ABombCharacter::ServerSpawnBomb_Implementation(TSubclassOf<ABomb> BombSpawn)
+{
+	// 폭탄이 이미 생성된 상태가 아니여야함
+	if (BombSpawn && !bBomb)
+	{
+		FVector spawnLocation = GetActorLocation() + FVector(0, 0, 200);
+		FRotator spawnRotation = FRotator::ZeroRotator;
+
+		// 폭탄을 월드에 생성
+		ABomb* spawnBomb = GetWorld()->SpawnActor<ABomb>(BombSpawn, spawnLocation, spawnRotation);
+		if (spawnBomb)
+		{
+			// 생성된 폭탄을 캐릭터에 부착
+			spawnBomb->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform);
+			Bomb = spawnBomb;
+			bBomb = true; // 폭탄 소유 상태로 변경(서버)
+
+			// 모든 클라이언트에게 폭탄 생성 정보를 전파
+			MultiSpawnBomb(spawnBomb);
+		}
+	}
+}
+
+// 모든 클라이언트에서 폭탄을 부착, 동기화
+void ABombCharacter::MultiSpawnBomb_Implementation(ABomb* SpawnBomb)
+{
+	if (SpawnBomb && !HasAuthority())
+	{
+		SpawnBomb->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform);
+		Bomb = SpawnBomb;
+		bBomb = true; // 폭탄 소유 상태로 변경(클라)
+	}
 }
 
 void ABombCharacter::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor && OtherActor != this && BombClass)
+	if (ABombCharacter* HitActor = Cast<ABombCharacter>(OtherActor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Collision Detected with %s"), *OtherActor->GetName());
+		OnAttackSuccess(this, HitActor);
+	}
+}
 
-		FVector headLocation = OtherActor->GetActorLocation() + (OtherActor->GetActorUpVector() * 200);
-
-		FRotator spawnRotation = FRotator::ZeroRotator;
-
-		ABomb* spawnBomb = GetWorld()->SpawnActor<ABomb>(BombClass, headLocation, spawnRotation);
-
-		if (spawnBomb)
+void ABombCharacter::OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor)
+{
+	if (ABombCharacter* AttackerCharacter = Cast<ABombCharacter>(Attacker))
+	{
+		if (ABombCharacter* HitCharacter = Cast<ABombCharacter>(HitActor))
 		{
-			spawnBomb->AttachToComponent(OtherActor->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+			if (AttackerCharacter->bBomb && AttackerCharacter->Bomb)
+			{
+				ABomb* AttackerBomb = AttackerCharacter->Bomb;
 
-			GetWorldTimerManager().SetTimer(BombTimerHandle, [spawnBomb]()
+				if (AttackerBomb)
 				{
-					if (spawnBomb)
+					AttackerBomb->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+					FVector spawnLocation = HitCharacter->GetActorLocation() + FVector(0, 0, 200);
+					AttackerBomb->SetActorLocation(spawnLocation);
+					AttackerBomb->BombLocation = spawnLocation; // BombLocation 업데이트
+
+					AttackerBomb->AttachToActor(HitCharacter, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+					HitCharacter->Bomb = AttackerBomb;
+					HitCharacter->bBomb = true;
+
+					AttackerCharacter->Bomb = nullptr;
+					AttackerCharacter->bBomb = false;
+
+					// 폭탄 위치 및 상태 업데이트
+					if (ABombGameMode* gameMode = Cast<ABombGameMode>(GetWorld()->GetAuthGameMode()))
 					{
-						spawnBomb->Destroy();
+						gameMode->BombHolderController = HitCharacter->GetController();
 					}
-				}, 5.0f, false);
+
+					// 클라이언트에게 업데이트 정보 전파
+					HitCharacter->Bomb->OnRep_UpdateBombLocation();
+
+					GetWorld()->GetTimerManager().SetTimer(CollisionTimerHandle, this, &ABombCharacter::EnableCollision, 3.0f, false);
+
+					DisableCollision();
+				}
+			}
 		}
 	}
 }
+
+void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// 서버에서 클라이언트로 값 전송
+	DOREPLIFETIME(ABombCharacter, bBombReplicate);
+	DOREPLIFETIME(ABombCharacter, bBombReplicateMovement);
+	DOREPLIFETIME(ABombCharacter, BombLocation);
+
+}
+
+void ABombCharacter::AdJustBombPosition()
+{
+	if (bBomb && Bomb)
+	{
+		FVector adjustedLocation = GetActorLocation() + FVector(0, 0, 200);
+		Bomb->SetActorLocation(adjustedLocation);
+		Bomb->BombLocation = adjustedLocation;
+		CLog::Log(*adjustedLocation.ToString());
+
+		// 위치 업데이트를 클라이언트에 알림
+		Bomb->OnRep_UpdateBombLocation();
+	}
+}
+
+void ABombCharacter::MultiUpdateBombLocation_Implementation(ABomb* Actor, FVector NewLocation)
+{
+	if (Bomb)
+	{
+		Bomb->SetActorLocation(NewLocation);
+		Bomb->BombLocation = NewLocation;
+		Bomb->OnRep_UpdateBombLocation();
+	}
+}
+
+void ABombCharacter::EnableCollision()
+{
+	HandSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+}
+
+void ABombCharacter::DisableCollision()
+{
+	HandSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+
 

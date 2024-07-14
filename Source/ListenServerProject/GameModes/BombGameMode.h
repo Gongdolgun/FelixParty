@@ -15,4 +15,27 @@ public:
 protected:
 	void BeginPlay() override;
 
+	void OnPostLogin(AController* NewPlayer) override;
+
+private:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABomb> BombClass;
+
+public:
+	void RandomSpawn();
+
+private:
+	TArray<class ADefaultController*> PlayerControllers;
+
+public:
+	AController* BombHolderController;
+
+public:
+	void SetHolderController(ADefaultController* NewController);
+
+public:
+	FTimerHandle BombTimerHandle;
+
+	FTimerHandle SpawnCharacterTimerHandle;
+
 };
