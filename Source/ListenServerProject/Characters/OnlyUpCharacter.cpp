@@ -10,9 +10,9 @@
 
 AOnlyUpCharacter::AOnlyUpCharacter()
 {
-	Helpers::CreateActorComponent<UParkourComponent>(this, &ParkourComponent, "ParkourComponent");
-	Helpers::CreateActorComponent<UStateComponent>(this, &StateComponent, "StateComponent");
-	MotionWarpComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpComponent"));
+	Helpers::CreateActorComponent<UParkourComponent>(this, &ParkourComponent, "Parkour");
+	Helpers::CreateActorComponent<UStateComponent>(this, &StateComponent, "State");
+	MotionWarpComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("CMotionWarp"));
 
 	// 액터 자체 리플리케이션
 	//SetReplicates(true);
@@ -54,6 +54,8 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 void AOnlyUpCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void AOnlyUpCharacter::Tick(float DeltaTime)

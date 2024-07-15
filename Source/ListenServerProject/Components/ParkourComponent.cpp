@@ -3,10 +3,15 @@
 #include "Global.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Global.h"
+#include "Components/ArrowComponent.h"
 
 UParkourComponent::UParkourComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	Arrows.SetNum((int32)EParkourArrowType::Max);
+	HitResults.SetNum((int32)EParkourArrowType::Max);
 
 }
 
@@ -16,6 +21,16 @@ void UParkourComponent::BeginPlay()
 
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	if (!OwnerCharacter) return;
+
+	USceneComponent* arrow = Helpers::GetComponent<USceneComponent>(OwnerCharacter, "ArrowGroup");
+
+	TArray<USceneComponent*> components;
+	arrow->GetChildrenComponents(false, components);
+
+	for (int32 i = 0; i < Arrows.Num(); i++)
+	{
+		Arrows[i] = Cast<UArrowComponent>(components[i]);
+	}
 }
 
 void UParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -77,21 +92,21 @@ void UParkourComponent::ParkourTrace(FVector& OutLocation1, FVector& OutLocation
 	// 초기 파쿠르 가능 값은 False일 것이다.
 	SetCanParkour(false);
 
-	//ParkourPos1 = FVector::ZeroVector;
-	//ParkourPos2 = FVector::ZeroVector;
+	ParkourPos1 = FVector::ZeroVector;
+	ParkourPos2 = FVector::ZeroVector;
 
+	LineTrace(EParkourArrowType::Center, InInitialTraceLength);
+	LineTrace(EParkourArrowType::Left, InInitialTraceLength);
+	LineTrace(EParkourArrowType::Right, InInitialTraceLength);
 
-	FHitResult object_HitResult;
-	FVector object_Start = OwnerCharacter->GetActorLocation();
-	FVector object_End = object_Start + (OwnerCharacter->GetActorForwardVector() * InInitialTraceLength);
-	TArray<AActor*> object_ignores;
+	bool bCheckTrace = true;
+	for (int32 i = 0; i < Arrows.Num(); i++)
+	{
+		bCheckTrace &= HitResults[i].bBlockingHit;
+	}
 
-	// 오브젝트 체크
-	UKismetSystemLibrary::LineTraceSingle(OwnerCharacter->GetWorld(), object_Start, object_End, TraceType, false,
-		object_ignores, DrawDebug_Parkour, object_HitResult, true);
-
-	// 오브젝트가 발견되면 높이 추적 후 Player가 Falling 상태면 도달 가능 높이 낮추기 (파쿠르 자연스럽게 하기 위해)
-	if (object_HitResult.bBlockingHit)
+	// 3개의 Trace가 모두 충돌이 되었을 때
+	if (bCheckTrace && Check_ObjectRotation())
 	{
 		bool falling = OwnerCharacter->GetCharacterMovement()->IsFalling();
 
@@ -103,8 +118,8 @@ void UParkourComponent::ParkourTrace(FVector& OutLocation1, FVector& OutLocation
 
 		// 보정값
 		float Correction_Height = InSecondaryTraceZOffset * InFallingHeightMultiplier;
-		FVector falling_Start = object_HitResult.Location + FVector(0.0f, 0.0f, Correction_Height + Correction_Height_Relative);
-		FVector falling_End = object_HitResult.Location;
+		FVector falling_Start = HitResults[(int32)EParkourArrowType::Center].Location + FVector(0.0f, 0.0f, Correction_Height + Correction_Height_Relative);
+		FVector falling_End = HitResults[(int32)EParkourArrowType::Center].Location;
 
 		FHitResult falling_HitResult;
 		TArray<AActor*> falling_ignores;
@@ -180,4 +195,46 @@ void UParkourComponent::ParkourTrace(FVector& OutLocation1, FVector& OutLocation
 		// 오브젝트 충돌이 되지 않았다면 파쿠르가 되지 않도록
 		SetCanParkour(false);
 	}
+}
+
+void UParkourComponent::LineTrace(EParkourArrowType InType, float InInitialTraceLength)
+{
+	UArrowComponent* arrow = Arrows[(int32)InType];
+	FLinearColor color = FLinearColor(arrow->ArrowColor);
+
+	FTransform transform = arrow->GetComponentToWorld();
+
+	FVector start = transform.GetLocation();
+	FVector end = start + (OwnerCharacter->GetActorForwardVector() * InInitialTraceLength);
+	TArray<AActor*> ignores;
+
+	// 오브젝트 체크
+	UKismetSystemLibrary::LineTraceSingle(OwnerCharacter->GetWorld(), start, end, TraceType, false,
+		ignores, DrawDebug_Parkour, HitResults[(int32)InType], true, color, FLinearColor::White);
+
+
+}
+
+bool UParkourComponent::Check_ObjectRotation()
+{
+	FVector center = HitResults[(int32)EParkourArrowType::Center].Normal;
+	FVector left = HitResults[(int32)EParkourArrowType::Left].Normal;
+	FVector right = HitResults[(int32)EParkourArrowType::Right].Normal;
+
+	if (center.Equals(left) == false) return false;
+	if (center.Equals(right) == false) return false;
+
+	FVector start = HitResults[(int32)EParkourArrowType::Center].ImpactPoint;
+	FVector end = OwnerCharacter->GetActorLocation();
+	float lookAt = UKismetMathLibrary::FindLookAtRotation(start, end).Yaw;
+
+	FVector impactNormal = HitResults[(int32)EParkourArrowType::Center].ImpactNormal;
+	float impactAt = UKismetMathLibrary::MakeRotFromX(impactNormal).Yaw;
+
+	float yaw = abs(abs(lookAt) - abs(impactAt));
+
+	if (yaw >= AvailableFrontAngle) return false;
+
+	return true;
+
 }

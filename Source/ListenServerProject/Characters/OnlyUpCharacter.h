@@ -48,7 +48,7 @@ protected:
 	float ZOffset_Hand = -60.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
-	float ZOffset_Landing = -30.0f;
+	float ZOffset_Landing = 0.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
 	float Montage_Length = 1.1f;
