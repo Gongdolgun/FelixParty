@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Characters/DefaultCharacter.h"
+#include "Misc/Structures.h"
 #include "FPSCharacter.generated.h"
 
 UCLASS()
@@ -22,6 +23,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float MaxHP = 100;
 
-	UPROPERTY(BlueprintReadOnly, Replicated)
+	UPROPERTY(BlueprintReadWrite, Replicated)
 	float HP;
+
+public:
+	void SerperateServer(FWeaponData WeaponData, FHitData HitData);
+	void LineTrace(FWeaponData WeaponData, FHitData HitData);
+
+	UFUNCTION(Server, Reliable)
+	void LineTrace_Server(FWeaponData WeaponData, FHitData HitData);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void FireEvent_NMC(FVector direction, FHitResult HitResult);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Dead_NMC();
 };

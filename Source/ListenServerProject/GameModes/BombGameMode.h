@@ -15,18 +15,27 @@ public:
 protected:
 	void BeginPlay() override;
 
-public:
-    UPROPERTY(EditAnywhere)
-    TSubclassOf<class ACharacter> CharacterClass;
-
-    UPROPERTY(EditAnywhere)
-    TArray<TSoftObjectPtr<AActor>> SpawnPoints;
-
-    UPROPERTY(EditAnywhere)
-    int32 NumberCharacters = 5;
+	void OnPostLogin(AController* NewPlayer) override;
 
 private:
-    void SpawnCharacters();
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABomb> BombClass;
 
+public:
+	void RandomSpawn();
+
+private:
+	TArray<class ADefaultController*> PlayerControllers;
+
+public:
+	AController* BombHolderController;
+
+public:
+	void SetHolderController(ADefaultController* NewController);
+
+public:
+	FTimerHandle BombTimerHandle;
+
+	FTimerHandle SpawnCharacterTimerHandle;
 
 };

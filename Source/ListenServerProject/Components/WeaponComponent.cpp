@@ -27,8 +27,8 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UWeaponComponent::Begin_Fire()
 {
-	if(CurWeapon)
-		CurWeapon->Fire();
+	if(CurWeapon != nullptr)
+		CurWeapon->BeginFire();
 }
 
 void UWeaponComponent::End_Fire()
@@ -43,19 +43,22 @@ void UWeaponComponent::ChangeType(TSubclassOf<class AWeapon> NewWeapon)
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	AWeapon* SpawnedWeapon = Owner->GetWorld()->SpawnActor<AWeapon>(NewWeapon, params);
 
-	if(SpawnedWeapon)
+	if(SpawnedWeapon != nullptr)
 	{
 		EWeaponType type = Type;
 		Type = SpawnedWeapon->WeaponType;
 
 		if (OnWeaponTypeChange.IsBound())
 			OnWeaponTypeChange.Broadcast(type, Type);
-	}
 
-	SetCurrentWeapon(SpawnedWeapon);
+		SetCurrentWeapon(SpawnedWeapon);
+	}
 }
 
 void UWeaponComponent::SetCurrentWeapon(class AWeapon* NewWeapon)
 {
+	if(CurWeapon)
+		CurWeapon->Destroy();
+
 	CurWeapon = NewWeapon;
 }

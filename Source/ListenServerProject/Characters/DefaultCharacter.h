@@ -41,7 +41,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UWeaponComponent* WeaponComponent;
 
-private:
+protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Move;
 
@@ -57,4 +57,17 @@ private:
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Action();
+
+public:
+	UFUNCTION(Server, Reliable)
+	void UpdatePlayer_Server();
+
+	UFUNCTION(Server, Reliable)
+	void ChangeMaterial_Server();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ChangeMaterial_NMC(const TArray<UMaterialInterface*>& InMaterials);
+
+	void ChangeMaterial();
+
 };

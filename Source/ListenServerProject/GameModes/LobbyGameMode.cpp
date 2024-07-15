@@ -4,6 +4,7 @@
 #include "GameFramework/PlayerState.h"
 #include "GameInstances/OnlineGameInstance.h"
 #include "Global.h"
+#include "Characters/LobbyCharacter.h"
 
 void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 {
@@ -51,4 +52,13 @@ void ALobbyGameMode::UpdatePlayerLists()
 
 	for (auto Player : ConnectedPlayers)
 		Player->UpdatePlayerList(PlayerBaseInfos);
+}
+
+void ALobbyGameMode::UpdatePlayerMaterial()
+{
+	for (auto Player : ConnectedPlayers)
+	{
+		if (ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(Player->GetPawn()))
+			LobbyCharacter->ChangeMaterial();
+	}
 }
