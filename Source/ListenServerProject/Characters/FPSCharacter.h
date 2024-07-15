@@ -17,6 +17,7 @@ public:
 
 protected:
 	virtual void Action() override;
+	virtual void End_Action() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
@@ -26,8 +27,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, Replicated)
 	float HP;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Respawn_time = 3.f;
+
 public:
-	void SerperateServer(FWeaponData WeaponData, FHitData HitData);
+	void SeperateServer(FWeaponData WeaponData, FHitData HitData);
 	void LineTrace(FWeaponData WeaponData, FHitData HitData);
 
 	UFUNCTION(Server, Reliable)

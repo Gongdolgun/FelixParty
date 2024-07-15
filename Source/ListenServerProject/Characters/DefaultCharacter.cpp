@@ -76,9 +76,10 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, MoveComponent, &UMoveComponent::Look);
 
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ThisClass::Jump);
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, MoveComponent, &UMoveComponent::Jump);
 		
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ThisClass::Action);
+		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Completed, this, &ThisClass::End_Action);
 	}
 }
 
@@ -87,6 +88,10 @@ void ADefaultCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 }
 
 void ADefaultCharacter::Action()
+{
+}
+
+void ADefaultCharacter::End_Action()
 {
 }
 
