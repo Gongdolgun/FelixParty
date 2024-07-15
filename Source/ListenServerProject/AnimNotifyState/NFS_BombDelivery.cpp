@@ -16,6 +16,7 @@ void UNFS_BombDelivery::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeque
 		if (ABombCharacter* BombCharacter = Cast<ABombCharacter>(MeshComp->GetOwner()))
 		{
 			BombCharacter->HandSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			BombCharacter->bAttack = true;
 		}
 
 	}
@@ -31,6 +32,7 @@ void UNFS_BombDelivery::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenc
 		if (ABombCharacter* BombCharacter = Cast<ABombCharacter>(MeshComp->GetOwner()))
 		{
 			BombCharacter->HandSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			BombCharacter->bAttack = false;
 		}
 	}
 }
