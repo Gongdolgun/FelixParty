@@ -42,6 +42,7 @@ ADefaultCharacter::ADefaultCharacter()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
+	GetCharacterMovement()->GravityScale = 2.0f;
 }
 
 void ADefaultCharacter::BeginPlay()
