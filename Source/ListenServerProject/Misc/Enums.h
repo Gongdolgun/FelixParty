@@ -4,6 +4,12 @@
 #include "Enums.generated.h"
 
 UENUM(BlueprintType)
+enum class EGameStateType : uint8
+{
+	GameStart = 0, GamePlay, GameOver, Max
+};
+
+UENUM(BlueprintType)
 enum class EStateType : uint8
 {
 	Idle = 0, Action, Hitted, Dead, Max

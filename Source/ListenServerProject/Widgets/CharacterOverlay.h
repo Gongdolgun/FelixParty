@@ -16,5 +16,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* CountdownText;
 
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* GameStateType;
 	
 };

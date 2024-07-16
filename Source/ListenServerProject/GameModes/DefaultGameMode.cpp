@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Characters/DefaultCharacter.h"
 #include "Controllers/DefaultController.h"
+#include "GameState/DefaultGameState.h"
 
 void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 {
@@ -9,6 +10,7 @@ void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 
 	if(ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
 		ConnectedPlayers.Add(Controller);
+
 }
 
 void ADefaultGameMode::UpdatePlayer()
@@ -19,3 +21,5 @@ void ADefaultGameMode::UpdatePlayer()
 			DefaultCharacter->ChangeMaterial();
 	}
 }
+
+

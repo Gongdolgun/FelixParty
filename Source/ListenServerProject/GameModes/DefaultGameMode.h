@@ -1,11 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameMode.h"
+#include "Misc/Enums.h"
 #include "DefaultGameMode.generated.h"
 
 UCLASS()
-class LISTENSERVERPROJECT_API ADefaultGameMode : public AGameModeBase
+class LISTENSERVERPROJECT_API ADefaultGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
@@ -17,4 +18,5 @@ public:
 
 public:
 	void UpdatePlayer();
+
 };
