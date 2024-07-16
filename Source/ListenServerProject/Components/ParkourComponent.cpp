@@ -89,7 +89,8 @@ void UParkourComponent::ParkourTrace(FVector& OutLocation1, FVector& OutLocation
 	float InInitialTraceLength, float InSecondaryTraceZOffset, float InFallingHeightMultiplier)
 {
 	if (OwnerCharacter == nullptr) return;
-	// 초기 파쿠르 가능 값은 False일 것이다.
+
+	// 초기 파쿠르 가능 값은 False
 	SetCanParkour(false);
 
 	ParkourPos1 = FVector::ZeroVector;

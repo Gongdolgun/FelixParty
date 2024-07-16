@@ -35,26 +35,6 @@ void AOnlyUpController::OnPossess(APawn* InPawn)
 	}
 }
 
-void AOnlyUpController::SetHUDScore(float InScore)
-{
-	// HUD가 제대로 들어오지 않았을 때 다시 세팅
-	if (OnlyUpHUD == nullptr)
-	{
-		OnlyUpHUD = Cast<AOnlyUpHUD>(GetHUD());
-	}
-
-	bool bCheck = OnlyUpHUD &&
-		OnlyUpHUD->CharacterOverlay && 
-		OnlyUpHUD->CharacterOverlay->ScoreText;
-
-	if (bCheck)
-	{
-		FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(InScore));
-		OnlyUpHUD->CharacterOverlay->ScoreText->SetText(FText::FromString(ScoreText));
-	}
-	
-}
-
 void AOnlyUpController::SetHUDCountdown(float InCountdownTime)
 {
 	// HUD가 제대로 들어오지 않았을 때 다시 세팅

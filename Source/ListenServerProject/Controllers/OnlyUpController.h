@@ -19,7 +19,6 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 
 public:
-	void SetHUDScore(float InScore);
 	void SetHUDCountdown(float InCountdownTime);
 
 	void SetHUDTime();

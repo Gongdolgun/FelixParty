@@ -22,4 +22,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void AddCharacterOverlay();
+
+public:
+	void AccessGameMode();
+
+private:
+	class AOnlyUpGameMode* OnlyUpGameMode;
 };
