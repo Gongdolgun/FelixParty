@@ -55,3 +55,7 @@ void ABomb::OnRep_UpdateBombLocation()
 	CLog::Log(*BombLocation.ToString());
 }
 
+void ABomb::DestroyBomb()
+{
+	this->Destroy();
+}

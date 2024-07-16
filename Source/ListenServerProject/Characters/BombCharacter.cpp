@@ -181,9 +181,17 @@ void ABombCharacter::MultiSpawnBomb_Implementation(ABomb* SpawnBomb)
 
 void ABombCharacter::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (ABombCharacter* HitActor = Cast<ABombCharacter>(OtherActor))
+	/*if (ABombCharacter* HitActor = Cast<ABombCharacter>(OtherActor))
 	{
 		OnAttackSuccess(this, HitActor);
+	}*/
+
+	if (OtherActor && OtherActor != this && bAttack)
+	{
+		if (ABombCharacter* HitActor = Cast<ABombCharacter>(OtherActor))
+		{
+			OnAttackSuccess(this, HitActor);
+		}
 	}
 }
 
@@ -199,11 +207,15 @@ void ABombCharacter::OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor)
 
 				if (AttackerBomb)
 				{
+					GetWorld()->GetTimerManager().ClearTimer(AttackerCharacter->BombTimerHandle);
+
 					AttackerBomb->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 					FVector spawnLocation = HitCharacter->GetActorLocation() + FVector(0, 0, 200);
 					AttackerBomb->SetActorLocation(spawnLocation);
 					AttackerBomb->BombLocation = spawnLocation; // BombLocation 업데이트
+
+					CLog::Log(*AttackerBomb->BombLocation.ToString());
 
 					AttackerBomb->AttachToActor(HitCharacter, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
@@ -222,9 +234,12 @@ void ABombCharacter::OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor)
 					// 클라이언트에게 업데이트 정보 전파
 					HitCharacter->Bomb->OnRep_UpdateBombLocation();
 
-					GetWorld()->GetTimerManager().SetTimer(CollisionTimerHandle, this, &ABombCharacter::EnableCollision, 3.0f, false);
+					GetWorld()->GetTimerManager().SetTimer(CollisionTimerHandle, this, &ABombCharacter::EnableCollision, 1.0f, false);
 
 					DisableCollision();
+
+					HitCharacter->ResetBomb();
+					//GetWorld()->GetTimerManager().SetTimer(BombTimerHandle, this, &ABombCharacter::BombExplosion, 10.0f, false);
 				}
 			}
 		}
@@ -242,30 +257,6 @@ void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 }
 
-void ABombCharacter::AdJustBombPosition()
-{
-	if (bBomb && Bomb)
-	{
-		FVector adjustedLocation = GetActorLocation() + FVector(0, 0, 200);
-		Bomb->SetActorLocation(adjustedLocation);
-		Bomb->BombLocation = adjustedLocation;
-		CLog::Log(*adjustedLocation.ToString());
-
-		// 위치 업데이트를 클라이언트에 알림
-		Bomb->OnRep_UpdateBombLocation();
-	}
-}
-
-void ABombCharacter::MultiUpdateBombLocation_Implementation(ABomb* Actor, FVector NewLocation)
-{
-	if (Bomb)
-	{
-		Bomb->SetActorLocation(NewLocation);
-		Bomb->BombLocation = NewLocation;
-		Bomb->OnRep_UpdateBombLocation();
-	}
-}
-
 void ABombCharacter::EnableCollision()
 {
 	HandSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -275,6 +266,37 @@ void ABombCharacter::EnableCollision()
 void ABombCharacter::DisableCollision()
 {
 	HandSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ABombCharacter::BombExplosion()
+{
+	if (bBomb && Bomb)
+	{
+		CLog::Log(TEXT("Bomb exploded!"));
+
+		if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+		{
+			AnimInstance->Montage_Play(Dead_Montage);
+
+			GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, this, &ABombCharacter::Dead, 3.0f, false);
+		}
+	}
+}
+
+void ABombCharacter::ResetBomb()
+{
+	// 기존 타이머가 있으면 정지
+	GetWorld()->GetTimerManager().ClearTimer(BombTimerHandle);
+
+	// 새로운 타이머 설정
+	GetWorld()->GetTimerManager().SetTimer(BombTimerHandle, this, &ABombCharacter::BombExplosion, 10.0f, false);
+}
+
+void ABombCharacter::Dead()
+{
+	Destroy();
+
+	Bomb->DestroyBomb();
 }
 
 

@@ -28,6 +28,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* Attack_Montage;
 
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* Dead_Montage;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* TopDownSpringArm;
 
@@ -72,11 +75,6 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void AdJustBombPosition();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiUpdateBombLocation(ABomb* Actor, FVector NewLocation);
-
 public:
 	UPROPERTY(Replicated)
 	bool bBombReplicate;
@@ -90,14 +88,23 @@ public:
 	UPROPERTY(Replicated)
 	bool bBomb = false;
 
-	UPROPERTY(Replicated)
-	bool bHasCollided;
+	bool bAttack = false;
 
 private:
 	void EnableCollision();
 	void DisableCollision();
 
+	void BombExplosion();
+
+	void ResetBomb();
+
+	void Dead();
+
 	FTimerHandle CollisionTimerHandle;
+
+	FTimerHandle BombTimerHandle;
+
+	FTimerHandle DeadTimerHandle;
 
 };
 
