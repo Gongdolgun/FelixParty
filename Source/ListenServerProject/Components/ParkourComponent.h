@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Misc/Enums.h"
 #include "ParkourComponent.generated.h"
 
 
@@ -42,6 +43,11 @@ public:
 	void ParkourTrace(
 		FVector& OutLocation1, FVector& OutLocation2,
 		float InInitialTraceLength, float InSecondaryTraceZOffset,float InFallingHeightMultiplier);
+
+private:
+	void LineTrace(EParkourArrowType InType, float InInitialTraceLength);
+	;
+	bool Check_ObjectRotation();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)
@@ -88,5 +94,13 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
 	UAnimMontage* ParkourMontage;
 
+	// Arrow Component
+	TArray<class UArrowComponent*> Arrows;
+	TArray<FHitResult> HitResults;
+
+	UPROPERTY(EditAnywhere, Category = " Parkour")
+	float AvailableFrontAngle = 30.0f;
 };
+
+
 

@@ -10,14 +10,20 @@ class LISTENSERVERPROJECT_API AOnlyUpCharacter : public ADefaultCharacter
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UParkourComponent* ParkourComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UStateComponent* StateComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<class UMotionWarpingComponent> MotionWarpComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class USceneComponent* ArrowGroup;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TArray<class UArrowComponent*> Arrows;
 
 public:
 	AOnlyUpCharacter();
@@ -42,7 +48,7 @@ protected:
 	float ZOffset_Hand = -60.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
-	float ZOffset_Landing = -30.0f;
+	float ZOffset_Landing = 0.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
 	float Montage_Length = 1.1f;

@@ -2,6 +2,7 @@
 #include "Components/ParkourComponent.h"
 #include "Global.h"
 #include "MotionWarpingComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Components/StateComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -9,9 +10,9 @@
 
 AOnlyUpCharacter::AOnlyUpCharacter()
 {
-	Helpers::CreateActorComponent<UParkourComponent>(this, &ParkourComponent, "ParkourComponent");
-	Helpers::CreateActorComponent<UStateComponent>(this, &StateComponent, "StateComponent");
-	MotionWarpComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpComponent"));
+	Helpers::CreateActorComponent<UParkourComponent>(this, &ParkourComponent, "Parkour");
+	Helpers::CreateActorComponent<UStateComponent>(this, &StateComponent, "State");
+	MotionWarpComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("CMotionWarp"));
 
 	// 액터 자체 리플리케이션
 	//SetReplicates(true);
@@ -20,11 +21,41 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 	StateComponent->SetIsReplicated(true);
 	MotionWarpComponent->SetIsReplicated(true);
 
+	Helpers::CreateComponent<USceneComponent>(this, &ArrowGroup, "ArrowGroup", GetCapsuleComponent());
+	Arrows.SetNum((int32)EParkourArrowType::Max);
+	
+	for (int32 i = 0; i < Arrows.Num(); i++)
+	{
+		FString name = StaticEnum<EParkourArrowType>()->GetNameStringByIndex(i);
+		Helpers::CreateComponent<UArrowComponent>(this, &Arrows[i], FName(name), ArrowGroup);
+	
+		EParkourArrowType ArrowType = static_cast<EParkourArrowType>(i);
+	
+		switch (ArrowType)
+		{
+		case EParkourArrowType::Center:
+			Arrows[i]->ArrowColor = FColor::Red;
+			Arrows[i]->SetRelativeLocation(FVector(0.0f, 0.0f, 20.0f));
+			break;
+	
+		case EParkourArrowType::Left:
+			Arrows[i]->ArrowColor = FColor::Blue;
+			Arrows[i]->SetRelativeLocation(FVector(0.0f, -30.0f, 20.0f));
+			break;
+	
+		case EParkourArrowType::Right:
+			Arrows[i]->ArrowColor = FColor::Green;
+			Arrows[i]->SetRelativeLocation(FVector(0.0f, 30.0f, 20.0f));
+			break;
+		}
+	}
 }
 
 void AOnlyUpCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void AOnlyUpCharacter::Tick(float DeltaTime)
