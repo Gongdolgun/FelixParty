@@ -32,3 +32,9 @@ enum class EThrow : uint8
 {
 	Grenade = 0, Flashbang, Smokeshell, Max,
 };
+
+UENUM(BlueprintType)
+enum class EParkourArrowType : uint8
+{
+	Left = 0, Center, Right, Max
+};

@@ -107,4 +107,6 @@ public:
     // 사격 사운드
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FWeaponData")
     class USoundWave* Sound = nullptr;
+
 };
+

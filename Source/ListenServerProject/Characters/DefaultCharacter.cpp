@@ -8,6 +8,8 @@
 #include "Components/MoveComponent.h"
 #include "Components/WeaponComponent.h"
 #include "Global.h"
+#include "Controllers/DefaultController.h"
+#include "GameModes/DefaultGameMode.h"
 
 ADefaultCharacter::ADefaultCharacter()
 {
@@ -40,6 +42,7 @@ ADefaultCharacter::ADefaultCharacter()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
+	GetCharacterMovement()->GravityScale = 2.0f;
 }
 
 void ADefaultCharacter::BeginPlay()
@@ -53,6 +56,8 @@ void ADefaultCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	UpdatePlayer_Server();
 }
 
 void ADefaultCharacter::Tick(float DeltaTime)
@@ -71,9 +76,10 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, MoveComponent, &UMoveComponent::Look);
 
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ThisClass::Jump);
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, MoveComponent, &UMoveComponent::Jump);
 		
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ThisClass::Action);
+		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Completed, this, &ThisClass::End_Action);
 	}
 }
 
@@ -83,4 +89,41 @@ void ADefaultCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 
 void ADefaultCharacter::Action()
 {
+}
+
+void ADefaultCharacter::End_Action()
+{
+}
+
+void ADefaultCharacter::UpdatePlayer_Server_Implementation()
+{
+	if (ADefaultGameMode* DefaultGameMode = Cast<ADefaultGameMode>(GetWorld()->GetAuthGameMode()))
+		DefaultGameMode->UpdatePlayer();
+}
+
+void ADefaultCharacter::ChangeMaterial()
+{
+	if (HasAuthority())
+		if (ADefaultController* DefaultController = Cast<ADefaultController>(Controller))
+			ChangeMaterial_NMC(DefaultController->MyMaterials);
+
+	else
+		ChangeMaterial_Server();
+}
+
+void ADefaultCharacter::ChangeMaterial_Server_Implementation()
+{
+	if (ADefaultController* DefaultController = Cast<ADefaultController>(Controller))
+		ChangeMaterial_NMC(DefaultController->MyMaterials);
+}
+
+void ADefaultCharacter::ChangeMaterial_NMC_Implementation(const TArray<UMaterialInterface*>& InMaterials)
+{
+	if (InMaterials.Num() > 0)
+	{
+		for (int i = 0; i < InMaterials.Num(); i++)
+		{
+			GetMesh()->SetMaterial(i, InMaterials[i]);
+		}
+	}
 }

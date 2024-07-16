@@ -10,5 +10,11 @@ class LISTENSERVERPROJECT_API ADefaultGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
+	virtual void OnPostLogin(AController* NewPlayer) override;
+
+public:
+	TArray<class ADefaultController*> ConnectedPlayers;
+
+public:
+	void UpdatePlayer();
 };

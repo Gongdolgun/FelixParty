@@ -27,4 +27,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FPlayerInGameData DefaultPlayerData;
 
+public:
+	void UpdatePlayerMaterial();
 };

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Misc/Enums.h"
 #include "ParkourComponent.generated.h"
 
 
@@ -20,6 +21,9 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+private:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 public:
 	FORCEINLINE bool GetCanParkour() { return bCanParkour; }
 
@@ -29,54 +33,74 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FVector GetParkourPos2();
 
+	UFUNCTION(BlueprintCallable)
+	void CorrectPlayerLocation();
+
 	void SetCanParkour(bool bInCanParkour);
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ParkourTrace(float InInitialTraceLength, float InSecondaryTraceZOffset,float InFallingHeightMultiplier);
+	void ParkourTrace(
+		FVector& OutLocation1, FVector& OutLocation2,
+		float InInitialTraceLength, float InSecondaryTraceZOffset,float InFallingHeightMultiplier);
 
+private:
+	void LineTrace(EParkourArrowType InType, float InInitialTraceLength);
+	;
+	bool Check_ObjectRotation();
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	ACharacter* OwnerCharacter;
+
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	bool bCanParkour = false;
 
 private:
-	ACharacter* OwnerCharacter;
-
-	// 초기 추적 거리
-	UPROPERTY(EditAnywhere, Category = "Parkour")
-	float Initial_Trace_Length = 120.0f;
-
-	// 
-	UPROPERTY(EditAnywhere, Category = "Parkour")
-	float Trace_Z_Offset = 200.0f;
-
-	// 
-	UPROPERTY(EditAnywhere, Category = "Parkour")
-	float Falling_Height_Multiplier = 0.5f;
-
-	UPROPERTY(EditAnywhere, Category = "Parkour")
+	UPROPERTY(EditAnywhere, Replicated, Category = "Parkour")
 	float Correction_Height_Relative = 15.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Parkour")
+	UPROPERTY(EditAnywhere, Replicated, Category = "Parkour")
 	float last_TraceAdd1 = 90.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Parkour")
+	UPROPERTY(EditAnywhere, Replicated, Category = "Parkour")
 	float last_TraceAdd2 = 90.0f;
 
+public:
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Parkour")
 	FVector ParkourPos1 = FVector::ZeroVector;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Parkour")
 	FVector ParkourPos2 = FVector::ZeroVector;
+
+private:
+	UPROPERTY(EditAnywhere, Replicated, Category = "Correct")
+	float AddPlayerLocationForward = -15.0f;
+
+	UPROPERTY(EditAnywhere, Replicated, Category = "Correct")
+	float AddPlayerLocationZ = -80.0f;
+
+	UPROPERTY(EditAnywhere, Replicated, Category = "Parkour")
+	FVector falling_ImpactPoint = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, Category = "Debug")
 	TEnumAsByte<EDrawDebugTrace::Type> DrawDebug_Parkour;
 
-	// TraceTypeQuery1 = Visibility
+	// TraceTypeQuery1 = Visibility, 3 = Parkour
 	UPROPERTY(EditAnywhere, Category = "Debug")
-	TEnumAsByte<ETraceTypeQuery> TraceType = TraceTypeQuery1;
+	TEnumAsByte<ETraceTypeQuery> TraceType = TraceTypeQuery3;
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
 	UAnimMontage* ParkourMontage;
 
+	// Arrow Component
+	TArray<class UArrowComponent*> Arrows;
+	TArray<FHitResult> HitResults;
+
+	UPROPERTY(EditAnywhere, Category = " Parkour")
+	float AvailableFrontAngle = 30.0f;
 };
+
+
 

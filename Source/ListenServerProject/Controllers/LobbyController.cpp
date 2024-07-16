@@ -1,5 +1,6 @@
 #include "Controllers/LobbyController.h"
 #include "Global.h"
+#include "Characters/LobbyCharacter.h"
 #include "GameFramework/PlayerState.h"
 #include "Misc/Structures.h"
 #include "GameInstances/OnlineGameInstance.h"
@@ -36,21 +37,10 @@ void ALobbyController::SetReadyStatus_Implementation()
 
 void ALobbyController::ChangeCharacter_Implementation(const TArray<UMaterialInterface*>& Materials)
 {
-	ADefaultCharacter* MyCharacter = Cast<ADefaultCharacter>(GetPawn());
-
-	if(MyCharacter)
-	{
-		for(int i = 0; i < Materials.Num(); i++)
-		{
-			MyCharacter->GetMesh()->SetMaterial(i, Materials[i]);
-		}
-	}
-
 	// Game Instance의 Player Data 편집 요청 로그 작성
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
 	if (GameInstance)
 	{
-		//FString PlayerID = FString::FromInt(GetPlayerState<APlayerState>()->GetUniqueID());
 		if (GameInstance->PlayerDatas.Contains(MyUniqueID))
 		{
 			FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(MyUniqueID);
@@ -60,4 +50,8 @@ void ALobbyController::ChangeCharacter_Implementation(const TArray<UMaterialInte
 			GameInstance->SavePlayerInfo(MyUniqueID, PlayerData);
 		}
 	}
+
+	MyMaterials = Materials;
+	if(ALobbyCharacter* MyCharacter = Cast<ALobbyCharacter>(GetPawn()))
+		MyCharacter->ChangeMaterial();
 }

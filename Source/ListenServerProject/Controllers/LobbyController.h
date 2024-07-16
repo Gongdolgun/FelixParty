@@ -26,7 +26,7 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetReadyStatus();
 
-public:public:
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString MyUniqueID;
 
@@ -34,4 +34,6 @@ public:public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FPlayerBaseInfo> PlayerInfos;
+
+	TArray<UMaterialInterface*> MyMaterials;
 };

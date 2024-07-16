@@ -13,7 +13,7 @@ UMoveComponent::UMoveComponent()
 void UMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	Character = Cast<ACharacter>(GetOwner());
+	Owner = Cast<ACharacter>(GetOwner());
 }
 
 void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -26,17 +26,17 @@ void UMoveComponent::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (Character != nullptr)
+	if (Owner != nullptr && CanMove)
 	{
-		const FRotator Rotation = Character->GetControlRotation();
+		const FRotator Rotation = Owner->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		Character->AddMovementInput(ForwardDirection, MovementVector.Y);
-		Character->AddMovementInput(RightDirection, MovementVector.X);
+		Owner->AddMovementInput(ForwardDirection, MovementVector.Y);
+		Owner->AddMovementInput(RightDirection, MovementVector.X);
 	}
 }
 
@@ -44,9 +44,15 @@ void UMoveComponent::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Character != nullptr)
+	if (Owner != nullptr && CanMove)
 	{
-		Character->AddControllerYawInput(LookAxisVector.X);
-		Character->AddControllerPitchInput(LookAxisVector.Y);
+		Owner->AddControllerYawInput(LookAxisVector.X);
+		Owner->AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void UMoveComponent::Jump()
+{
+	if(Owner != nullptr && CanMove)
+		Owner->Jump();
 }

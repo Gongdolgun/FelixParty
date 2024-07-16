@@ -14,6 +14,7 @@ void UStateComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
+	if (OwnerCharacter == nullptr) return;
 }
 
 void UStateComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -58,6 +59,11 @@ void UStateComponent::SetDeadMode()
 {
 	if (OwnerCharacter->IsLocallyControlled())
 		ChangeType(EStateType::Dead);
+}
+
+EStateType UStateComponent::GetCurrState()
+{
+	return StateType;
 }
 
 void UStateComponent::ChangeType(EStateType InType)

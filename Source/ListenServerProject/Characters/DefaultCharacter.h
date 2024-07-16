@@ -57,4 +57,20 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Action();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void End_Action();
+
+public:
+	UFUNCTION(Server, Reliable)
+	void UpdatePlayer_Server();
+
+	UFUNCTION(Server, Reliable)
+	void ChangeMaterial_Server();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ChangeMaterial_NMC(const TArray<UMaterialInterface*>& InMaterials);
+
+	void ChangeMaterial();
+
 };
