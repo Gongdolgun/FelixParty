@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BlueprintDataDefinitions.h"
 #include "Materials/MaterialInterface.h"
 #include "Enums.h"
 #include "Structures.generated.h"
@@ -12,13 +13,13 @@ struct FPlayerBaseInfo
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName PlayerName = FName(TEXT("Player Name"));
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsReady = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture2D* UserThumbnail;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FBPUniqueNetId UniqueID;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FName PlayerName = FName(TEXT("Player Name"));
 };
 
 USTRUCT(BlueprintType)
@@ -28,6 +29,12 @@ struct FPlayerInGameData
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UMaterialInterface*> CharacterMaterials;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FBPUniqueNetId UniqueID;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FName PlayerName = FName(TEXT("Player Name"));
 };
 
 USTRUCT(BlueprintType)
