@@ -38,6 +38,7 @@ public:
 
 	virtual void Equip();
 	virtual void BeginFire();
+	virtual void EndFire();
 	virtual void Fire();
 	virtual void Fire_Event(FVector direction, FHitResult HitResult);
 
@@ -48,10 +49,9 @@ public:
 protected:
 	class AFPSCharacter* Owner;
 	FWeaponData WeaponData;
-
+	FTimerHandle Timer;
 
 public:
-
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	UDataTable* WeaponDataTable;
 
@@ -63,6 +63,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "HitData")
 	FHitData HitData;
+
+	UPROPERTY(BlueprintReadOnly)
+	int MaxBullet;
+
+	UPROPERTY(BlueprintReadOnly)
+	int CurBullet;
 
 public:
 };

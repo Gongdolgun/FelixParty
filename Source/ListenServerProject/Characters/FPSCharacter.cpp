@@ -1,6 +1,7 @@
 #include "Characters/FPSCharacter.h"
 #include "AnimInstance_DefaultCharacter.h"
 #include "Global.h"
+#include "Components/MoveComponent.h"
 #include "GameModes/FPSGameMode.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
@@ -25,19 +26,33 @@ void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 
 		if(HP == 0)
 		{
-			AFPSGameMode* GameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
-			if (GameMode != nullptr)
-				GameMode->RespawnPlayer(GetController());
-
 			Dead_NMC();
-			Destroy();
+
+			FTimerHandle RespawnTimer;
+			GetWorld()->GetTimerManager().SetTimer(RespawnTimer, FTimerDelegate::CreateLambda([&]()
+			{
+				AFPSGameMode* GameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+				if (GameMode != nullptr)
+					GameMode->RespawnPlayer(GetController());
+
+				GetWorld()->GetTimerManager().ClearTimer(RespawnTimer);
+
+				Destroy();
+			}),Respawn_time, false);
 		}
 	}
 }
 
 void AFPSCharacter::Action()
 {
-	WeaponComponent->Begin_Fire();
+	if(WeaponComponent != nullptr)
+		WeaponComponent->Begin_Fire();
+}
+
+void AFPSCharacter::End_Action()
+{
+	if (WeaponComponent != nullptr)
+		WeaponComponent->End_Fire();
 }
 
 void AFPSCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -47,8 +62,9 @@ void AFPSCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(ThisClass, HP);
 }
 
-void AFPSCharacter::SerperateServer(FWeaponData WeaponData, FHitData HitData)
+void AFPSCharacter::SeperateServer(FWeaponData WeaponData, FHitData HitData)
 {
+	// 서버라면 Linetrace 이벤트, 아니면 서버에서 이벤트 실행
 	if (HasAuthority())
 		LineTrace(WeaponData, HitData);
 
@@ -102,6 +118,10 @@ void AFPSCharacter::LineTrace(FWeaponData WeaponData, FHitData HitData)
 
 void AFPSCharacter::Dead_NMC_Implementation()
 {
+	MoveComponent->CanMove = false;
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionProfileName("Ragdoll");
+
 	if(WeaponComponent != nullptr && WeaponComponent->CurWeapon != nullptr)
 		WeaponComponent->CurWeapon->Destroy();
 }

@@ -30,6 +30,8 @@ void AWeapon::BeginPlay()
 	if(WeaponDataTable != nullptr)
 		WeaponData = *WeaponDataTable->FindRow<FWeaponData>(WeaponName, TEXT("Data Setting"));
 
+	MaxBullet = WeaponData.MaxBullet;
+	CurBullet = MaxBullet;
 }
 
 void AWeapon::Tick(float DeltaTime)
@@ -45,13 +47,22 @@ void AWeapon::Equip()
 
 void AWeapon::BeginFire()
 {
-	if (Owner != nullptr)
-		Owner->SerperateServer(WeaponData, HitData);
+	Fire();
+	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::Fire, WeaponData.FireRate, true);
+}
+
+void AWeapon::EndFire()
+{
+	GetWorld()->GetTimerManager().ClearTimer(Timer);
 }
 
 void AWeapon::Fire()
 {
-	
+	if (Owner != nullptr && CurBullet != 0)
+	{
+		Owner->SeperateServer(WeaponData, HitData);
+		CurBullet -= 1;
+	}
 }
 
 void AWeapon::Fire_Event(FVector direction, FHitResult HitResult)
@@ -112,7 +123,6 @@ void AWeapon::Fire_Event(FVector direction, FHitResult HitResult)
 
 void AWeapon::Begin_Equip()
 {
-
 
 }
 

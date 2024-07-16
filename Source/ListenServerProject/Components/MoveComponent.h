@@ -22,8 +22,12 @@ public:
 public:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void Jump();
 
 private:
-	class ACharacter* Character;
+	class ACharacter* Owner;
+
+public:
+	bool CanMove = true;
 
 };

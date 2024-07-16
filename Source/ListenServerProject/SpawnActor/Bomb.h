@@ -40,4 +40,5 @@ public:
 	UFUNCTION()
 	void OnRep_UpdateBombLocation();
 
+	void DestroyBomb();
 };

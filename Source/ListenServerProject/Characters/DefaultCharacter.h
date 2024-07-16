@@ -58,6 +58,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Action();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void End_Action();
+
 public:
 	UFUNCTION(Server, Reliable)
 	void UpdatePlayer_Server();

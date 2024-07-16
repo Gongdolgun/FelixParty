@@ -33,7 +33,8 @@ void UWeaponComponent::Begin_Fire()
 
 void UWeaponComponent::End_Fire()
 {
-
+	if (CurWeapon != nullptr)
+		CurWeapon->EndFire();
 }
 
 void UWeaponComponent::ChangeType(TSubclassOf<class AWeapon> NewWeapon)
