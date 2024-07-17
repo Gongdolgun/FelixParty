@@ -9,5 +9,16 @@ class LISTENSERVERPROJECT_API AOnlyUpGameMode : public ADefaultGameMode
 {
 	GENERATED_BODY()
 
+public:
+	AOnlyUpGameMode();
+
 protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+
+public:
+
+
+
+
 };

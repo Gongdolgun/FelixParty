@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Controllers/DefaultController.h"
+#include "Misc/Enums.h"
 #include "OnlyUpController.generated.h"
 
 UCLASS()
@@ -19,10 +20,11 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 
 public:
-	void SetHUDScore(float InScore);
-	void SetHUDCountdown(float InCountdownTime);
+	FString EnumToString(EGameStateType InGameStateType);
 
 	void SetHUDTime();
+	void SetGameStateType();
+
 
 protected:
 
@@ -30,7 +32,10 @@ private:
 	UPROPERTY()
 	class AOnlyUpHUD* OnlyUpHUD;
 
-	float MatchTime = 120.0f;
-	uint32 CountdownInt = 0;
+	UPROPERTY()
+	class ADefaultGameState* OnlyUpGameState;
+
+private:
+	float TimeLeft;
 
 };

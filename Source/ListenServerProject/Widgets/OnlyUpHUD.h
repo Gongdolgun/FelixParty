@@ -4,8 +4,6 @@
 #include "GameFramework/HUD.h"
 #include "OnlyUpHUD.generated.h"
 
-
-
 UCLASS()
 class LISTENSERVERPROJECT_API AOnlyUpHUD : public AHUD
 {
@@ -21,5 +19,12 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+
+public:
 	void AddCharacterOverlay();
+
+private:
+
+
 };
