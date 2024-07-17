@@ -1,14 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameState.h"
+#include "GameFramework/GameStateBase.h"
 #include "Misc/Enums.h"
 #include "DefaultGameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGameStateTypeChanged, EGameStateType, InPrevGameType, EGameStateType, InNewGameType);
 
 UCLASS()
-class LISTENSERVERPROJECT_API ADefaultGameState : public AGameState
+class LISTENSERVERPROJECT_API ADefaultGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 

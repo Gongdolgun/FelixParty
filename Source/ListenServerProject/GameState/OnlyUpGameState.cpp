@@ -1,4 +1,5 @@
 #include "GameState/OnlyUpGameState.h"
+#include "Global.h"
 
 AOnlyUpGameState::AOnlyUpGameState()
 {
@@ -17,15 +18,16 @@ void AOnlyUpGameState::Tick(float DeltaSeconds)
 
 }
 
-void AOnlyUpGameState::SetTimer(float InTime)
+void AOnlyUpGameState::PlayerRank(APlayerController* InPlayerController)
 {
-	Super::SetTimer(InTime);
+	if (InPlayerController)
+	{
+		int32 number = PlayerRankings.Num() + 1;
 
+		PlayerRankings.Add(InPlayerController);
+		number++;
+		CLog::Print(InPlayerController);
+		CLog::Print(number);
 
-}
-
-void AOnlyUpGameState::SetScore()
-{
-	Super::SetScore();
-
+	}
 }
