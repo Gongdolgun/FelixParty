@@ -35,7 +35,7 @@ void ADefaultGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 	DOREPLIFETIME(ThisClass, GameStateType);
 
-	DOREPLIFETIME(ThisClass, Score);
+	DOREPLIFETIME(ThisClass, PlayerScores);
 }
 
 void ADefaultGameState::SetTimer(float InTime)
@@ -74,7 +74,6 @@ void ADefaultGameState::SetTimer(float InTime)
 
 		break;
 	}
-
 }
 
 void ADefaultGameState::SetGameState(EGameStateType InGameStateType)
@@ -116,6 +115,27 @@ void ADefaultGameState::ChangeGameType(EGameStateType InGameType)
 		OnGameStateTypeChanged.Broadcast(prevGameType, GameStateType);
 }
 
+void ADefaultGameState::AddPlayerScore(const FString& PlayerName, int32 Score)
+{
+	// 기존 플레이어 점수 업데이트 또는 새 플레이어 추가
+	for (FPlayerScore& PlayerScore : PlayerScores)
+	{
+		if (PlayerScore.PlayerName == PlayerName)
+		{
+			PlayerScore.Score += Score;
+			return;
+		}
+	}
 
+	// 새 플레이어 추가
+	PlayerScores.Add(FPlayerScore(PlayerName, Score));
+}
 
+int ADefaultGameState::GetPlayerScore(FString PlayerName)
+{
+	for (FPlayerScore& PlayerScore : PlayerScores)
+		if (PlayerScore.PlayerName == PlayerName)
+			return PlayerScore.Score;
 
+	return -1;
+}

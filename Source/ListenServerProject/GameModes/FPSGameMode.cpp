@@ -5,20 +5,46 @@
 
 void AFPSGameMode::RespawnPlayer(AController* controller)
 {
-	if(controller != nullptr)
-	{
-		TArray<AActor*> PlayerStarts;
-		UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
+    if (controller != nullptr)
+    {
+        UWorld* World = GetWorld();
+        if (World)
+        {
+            TArray<AActor*> PlayerStarts;
+            UGameplayStatics::GetAllActorsOfClass(World, APlayerStart::StaticClass(), PlayerStarts);
 
-		if (PlayerStarts.Num() > 0)
-		{
-			int32 RandomIndex = FMath::RandRange(0, PlayerStarts.Num() - 1);
+            UE_LOG(LogTemp, Warning, TEXT("Number of PlayerStarts: %d"), PlayerStarts.Num()); // 로그 추가
 
-			FActorSpawnParameters params;
-			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			AFPSCharacter* NewCharacter = GetWorld()->SpawnActor<AFPSCharacter>(DefaultPawnClass, params);
+            if (PlayerStarts.Num() > 0)
+            {
+                int32 RandomIndex = FMath::RandRange(0, PlayerStarts.Num() - 1);
 
-			controller->Possess(NewCharacter);
-		}
-	}
+                FActorSpawnParameters params;
+                params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+                AFPSCharacter* NewCharacter = World->SpawnActor<AFPSCharacter>(DefaultPawnClass, params);
+
+                if (NewCharacter)
+                {
+                    controller->Possess(NewCharacter);
+                    UE_LOG(LogTemp, Warning, TEXT("Player respawned successfully."));
+                }
+                else
+                {
+                    UE_LOG(LogTemp, Error, TEXT("Failed to spawn new character."));
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("No PlayerStart found."));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("World is not valid."));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Controller is not valid."));
+    }
 }

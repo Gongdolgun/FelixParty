@@ -117,3 +117,24 @@ public:
 
 };
 
+USTRUCT(BlueprintType)
+struct FPlayerScore
+{
+    GENERATED_BODY()
+
+    UPROPERTY()
+    FString PlayerName;
+
+    UPROPERTY()
+    int32 Score;
+
+    FPlayerScore()
+        : PlayerName(TEXT(""))
+        , Score(0)
+    {}
+
+    FPlayerScore(const FString& InPlayerName, int32 InScore)
+        : PlayerName(InPlayerName)
+        , Score(InScore)
+    {}
+};

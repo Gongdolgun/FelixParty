@@ -1,14 +1,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameState.h"
+#include "GameFramework/GameStateBase.h"
+#include "Misc/Structures.h"
 #include "Misc/Enums.h"
 #include "DefaultGameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGameStateTypeChanged, EGameStateType, InPrevGameType, EGameStateType, InNewGameType);
 
 UCLASS()
-class LISTENSERVERPROJECT_API ADefaultGameState : public AGameState
+class LISTENSERVERPROJECT_API ADefaultGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 
@@ -27,7 +28,6 @@ protected:
 public:
 	FGameStateTypeChanged OnGameStateTypeChanged;
 
-
 public:
 	// Time
 	UPROPERTY(EditAnywhere, Replicated, Category = "Game State")
@@ -39,15 +39,14 @@ public:
 	UPROPERTY(EditAnywhere, Replicated, Category = "Game State")
 	float GameOverTime = 5.0f;
 
-protected:
-	// Score
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "Game State")
-	int32 Score = 0;
+	//Scores
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	TArray<FPlayerScore> PlayerScores;
 
+protected:
 	// Game State
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	EGameStateType GameStateType;
-
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -56,7 +55,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EGameStateType GetGameStateType();
 
+	UFUNCTION(BlueprintCallable)
+	int GetPlayerScore(FString PlayerName);
+
 private:
 	void ChangeGameType(EGameStateType InGameType);
 
+public:
+	void AddPlayerScore(const FString& PlayerName, int32 Score);
 };

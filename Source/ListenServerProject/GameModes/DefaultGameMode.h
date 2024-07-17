@@ -14,9 +14,7 @@ public:
 
 public:
 	TArray<class ADefaultController*> ConnectedPlayers;
-	TMap<FString, int> PlayerScores;
 
 public:
 	void UpdatePlayer();
-	void UpdatePlayerScore(class ADefaultCharacter InPlayer, int InScore);
 };

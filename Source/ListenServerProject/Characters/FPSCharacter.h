@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Respawn_time = 3.f;
 
+private:
+	FTimerHandle RespawnTimer;
+
 public:
 	void SeperateServer(FWeaponData WeaponData, FHitData HitData);
 	void LineTrace(FWeaponData WeaponData, FHitData HitData);
@@ -42,4 +45,6 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Dead_NMC();
+
+	void RespawnCharacter();
 };
