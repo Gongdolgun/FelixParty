@@ -23,7 +23,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FPlayerInGameData
+struct FPlayerData
 {
 	GENERATED_BODY()
 public:
@@ -35,6 +35,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName PlayerName = FName(TEXT("Player Name"));
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int TotalScore = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -118,23 +121,32 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FPlayerScore
+struct FPlayerInGameData
 {
     GENERATED_BODY()
 
-    UPROPERTY()
+    UPROPERTY(BlueprintReadOnly)
     FString PlayerName;
 
-    UPROPERTY()
+    UPROPERTY(BlueprintReadOnly)
     int32 Score;
 
-    FPlayerScore()
+    UPROPERTY(BlueprintReadOnly)
+    FBPUniqueNetId UniqueID;
+
+    FPlayerInGameData()
         : PlayerName(TEXT(""))
         , Score(0)
     {}
 
-    FPlayerScore(const FString& InPlayerName, int32 InScore)
+    FPlayerInGameData(const FString& InPlayerName, int32 InScore)
         : PlayerName(InPlayerName)
         , Score(InScore)
+    {}
+
+    FPlayerInGameData(const FString& InPlayerName, int32 InScore, FBPUniqueNetId InUniqueID)
+        : PlayerName(InPlayerName)
+        , Score(InScore)
+		, UniqueID(InUniqueID)
     {}
 };

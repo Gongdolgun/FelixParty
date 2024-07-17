@@ -41,7 +41,7 @@ public:
 
 	//Scores
 	UPROPERTY(Replicated, BlueprintReadOnly)
-	TArray<FPlayerScore> PlayerScores;
+	TArray<FPlayerInGameData> PlayerDatas;
 
 protected:
 	// Game State
@@ -56,11 +56,12 @@ public:
 	EGameStateType GetGameStateType();
 
 	UFUNCTION(BlueprintCallable)
-	int GetPlayerScore(FString PlayerName);
+	FPlayerInGameData GetPlayerData(FString PlayerName);
 
 private:
 	void ChangeGameType(EGameStateType InGameType);
 
 public:
-	void AddPlayerScore(const FString& PlayerName, int32 Score);
+	void UpdatePlayerScore(const FString& PlayerName, int32 Score);
+	void AddPlayerData(const FString& PlayerName, int32 Score, FBPUniqueNetId UniqueID);
 };

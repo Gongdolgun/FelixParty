@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Characters/DefaultCharacter.h"
 #include "Controllers/DefaultController.h"
+#include "GameInstances/OnlineGameInstance.h"
 #include "GameState/DefaultGameState.h"
 
 void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
@@ -13,10 +14,17 @@ void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 		ConnectedPlayers.Add(Controller);
 
 		ADefaultGameState* DefaultGameState = GetGameState<ADefaultGameState>();
-		if(DefaultGameState != nullptr)
+		UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+
+		if(DefaultGameState != nullptr && GameInstance != nullptr)
 		{
 			FString PlayerName = Controller->GetPlayerState<APlayerState>()->GetPlayerName();
-			DefaultGameState->AddPlayerScore(PlayerName, 0);
+			CLog::Print(PlayerName);
+			if (GameInstance->PlayerDatas.Contains(PlayerName))
+			{
+				FBPUniqueNetId PlayerUniqueID = GameInstance->PlayerDatas.Find(PlayerName)->UniqueID;
+				DefaultGameState->AddPlayerData(PlayerName, 0, PlayerUniqueID);
+			}
 		}
 	}
 }

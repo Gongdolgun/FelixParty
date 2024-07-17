@@ -42,7 +42,7 @@ void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 				if(DefaultGameState != nullptr && AttackerController != nullptr)
 				{
 					FString AttackerName = AttackerController->GetPlayerState<APlayerState>()->GetPlayerName();
-					DefaultGameState->AddPlayerScore(AttackerName, 20);
+					DefaultGameState->UpdatePlayerScore(AttackerName, 20);
 				}
 			}
 
