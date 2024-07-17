@@ -16,11 +16,10 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
-	virtual void SetTimer(float InTime) override;
-	virtual void SetScore() override;
+public:
+	void PlayerRank(APlayerController* InPlayerController);
 
 private:
-
-	
+	TArray<APlayerController*> PlayerRankings;
 	
 };
