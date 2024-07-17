@@ -127,6 +127,17 @@ void ABombCharacter::Attack()
 	}
 }
 
+void ABombCharacter::MulticastAttack_Implementation()
+{
+	Attack();
+}
+
+
+void ABombCharacter::ServerAttack_Implementation()
+{
+	MulticastAttack();
+}
+
 void ABombCharacter::ServerPlayWall_Implementation()
 {
 	MultiPlayWall();
@@ -145,7 +156,7 @@ void ABombCharacter::ServerSpawnWall_Implementation()
 	FActorSpawnParameters params;
 	params.Owner = this;
 
-	FVector location = this->GetActorLocation() + this->GetActorForwardVector() * 600.0f;
+	FVector location = this->GetActorLocation() + this->GetActorForwardVector() * Rate;
 	location.Z += 50.0f;
 	FRotator rotation = FVector(this->GetActorForwardVector()).Rotation();
 	FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
@@ -154,16 +165,6 @@ void ABombCharacter::ServerSpawnWall_Implementation()
 	{
 		this->GetWorld()->SpawnActor<AActor>(WallClass, transform, params);
 	}
-}
-
-void ABombCharacter::ServerAttack_Implementation()
-{
-	MulticastAttack();
-}
-
-void ABombCharacter::MulticastAttack_Implementation()
-{
-	Attack();
 }
 
 // 서버에서 폭탄을 생성
@@ -321,28 +322,11 @@ void ABombCharacter::Dead()
 	if (HasAuthority())
 	{
 		MultiDead();
-
 	}
 }
 
 void ABombCharacter::MultiDead_Implementation()
 {
-	//// 타이머를 설정하여 클라이언트와 동기화된 상태에서 작업 수행
-	//GetWorld()->GetTimerManager().SetTimer(BombParticleHandle, [this]()
-	//	{
-	//		if (Bomb)
-	//		{
-	//			Bomb->Explosion();
-	//		}
-
-	//		// 폭발 후 1초 뒤에 Dead_Montage 실행 타이머 설정
-	//		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, [this]()
-	//			{
-	//				PlayDead();
-	//			}, 1.0f, false);
-
-	//	}, 2.0f, false);
-
 	if (Bomb)
 	{
 		Bomb->Explosion();

@@ -45,11 +45,14 @@ public:
 	USphereComponent* HandSphere;
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Wall")
 	TSubclassOf<class AWall> WallClass;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_SubAction;
+
+	UPROPERTY(EditAnywhere, Category = "Wall")
+	float Rate;
 
 public:
 	FAttachmentBeginOverlap OnAttachmentBeginOverlap;
