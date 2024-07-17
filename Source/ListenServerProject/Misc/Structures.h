@@ -122,7 +122,7 @@ struct FPlayerScore
 {
     GENERATED_BODY()
 
-    UPROPERTY()
+    UPROPERTY() 
     FString PlayerName;
 
     UPROPERTY()

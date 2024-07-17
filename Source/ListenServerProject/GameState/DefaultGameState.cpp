@@ -97,6 +97,7 @@ void ADefaultGameState::SetGameState(EGameStateType InGameStateType)
 			GameOverTime = 5.0f;
 			break;
 		}
+
 		
 	}
 }
@@ -120,11 +121,9 @@ void ADefaultGameState::AddPlayerScore(const FString& PlayerName, int32 Score)
 	// 기존 플레이어 점수 업데이트 또는 새 플레이어 추가
 	for (FPlayerScore& PlayerScore : PlayerScores)
 	{
-		if (PlayerScore.PlayerName == PlayerName)
-		{
 			PlayerScore.Score += Score;
-			return;
-		}
+
+		return;
 	}
 
 	// 새 플레이어 추가
@@ -134,8 +133,9 @@ void ADefaultGameState::AddPlayerScore(const FString& PlayerName, int32 Score)
 int ADefaultGameState::GetPlayerScore(FString PlayerName)
 {
 	for (FPlayerScore& PlayerScore : PlayerScores)
-		if (PlayerScore.PlayerName == PlayerName)
-			return PlayerScore.Score;
+	{
+		return PlayerScore.Score;
+	}
 
-	return -1;
+	return 0;
 }

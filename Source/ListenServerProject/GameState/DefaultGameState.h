@@ -49,7 +49,7 @@ protected:
 	EGameStateType GameStateType;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable) 
 	void SetGameState(EGameStateType InGameStateType);
 
 	UFUNCTION(BlueprintCallable)
