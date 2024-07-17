@@ -35,7 +35,7 @@ void ADefaultGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 	DOREPLIFETIME(ThisClass, GameStateType);
 
-	DOREPLIFETIME(ThisClass, PlayerScores);
+	DOREPLIFETIME(ThisClass, PlayerDatas);
 }
 
 void ADefaultGameState::SetTimer(float InTime)
@@ -97,7 +97,6 @@ void ADefaultGameState::SetGameState(EGameStateType InGameStateType)
 			GameOverTime = 5.0f;
 			break;
 		}
-
 		
 	}
 }
@@ -116,26 +115,24 @@ void ADefaultGameState::ChangeGameType(EGameStateType InGameType)
 		OnGameStateTypeChanged.Broadcast(prevGameType, GameStateType);
 }
 
-void ADefaultGameState::AddPlayerScore(const FString& PlayerName, int32 Score)
+void ADefaultGameState::UpdatePlayerScore(const FString& PlayerName, int32 Score)
 {
-	// 기존 플레이어 점수 업데이트 또는 새 플레이어 추가
-	for (FPlayerScore& PlayerScore : PlayerScores)
-	{
-			PlayerScore.Score += Score;
-
-		return;
-	}
-
-	// 새 플레이어 추가
-	PlayerScores.Add(FPlayerScore(PlayerName, Score));
+	for (FPlayerInGameData& PlayerData : PlayerDatas)
+		if (PlayerData.PlayerName == PlayerName)
+			PlayerData.Score += Score;
 }
 
-int ADefaultGameState::GetPlayerScore(FString PlayerName)
+void ADefaultGameState::AddPlayerData(const FString& PlayerName, int32 Score, FBPUniqueNetId UniqueID)
 {
-	for (FPlayerScore& PlayerScore : PlayerScores)
-	{
-		return PlayerScore.Score;
-	}
+	// 새 플레이어 추가
+	PlayerDatas.Add(FPlayerInGameData(PlayerName, Score, UniqueID));
+}
 
-	return 0;
+FPlayerInGameData ADefaultGameState::GetPlayerData(FString PlayerName)
+{
+	for (FPlayerInGameData& PlayerData : PlayerDatas)
+		if (PlayerData.PlayerName == PlayerName)
+			return PlayerData;
+
+	return FPlayerInGameData();
 }
