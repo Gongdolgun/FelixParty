@@ -10,6 +10,11 @@ void CLog::Log(int32 InValue)
 	UE_LOG(GP, Display, L"%d", InValue);
 }
 
+void CLog::Log(uint32 InValue)
+{
+	UE_LOG(GP, Display, L"%u", InValue);
+}
+
 void CLog::Log(float InValue)
 {
 	UE_LOG(GP, Display, L"%f", InValue);
@@ -56,6 +61,11 @@ void CLog::Log(const FString& InFileName, const FString& InFuncName, int32 InLin
 }
 
 void CLog::Print(int32 InValue, int32 InKey, float InDuration, FColor InColor)
+{
+	GEngine->AddOnScreenDebugMessage(InKey, InDuration, InColor, FString::FromInt(InValue));
+}
+
+void CLog::Print(uint32 InValue, int32 InKey, float InDuration, FColor InColor)
 {
 	GEngine->AddOnScreenDebugMessage(InKey, InDuration, InColor, FString::FromInt(InValue));
 }
@@ -113,6 +123,12 @@ void CLog::Print(const FString& InFileName, const FString& InFuncName, int32 InL
 }
 
 void CLog::LogAndPrint(int32 InValue)
+{
+	Log(InValue);
+	Print(InValue);
+}
+
+void CLog::LogAndPrint(uint32 InValue)
 {
 	Log(InValue);
 	Print(InValue);

@@ -27,9 +27,6 @@ public:
 	void SetReadyStatus();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString MyUniqueID;
-
 	FPlayerBaseInfo PlayerInfo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

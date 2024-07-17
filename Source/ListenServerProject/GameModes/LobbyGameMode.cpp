@@ -1,10 +1,13 @@
 #include "GameModes/LobbyGameMode.h"
-#include "Characters/DefaultCharacter.h"
+#include "AdvancedSteamFriendsLibrary.h"
+#include "OnlineSubsystem.h"
 #include "Controllers/LobbyController.h"
 #include "GameFramework/PlayerState.h"
 #include "GameInstances/OnlineGameInstance.h"
 #include "Global.h"
+#include "OnlineSubsystem.h"
 #include "Characters/LobbyCharacter.h"
+#include "Interfaces/OnlineFriendsInterface.h"
 
 void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 {
@@ -16,13 +19,17 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 	// 인게임에서 사용할 플레이어 데이터 초기화 (Game Instance)
 	if(Controller && GameInstance)
 	{
-		//FString PlayerID = FString::FromInt(Controller->GetPlayerState<APlayerState>()->GetUniqueID());
-
-		GameInstance->PlayerDatas.Add(Controller->MyUniqueID, DefaultPlayerData);
+		FString PlayerID = Controller->GetPlayerState<APlayerState>()->GetPlayerName();
+		GameInstance->PlayerDatas.Add(PlayerID, DefaultPlayerData);
+		if(GameInstance->PlayerDatas.Contains(PlayerID))
+		{
+			GameInstance->PlayerDatas.Find(PlayerID)->PlayerName = FName(*PlayerID);
+			SetUserUniqueID(NewPlayer);
+		}
 	}
 
 	// Player Base Info 초기화
-	if(Controller)
+	if(Controller && GameInstance)
 	{
 		ConnectedPlayers.Add(Controller);
 
@@ -32,7 +39,11 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 		else
 			Controller->PlayerInfo.IsReady = false;
 
-		Controller->PlayerInfo.PlayerName = FName(*FString::FromInt(Controller->GetPlayerState<APlayerState>()->GetUniqueID()));
+		if (GameInstance->PlayerDatas.Contains(Controller->GetPlayerState<APlayerState>()->GetPlayerName()))
+		{
+			Controller->PlayerInfo.PlayerName = GameInstance->PlayerDatas.Find(Controller->GetPlayerState<APlayerState>()->GetPlayerName())->PlayerName;
+			Controller->PlayerInfo.UniqueID = GameInstance->PlayerDatas.Find(Controller->GetPlayerState<APlayerState>()->GetPlayerName())->UniqueID;
+		}
 
 		PlayerBaseInfos.Add(Controller->PlayerInfo);
 
@@ -52,6 +63,10 @@ void ALobbyGameMode::UpdatePlayerLists()
 
 	for (auto Player : ConnectedPlayers)
 		Player->UpdatePlayerList(PlayerBaseInfos);
+}
+
+void ALobbyGameMode::SetUserUniqueID_Implementation(AController* NewPlayer)
+{
 }
 
 void ALobbyGameMode::UpdatePlayerMaterial()

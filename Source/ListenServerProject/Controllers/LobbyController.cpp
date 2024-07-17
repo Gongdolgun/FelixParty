@@ -28,10 +28,7 @@ void ALobbyController::SetReadyStatus_Implementation()
 	{
 		ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(World->GetAuthGameMode());
 		if (LobbyGameMode)
-		{
 			LobbyGameMode->UpdatePlayerLists();
-			return;
-		}
 	}
 }
 
@@ -41,13 +38,13 @@ void ALobbyController::ChangeCharacter_Implementation(const TArray<UMaterialInte
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
 	if (GameInstance)
 	{
-		if (GameInstance->PlayerDatas.Contains(MyUniqueID))
+		if (GameInstance->PlayerDatas.Contains(GetPlayerState<APlayerState>()->GetPlayerName()))
 		{
-			FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(MyUniqueID);
+			FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(GetPlayerState<APlayerState>()->GetPlayerName());
 
 			PlayerData.CharacterMaterials = Materials;
 
-			GameInstance->SavePlayerInfo(MyUniqueID, PlayerData);
+			GameInstance->SavePlayerInfo(GetPlayerState<APlayerState>()->GetPlayerName() , PlayerData);
 		}
 	}
 

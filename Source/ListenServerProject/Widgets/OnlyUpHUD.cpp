@@ -3,6 +3,9 @@
 #include "CharacterOverlay.h"
 #include "Global.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
+#include "GameModes/OnlyUpGameMode.h"
+#include "Net/UnrealNetwork.h"
 
 void AOnlyUpHUD::DrawHUD()
 {
@@ -16,6 +19,13 @@ void AOnlyUpHUD::BeginPlay()
 	Super::BeginPlay();
 
 	AddCharacterOverlay();
+	
+}
+
+void AOnlyUpHUD::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
 }
 
 void AOnlyUpHUD::AddCharacterOverlay()
@@ -27,3 +37,6 @@ void AOnlyUpHUD::AddCharacterOverlay()
 		CharacterOverlay->AddToViewport();
 	}
 }
+
+
+

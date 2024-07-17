@@ -6,7 +6,7 @@ public class ListenServerProject : ModuleRules
 {
 	public ListenServerProject(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicIncludePaths.Add(ModuleDirectory);
 
@@ -21,6 +21,8 @@ public class ListenServerProject : ModuleRules
         PublicDependencyModuleNames.Add("OnlineSubsystem");
         PublicDependencyModuleNames.Add("OnlineSubsystemUtils");
         PublicDependencyModuleNames.Add("OnlineSubsystemSteam");
+        PublicDependencyModuleNames.Add("AdvancedSessions");
+        PublicDependencyModuleNames.Add("AdvancedSteamSessions");
 
         PublicDependencyModuleNames.Add("MotionWarping");
 
