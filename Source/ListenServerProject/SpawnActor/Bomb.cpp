@@ -2,7 +2,7 @@
 #include "Global.h"
 #include "GameFramework/Character.h"
 #include "Components/SphereComponent.h"
-#include "NiagaraComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
 ABomb::ABomb()
@@ -14,7 +14,6 @@ ABomb::ABomb()
 	bBombReplicateMovement = true;
 
 	Helpers::CreateComponent<USphereComponent>(this, &Sphere, "Sphere");
-	Helpers::CreateComponent<UNiagaraComponent>(this, &Niagara, "Niagara", Sphere);
 
 	Sphere->SetCollisionProfileName(TEXT("PhysicsActor"));
 	Sphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -53,6 +52,16 @@ void ABomb::OnRep_UpdateBombLocation()
 	// 클라이언트들에게 위치 변경을 알리기 위해
 	SetActorLocation(BombLocation);
 	CLog::Log(*BombLocation.ToString());
+}
+
+void ABomb::Explosion_Implementation()
+{
+	if (Particle)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, GetActorLocation(), FRotator::ZeroRotator, FVector::OneVector, true);
+
+		DestroyBomb();
+	}
 }
 
 void ABomb::DestroyBomb()

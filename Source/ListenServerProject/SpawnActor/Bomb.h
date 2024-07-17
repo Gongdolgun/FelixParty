@@ -22,8 +22,8 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 	class USphereComponent* Sphere;
 
-	UPROPERTY(VisibleDefaultsOnly)
-	class UNiagaraComponent* Niagara;
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* Particle;
 
 public:
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Bomb")
@@ -39,6 +39,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_UpdateBombLocation();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Explosion();
 
 	void DestroyBomb();
 };

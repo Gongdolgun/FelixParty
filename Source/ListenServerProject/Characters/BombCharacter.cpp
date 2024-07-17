@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Global.h"
 #include "Net/UnrealNetwork.h"
+#include "SpawnActor/Wall.h"
 
 ABombCharacter::ABombCharacter()
 {
@@ -73,15 +74,6 @@ void ABombCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//if (HasAuthority() && bBomb && Bomb)
-	//{
-	//	// 서버에서 폭탄의 위치를 캐릭터의 머리 위로 계속 업데이트
-	//	FVector spawnLocation = GetActorLocation() + FVector(0, 0, 200);
-	//	Bomb->SetActorLocation(spawnLocation);
-	//	Bomb->BombLocation = spawnLocation; // 복제된 위치 속성
-	//	Bomb->OnRep_UpdateBombLocation(); // 직접 호출하여 서버에서도 위치 업데이트
-	//}
-
 	if (HasAuthority() && bBomb && Bomb)
 	{
 		// 서버에서 폭탄의 위치를 캐릭터의 머리 위로 계속 업데이트
@@ -107,6 +99,7 @@ void ABombCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ABombCharacter::Action);
+		EnhancedInputComponent->BindAction(IA_SubAction, ETriggerEvent::Started, this, &ABombCharacter::ServerPlayWall);
 	}
 
 }
@@ -131,6 +124,35 @@ void ABombCharacter::Attack()
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
 	{
 		AnimInstance->Montage_Play(Attack_Montage);
+	}
+}
+
+void ABombCharacter::ServerPlayWall_Implementation()
+{
+	MultiPlayWall();
+}
+
+void ABombCharacter::MultiPlayWall_Implementation()
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		AnimInstance->Montage_Play(Wall_Montage);
+	}
+}
+
+void ABombCharacter::ServerSpawnWall_Implementation()
+{
+	FActorSpawnParameters params;
+	params.Owner = this;
+
+	FVector location = this->GetActorLocation() + this->GetActorForwardVector() * 600.0f;
+	location.Z += 50.0f;
+	FRotator rotation = FVector(this->GetActorForwardVector()).Rotation();
+	FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
+
+	if (WallClass)
+	{
+		this->GetWorld()->SpawnActor<AActor>(WallClass, transform, params);
 	}
 }
 
@@ -234,7 +256,6 @@ void ABombCharacter::OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor)
 					DisableCollision();
 
 					HitCharacter->ResetBomb();
-					//GetWorld()->GetTimerManager().SetTimer(BombTimerHandle, this, &ABombCharacter::BombExplosion, 10.0f, false);
 				}
 			}
 		}
@@ -269,11 +290,11 @@ void ABombCharacter::BombExplosion()
 	{
 		CLog::Log(TEXT("Bomb exploded!"));
 
-		if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+		// 서버에서 Dead 함수를 직접 호출
+		if (HasAuthority())
 		{
-			AnimInstance->Montage_Play(Dead_Montage);
 
-			GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, this, &ABombCharacter::Dead, 3.0f, false);
+			Dead();
 		}
 	}
 }
@@ -287,11 +308,47 @@ void ABombCharacter::ResetBomb()
 	GetWorld()->GetTimerManager().SetTimer(BombTimerHandle, this, &ABombCharacter::BombExplosion, 10.0f, false);
 }
 
+void ABombCharacter::PlayDead()
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		AnimInstance->Montage_Play(Dead_Montage);
+	}
+}
+
 void ABombCharacter::Dead()
 {
-	Destroy();
+	if (HasAuthority())
+	{
+		MultiDead();
 
-	Bomb->DestroyBomb();
+	}
+}
+
+void ABombCharacter::MultiDead_Implementation()
+{
+	//// 타이머를 설정하여 클라이언트와 동기화된 상태에서 작업 수행
+	//GetWorld()->GetTimerManager().SetTimer(BombParticleHandle, [this]()
+	//	{
+	//		if (Bomb)
+	//		{
+	//			Bomb->Explosion();
+	//		}
+
+	//		// 폭발 후 1초 뒤에 Dead_Montage 실행 타이머 설정
+	//		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, [this]()
+	//			{
+	//				PlayDead();
+	//			}, 1.0f, false);
+
+	//	}, 2.0f, false);
+
+	if (Bomb)
+	{
+		Bomb->Explosion();
+	}
+
+	PlayDead();
 }
 
 
