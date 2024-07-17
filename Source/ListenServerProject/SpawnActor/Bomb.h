@@ -25,6 +25,18 @@ private:
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* Particle;
 
+	UPROPERTY(EditAnywhere)
+	UMaterialInstanceDynamic* DynamicMaterial;
+
+	UPROPERTY(EditAnywhere)
+	UAudioComponent* Audio;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* ExplosionSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* CountdownSound;
+
 public:
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Bomb")
 	bool bBombReplicate;
@@ -44,4 +56,16 @@ public:
 	void Explosion();
 
 	void DestroyBomb();
+
+
+private:
+	void StartCountdown();
+
+	void UpDateSound(float DeltaTime);
+
+	FTimerHandle CountdownTimerHandle;
+
+	float TotalCountdownTime;
+	float ElapseTime;
+
 };
