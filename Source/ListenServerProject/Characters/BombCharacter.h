@@ -29,6 +29,9 @@ private:
 	class UAnimMontage* Attack_Montage;
 
 	UPROPERTY(EditAnywhere)
+	class UAnimMontage* Wall_Montage;
+
+	UPROPERTY(EditAnywhere)
 	class UAnimMontage* Dead_Montage;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -40,6 +43,13 @@ private:
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent* HandSphere;
+
+private:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AWall> WallClass;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_SubAction;
 
 public:
 	FAttachmentBeginOverlap OnAttachmentBeginOverlap;
@@ -58,6 +68,15 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastAttack();
+
+	UFUNCTION(Server, Reliable)
+	void ServerPlayWall();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiPlayWall();
+
+	UFUNCTION(Server, Reliable)
+	void ServerSpawnWall();
 
 	// ¼­¹ö¿¡¼­ ÆøÅºÀ» »ý¼º
 	UFUNCTION(Server, Reliable)
@@ -98,11 +117,18 @@ private:
 
 	void ResetBomb();
 
+	void PlayDead();
+
 	void Dead();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiDead();
 
 	FTimerHandle CollisionTimerHandle;
 
 	FTimerHandle BombTimerHandle;
+
+	FTimerHandle BombParticleHandle;
 
 	FTimerHandle DeadTimerHandle;
 
