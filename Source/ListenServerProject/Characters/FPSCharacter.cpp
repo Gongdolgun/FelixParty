@@ -26,12 +26,14 @@ void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 
 		if(HP == 0)
 		{
+			// Ragdoll 처리, 장착중인 무기 Destroy
 			Dead_NMC();
 
+			// Game Mode에 리스폰 요청
+			AFPSGameMode* GameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 			FTimerHandle RespawnTimer;
 			GetWorld()->GetTimerManager().SetTimer(RespawnTimer, FTimerDelegate::CreateLambda([&]()
 			{
-				AFPSGameMode* GameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 				if (GameMode != nullptr)
 					GameMode->RespawnPlayer(GetController());
 
