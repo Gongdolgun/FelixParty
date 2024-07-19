@@ -12,19 +12,29 @@ void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 	if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
 	{
 		ConnectedPlayers.Add(Controller);
+	}
+}
 
-		ADefaultGameState* DefaultGameState = GetGameState<ADefaultGameState>();
-		UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+void ADefaultGameMode::BeginPlay()
+{
+	Super::BeginPlay();
 
-		if(DefaultGameState != nullptr && GameInstance != nullptr)
+	ADefaultGameState* DefaultGameState = GetGameState<ADefaultGameState>();
+	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+
+	if (DefaultGameState != nullptr && GameInstance != nullptr)
+	{
+		for (auto It = GameInstance->PlayerDatas.CreateConstIterator(); It; ++It)
 		{
-			FString PlayerName = Controller->GetPlayerState<APlayerState>()->GetPlayerName();
-			CLog::Print(PlayerName);
+			FString PlayerName = It.Value().PlayerName.ToString();
+			FBPUniqueNetId PlayerUniqueID = It.Value().UniqueID;
+			DefaultGameState->AddPlayerData(PlayerName, 0, PlayerUniqueID);
+			/*FString PlayerName = Controller->GetPlayerState<APlayerState>()->GetPlayerName();
 			if (GameInstance->PlayerDatas.Contains(PlayerName))
 			{
 				FBPUniqueNetId PlayerUniqueID = GameInstance->PlayerDatas.Find(PlayerName)->UniqueID;
 				DefaultGameState->AddPlayerData(PlayerName, 0, PlayerUniqueID);
-			}
+			}*/
 		}
 	}
 }
