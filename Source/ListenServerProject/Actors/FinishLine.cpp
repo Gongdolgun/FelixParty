@@ -39,6 +39,7 @@ void AFinishLine::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 			if (PlayerController)
 			{
 				GameState->PlayerRank(PlayerController);
+
 			}
 		}
 	}

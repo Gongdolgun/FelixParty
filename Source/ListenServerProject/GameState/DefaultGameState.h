@@ -62,6 +62,8 @@ private:
 	void ChangeGameType(EGameStateType InGameType);
 
 public:
+	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerScore(const FString& PlayerName, int32 Score);
+
 	void AddPlayerData(const FString& PlayerName, int32 Score, FBPUniqueNetId UniqueID);
 };

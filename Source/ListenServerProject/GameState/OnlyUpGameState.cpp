@@ -31,7 +31,7 @@ void AOnlyUpGameState::PlayerRank(APlayerController* InController)
 {
 	PlayerRanking.AddUnique(InController);
 
-	AddPlayerScore("", 12);
+	
 }
 
 
