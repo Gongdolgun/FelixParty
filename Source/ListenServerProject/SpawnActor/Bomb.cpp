@@ -1,5 +1,6 @@
 #include "SpawnActor/Bomb.h"
 #include "Global.h"
+#include "Characters/BombCharacter.h"
 #include "Components/AudioComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/SphereComponent.h"
@@ -15,7 +16,7 @@ ABomb::ABomb()
 	bBombReplicateMovement = true;
 
 	Helpers::CreateComponent<USphereComponent>(this, &Sphere, "Sphere");
-	Helpers::CreateComponent<UAudioComponent>(this, &Audio, "Audio");
+	Helpers::CreateComponent<UAudioComponent>(this, &Audio, "Audio", Sphere);
 
 	Sphere->SetCollisionProfileName(TEXT("PhysicsActor"));
 	Sphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -23,7 +24,6 @@ ABomb::ABomb()
 	Sphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	Sphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
-	Audio->SetupAttachment(RootComponent);
 }
 
 void ABomb::BeginPlay()
@@ -55,6 +55,7 @@ void ABomb::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ABomb, bBombReplicate);
 	DOREPLIFETIME(ABomb, bBombReplicateMovement);
 	DOREPLIFETIME(ABomb, BombLocation);
+	DOREPLIFETIME(ABomb, ElapseTime);
 
 }
 
@@ -73,7 +74,8 @@ void ABomb::Explosion_Implementation()
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, GetActorLocation(), FRotator::ZeroRotator, FVector::OneVector, true);
 		UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation());
 
-		DestroyBomb();
+		// »ç¿îµå Àç»ý ÈÄ 0.2ÃÊ ÈÄ¿¡ ÆøÅºÀ» ÆÄ±«
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle_DestroyBomb, this, &ABomb::DestroyBomb, 0.2f, false);
 	}
 }
 
@@ -84,10 +86,27 @@ void ABomb::DestroyBomb()
 
 void ABomb::StartCountdown()
 {
-	TotalCountdownTime = 10.0f;
-	ElapseTime = 0.0f;
-	
-	GetWorld()->GetTimerManager().SetTimer(CountdownTimerHandle, this, &ABomb::Explosion, TotalCountdownTime, false);
+	ElapseTime = 0;
+
+	MultiPlayCountdownSound();
+
+	GetWorld()->GetTimerManager().SetTimer(CountdownTimerHandle, this, &ABomb::Explosion, 10.0f, false);
+}
+
+void ABomb::MultiPlayCountdownSound_Implementation()
+{
+	if (CountdownSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, CountdownSound, GetActorLocation());
+	}
+}
+
+void ABomb::MultiPlayExplosionSound_Implementation()
+{
+	if (ExplosionSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation());
+	}
 }
 
 void ABomb::UpDateSound(float DeltaTime)

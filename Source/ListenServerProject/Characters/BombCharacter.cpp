@@ -185,6 +185,8 @@ void ABombCharacter::ServerSpawnBomb_Implementation(TSubclassOf<ABomb> BombSpawn
 			Bomb = spawnBomb;
 			bBomb = true; // 폭탄 소유 상태로 변경(서버)
 
+			Bomb->StartCountdown();
+
 			// 모든 클라이언트에게 폭탄 생성 정보를 전파
 			MultiSpawnBomb(spawnBomb);
 		}
@@ -271,6 +273,7 @@ void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABombCharacter, bBombReplicate);
 	DOREPLIFETIME(ABombCharacter, bBombReplicateMovement);
 	DOREPLIFETIME(ABombCharacter, BombLocation);
+	DOREPLIFETIME(ABombCharacter, ElapseTime);
 
 }
 
@@ -294,7 +297,6 @@ void ABombCharacter::BombExplosion()
 		// 서버에서 Dead 함수를 직접 호출
 		if (HasAuthority())
 		{
-
 			Dead();
 		}
 	}
@@ -330,6 +332,7 @@ void ABombCharacter::MultiDead_Implementation()
 	if (Bomb)
 	{
 		Bomb->Explosion();
+		Bomb->MultiPlayCountdownSound();
 	}
 
 	PlayDead();
