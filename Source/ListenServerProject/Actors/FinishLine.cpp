@@ -30,15 +30,16 @@ void AFinishLine::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 {
 	ACharacter* character = Cast<ACharacter>(OtherActor);
 
-	if (HasAuthority() && character && (OtherActor != this))
+	if (character && (OtherActor != this))
 	{
 		AOnlyUpGameState* GameState = GetWorld()->GetGameState<AOnlyUpGameState>();
 		if (GameState)
 		{
-			APlayerController* PlayerController = Cast<APlayerController>(character->GetInstigatorController());
+			APlayerController* PlayerController = Cast<APlayerController>(character->GetController());
 			if (PlayerController)
 			{
 				GameState->PlayerRank(PlayerController);
+
 			}
 		}
 	}

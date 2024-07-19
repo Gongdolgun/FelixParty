@@ -49,7 +49,7 @@ protected:
 	EGameStateType GameStateType;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable) 
 	void SetGameState(EGameStateType InGameStateType);
 
 	UFUNCTION(BlueprintCallable)
@@ -62,6 +62,8 @@ private:
 	void ChangeGameType(EGameStateType InGameType);
 
 public:
+	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerScore(const FString& PlayerName, int32 Score);
+
 	void AddPlayerData(const FString& PlayerName, int32 Score, FBPUniqueNetId UniqueID);
 };
