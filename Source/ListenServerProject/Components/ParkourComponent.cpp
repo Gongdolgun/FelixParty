@@ -17,9 +17,9 @@ UParkourComponent::UParkourComponent()
 	HighStruct.ZOffsetLanding = 30.0f;
 	HighStruct.MontageLength = 1.1f;
 
-	LowStruct.ZOffsetHand = 20.0f;
-	LowStruct.ZOffsetLanding = 10.0f;
-	LowStruct.MontageLength = 1.1f;
+	LowStruct.ZOffsetHand = 5.0f;
+	LowStruct.ZOffsetLanding = 20.0f;
+	LowStruct.MontageLength = 0.6f;
 }
 
 void UParkourComponent::BeginPlay()
