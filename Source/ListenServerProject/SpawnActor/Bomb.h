@@ -47,9 +47,6 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_UpdateBombLocation, BlueprintReadOnly, Category = "Bomb")
 	FVector BombLocation;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Bomb")
-	float ElapseTime;
-
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION()
@@ -60,20 +57,15 @@ public:
 
 	void DestroyBomb();
 
+
+private:
 	void StartCountdown();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiPlayCountdownSound();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiPlayExplosionSound();
 
 	void UpDateSound(float DeltaTime);
 
-private:
 	FTimerHandle CountdownTimerHandle;
-	FTimerHandle TimerHandle_DestroyBomb;
 
 	float TotalCountdownTime;
+	float ElapseTime;
 
 };

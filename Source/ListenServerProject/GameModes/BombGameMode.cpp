@@ -40,7 +40,7 @@ void ABombGameMode::OnPostLogin(AController* NewPlayer)
 
 void ABombGameMode::RandomSpawn()
 {
-	if (PlayerControllers.Num() == 0)
+	if (PlayerControllers.Num() == 0) 
 		return;
 
 	if (BombClass)

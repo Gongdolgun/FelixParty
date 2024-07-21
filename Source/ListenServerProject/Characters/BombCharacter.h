@@ -108,9 +108,6 @@ public:
 	FVector BombLocation;
 
 	UPROPERTY(Replicated)
-	float ElapseTime;
-
-	UPROPERTY(Replicated)
 	bool bBomb = false;
 
 	bool bAttack = false;
