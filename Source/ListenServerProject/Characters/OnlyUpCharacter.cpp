@@ -47,6 +47,11 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 			Arrows[i]->ArrowColor = FColor::Green;
 			Arrows[i]->SetRelativeLocation(FVector(0.0f, 30.0f, 20.0f));
 			break;
+
+		case EParkourArrowType::Down:
+			Arrows[i]->ArrowColor = FColor::White;
+			Arrows[i]->SetRelativeLocation(FVector(0.0f, 0.0f, -30.0f));
+			break;
 		}
 	}
 }
@@ -86,12 +91,6 @@ void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 void AOnlyUpCharacter::Action()
 {
 	Super::Action();
-
-}
-
-void AOnlyUpCharacter::Jump()
-{
-	Super::Jump();
 
 }
 
@@ -137,7 +136,7 @@ void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2,
 	Target2.Rotation = GetActorRotation();
 	MotionWarpComponent->AddOrUpdateWarpTarget(Target2);
 	
-	PlayParkourMontage();
+	//PlayParkourMontage();
 	
 	FTimerHandle timerhandler;
 	GetWorld()->GetTimerManager().SetTimer(timerhandler, FTimerDelegate::CreateLambda([this]() {
@@ -145,21 +144,21 @@ void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2,
 		}), InMontageLength, false);
 }
 
-void AOnlyUpCharacter::PlayParkourMontage_NMC_Implementation()
+void AOnlyUpCharacter::PlayParkourMontage_NMC_Implementation(EParkourType ParkourType)
 {
-	PlayAnimMontage(ParkourComponent->ParkourMontage);
+	PlayAnimMontage(ParkourComponent->GetPlayParkourMontage(ParkourType));
 }
 
-void AOnlyUpCharacter::PlayParkourMontage_Server_Implementation()
+void AOnlyUpCharacter::PlayParkourMontage_Server_Implementation(EParkourType ParkourType)
 {
-	PlayParkourMontage_NMC();
+	PlayParkourMontage_NMC(ParkourType);
 }
 
-void AOnlyUpCharacter::PlayParkourMontage()
+void AOnlyUpCharacter::PlayParkourMontage(EParkourType ParkourType)
 {
 	if (IsLocallyControlled())
 	{
-		PlayParkourMontage_Server();
+		PlayParkourMontage_Server(ParkourType);
 	}
 
 

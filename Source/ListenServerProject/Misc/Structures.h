@@ -150,3 +150,19 @@ struct FPlayerInGameData
 		, UniqueID(InUniqueID)
     {}
 };
+
+USTRUCT(BlueprintType)
+struct FParkourStruct
+{
+    GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float ZOffsetHand;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float ZOffsetLanding;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float MontageLength;
+};
