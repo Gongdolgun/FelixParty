@@ -22,6 +22,8 @@ public:
 public:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void Run();
+	void Walk();
 	void Jump();
 
 private:

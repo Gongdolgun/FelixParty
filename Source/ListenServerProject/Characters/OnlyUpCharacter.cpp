@@ -1,8 +1,11 @@
 #include "Characters/OnlyUpCharacter.h"
+
+#include "EnhancedInputComponent.h"
 #include "Components/ParkourComponent.h"
 #include "Global.h"
 #include "MotionWarpingComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Components/MoveComponent.h"
 #include "Components/StateComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -50,10 +53,12 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 
 		case EParkourArrowType::Down:
 			Arrows[i]->ArrowColor = FColor::White;
-			Arrows[i]->SetRelativeLocation(FVector(0.0f, 0.0f, -30.0f));
+			Arrows[i]->SetRelativeLocation(FVector(0.0f, 0.0f, -20.0f));
 			break;
 		}
 	}
+
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
 void AOnlyUpCharacter::BeginPlay()
@@ -72,6 +77,12 @@ void AOnlyUpCharacter::Tick(float DeltaTime)
 void AOnlyUpCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, MoveComponent, &UMoveComponent::Run);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, MoveComponent, &UMoveComponent::Walk);
+	}
 }
 
 void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

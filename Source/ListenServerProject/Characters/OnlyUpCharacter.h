@@ -42,6 +42,10 @@ private:
 protected:
 	virtual void Action() override;
 
+private:
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_Run;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Parkour")
 	float ZOffset_Hand = -60.0f;
