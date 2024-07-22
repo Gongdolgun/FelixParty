@@ -63,7 +63,6 @@ void UParkourComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ThisClass, AddPlayerLocationForward);
 	DOREPLIFETIME(ThisClass, AddPlayerLocationZ_High);
 	DOREPLIFETIME(ThisClass, AddPlayerLocationZ_Low);
-	DOREPLIFETIME(ThisClass, AvailableFrontAngle);
 
 	DOREPLIFETIME(ThisClass, falling_ImpactPoint);
 }
@@ -141,7 +140,17 @@ void UParkourComponent::ParkourTrace(FVector& OutLocation1, FVector& OutLocation
 	// 모든 방향이 충돌했을 때 또는 Down 방향만 충돌했을 때
 	if ((bAllHit && Check_ObjectRotation()) || (bDownHit && OwnerCharacter->CanJump()))
 	{
-		ParkourCheck(InSecondaryTraceZOffset, InFallingHeightMultiplier, ParkourType);
+		if (!HitResults[(int32)EParkourArrowType::Left].bBlockingHit &&
+			!HitResults[(int32)EParkourArrowType::Right].bBlockingHit &&
+			!HitResults[(int32)EParkourArrowType::Center].bBlockingHit)
+		{
+			ParkourType = EParkourType::Low;
+		}
+
+		else
+		{
+			return;
+		}
 	}
 
 	else
@@ -247,6 +256,7 @@ void UParkourComponent::ParkourCheck(float InSecondaryTraceZOffset, float InFall
 void UParkourComponent::LineTrace(EParkourArrowType InType, float InInitialTraceLength)
 {
 	UArrowComponent* arrow = Arrows[(int32)InType];
+	
 	FLinearColor color = FLinearColor(arrow->ArrowColor);
 
 	FTransform transform = arrow->GetComponentToWorld();
