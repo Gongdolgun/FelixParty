@@ -23,6 +23,7 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 	ParkourComponent->SetIsReplicated(true);
 	StateComponent->SetIsReplicated(true);
 	MotionWarpComponent->SetIsReplicated(true);
+	MoveComponent->SetIsReplicated(true);
 
 	Helpers::CreateComponent<USceneComponent>(this, &ArrowGroup, "ArrowGroup", GetCapsuleComponent());
 	Arrows.SetNum((int32)EParkourArrowType::Max);
