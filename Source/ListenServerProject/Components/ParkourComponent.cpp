@@ -63,7 +63,6 @@ void UParkourComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ThisClass, AddPlayerLocationForward);
 	DOREPLIFETIME(ThisClass, AddPlayerLocationZ_High);
 	DOREPLIFETIME(ThisClass, AddPlayerLocationZ_Low);
-	DOREPLIFETIME(ThisClass, AvailableFrontAngle);
 
 	DOREPLIFETIME(ThisClass, falling_ImpactPoint);
 }
@@ -135,7 +134,18 @@ void UParkourComponent::ParkourTrace(FVector& OutLocation1, FVector& OutLocation
 
 	else if (bDownHit && OwnerCharacter->CanJump())
 	{
-		ParkourType = EParkourType::Low;
+		// Left, Right, Center 중 하나라도 충돌이 안되었는지 확인
+		if (!HitResults[(int32)EParkourArrowType::Left].bBlockingHit &&
+			!HitResults[(int32)EParkourArrowType::Right].bBlockingHit &&
+			!HitResults[(int32)EParkourArrowType::Center].bBlockingHit)
+		{
+			ParkourType = EParkourType::Low;
+		}
+
+		else
+		{
+			return;
+		}
 	}
 
 	// 모든 방향이 충돌했을 때 또는 Down 방향만 충돌했을 때
