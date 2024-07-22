@@ -75,13 +75,13 @@ void AOnlyUpCharacter::Tick(float DeltaTime)
 }
 
 void AOnlyUpCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{ 
+{
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		//EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, MoveComponent, &UMoveComponent::Run);
-		//EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, MoveComponent, &UMoveComponent::Walk);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, MoveComponent, &UMoveComponent::Run);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, MoveComponent, &UMoveComponent::Walk);
 	}
 }
 
