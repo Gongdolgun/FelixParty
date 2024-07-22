@@ -22,9 +22,15 @@ public:
 public:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	void Run();
-	void Walk();
 	void Jump();
+
+	UFUNCTION(Reliable, Server)
+	void Run_Server();
+	void Run();
+
+	UFUNCTION(Reliable, Server)
+	void Walk_Server();
+	void Walk();
 
 private:
 	class ACharacter* Owner;

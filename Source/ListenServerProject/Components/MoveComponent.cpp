@@ -52,24 +52,38 @@ void UMoveComponent::Look(const FInputActionValue& Value)
 	}
 }
 
+void UMoveComponent::Jump()
+{
+	if(Owner != nullptr && CanMove)
+		Owner->Jump();
+}
+
+void UMoveComponent::Run_Server_Implementation()
+{
+	
+}
+
 void UMoveComponent::Run()
 {
+	//Run_Server();
+
 	if (Owner != nullptr && CanMove)
 	{
 		Owner->GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 	}
 }
 
+void UMoveComponent::Walk_Server_Implementation()
+{
+	
+}
+
 void UMoveComponent::Walk()
 {
+	//Walk_Server();
+
 	if (Owner != nullptr && CanMove)
 	{
 		Owner->GetCharacterMovement()->MaxWalkSpeed = 250.0f;
 	}
-}
-
-void UMoveComponent::Jump()
-{
-	if(Owner != nullptr && CanMove)
-		Owner->Jump();
 }
