@@ -4,7 +4,6 @@
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Net/UnrealNetwork.h"
 
 UMoveComponent::UMoveComponent()
 {
@@ -74,6 +73,3 @@ void UMoveComponent::Jump()
 	if(Owner != nullptr && CanMove)
 		Owner->Jump();
 }
-
-
-

@@ -106,7 +106,7 @@ public:
 	TArray<class UArrowComponent*> Arrows;
 	TArray<FHitResult> HitResults;
 
-	UPROPERTY(Replicated, EditAnywhere, Category = " Parkour")
+	UPROPERTY(EditAnywhere, Category = " Parkour")
 	float AvailableFrontAngle = 55.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
