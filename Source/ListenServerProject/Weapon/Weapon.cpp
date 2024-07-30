@@ -5,6 +5,7 @@
 #include "Characters/FPSCharacter.h"
 #include "Components/WeaponComponent.h"
 #include "Controllers/DefaultController.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AWeapon::AWeapon()
@@ -58,7 +59,7 @@ void AWeapon::EndFire()
 
 void AWeapon::Fire()
 {
-	if (Owner != nullptr && CurBullet != 0)
+	if (Owner != nullptr && CurBullet != 0 && !Owner->GetMovementComponent()->IsFalling())
 	{
 		Owner->SeperateServer(WeaponData, HitData);
 		CurBullet -= 1;

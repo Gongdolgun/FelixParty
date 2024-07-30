@@ -29,7 +29,7 @@ public:
 	class USphereComponent* Sphere;
 
 	UPROPERTY(EditAnywhere, Category = "Settings")
-	TSubclassOf<AActor> SpawnActorClass;
+	TArray<TSubclassOf<AActor>> SpawnActorClass;
 
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	FVector SpawnLocation = FVector(0, 0, 60);

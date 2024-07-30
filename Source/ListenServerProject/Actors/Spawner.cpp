@@ -20,17 +20,21 @@ void ASpawner::BeginPlay()
 	Super::BeginPlay();
 
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnComponentBeginOverlap);
-
-	if(SpawnActorClass)
+	if (SpawnActorClass.Num() > 0)
 	{
-		FVector Location = GetActorLocation() + SpawnLocation;
+		int32 RandomInteger = UKismetMathLibrary::RandomIntegerInRange(0, SpawnActorClass.Num() - 1);
 
-		FActorSpawnParameters params;
-		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		if (SpawnActorClass[RandomInteger] != nullptr)
+		{
+			FVector Location = GetActorLocation() + SpawnLocation;
 
-		SpawnedActor = GetWorld()->SpawnActor<AActor>(SpawnActorClass, Location, FRotator::ZeroRotator, params);
+			FActorSpawnParameters params;
+			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		CreateRotatingMovementComponent();
+			SpawnedActor = GetWorld()->SpawnActor<AActor>(SpawnActorClass[RandomInteger], Location, FRotator::ZeroRotator, params);
+
+			CreateRotatingMovementComponent();
+		}
 	}
 }
 

@@ -98,9 +98,11 @@ void AFPSCharacter::LineTrace(FWeaponData WeaponData, FHitData HitData)
 	FHitResult hitResult;
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTyps;
 	TEnumAsByte<EObjectTypeQuery> CharacterMesh = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1);
-	TEnumAsByte<EObjectTypeQuery> WorldStatic = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_EngineTraceChannel1);
+	TEnumAsByte<EObjectTypeQuery> WorldStatic = UEngineTypes::ConvertToObjectType(ECC_WorldStatic);
+	TEnumAsByte<EObjectTypeQuery> WorldDynamic = UEngineTypes::ConvertToObjectType(ECC_WorldDynamic);
 	ObjectTyps.Add(CharacterMesh);
 	ObjectTyps.Add(WorldStatic);
+	ObjectTyps.Add(WorldDynamic);
 
 	if (UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), start, end, ObjectTyps, false, ignores, EDrawDebugTrace::None, hitResult, true))
 	{

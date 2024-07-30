@@ -16,15 +16,22 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 	ALobbyController* Controller = Cast<ALobbyController>(NewPlayer);
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
 
+	CLog::Print(Controller->GetPlayerState<APlayerState>()->GetUniqueId()->ToString());
+
 	// 인게임에서 사용할 플레이어 데이터 초기화 (Game Instance)
 	if(Controller && GameInstance)
 	{
 		FString PlayerID = Controller->GetPlayerState<APlayerState>()->GetPlayerName();
+
+		TSharedPtr<const FUniqueNetId> UniqueNetId = Controller->GetPlayerState<APlayerState>()->GetUniqueId().GetUniqueNetId();
+		FBPUniqueNetId PlayerUniqueID;
+		PlayerUniqueID.SetUniqueNetId(UniqueNetId);
+
 		GameInstance->PlayerDatas.Add(PlayerID, DefaultPlayerData);
 		if(GameInstance->PlayerDatas.Contains(PlayerID))
 		{
-			GameInstance->PlayerDatas.Find(PlayerID)->PlayerName = FName(*PlayerID);
-			SetUserUniqueID(NewPlayer);
+			GameInstance->PlayerDatas[PlayerID].PlayerName = FName(*PlayerID);
+			GameInstance->PlayerDatas[PlayerID].UniqueID = PlayerUniqueID;
 		}
 	}
 
@@ -41,8 +48,8 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 
 		if (GameInstance->PlayerDatas.Contains(Controller->GetPlayerState<APlayerState>()->GetPlayerName()))
 		{
-			Controller->PlayerInfo.PlayerName = GameInstance->PlayerDatas.Find(Controller->GetPlayerState<APlayerState>()->GetPlayerName())->PlayerName;
-			Controller->PlayerInfo.UniqueID = GameInstance->PlayerDatas.Find(Controller->GetPlayerState<APlayerState>()->GetPlayerName())->UniqueID;
+			Controller->PlayerInfo.PlayerName = GameInstance->PlayerDatas[Controller->GetPlayerState<APlayerState>()->GetPlayerName()].PlayerName;
+			Controller->PlayerInfo.UniqueID = GameInstance->PlayerDatas[Controller->GetPlayerState<APlayerState>()->GetPlayerName()].UniqueID;
 		}
 
 		PlayerBaseInfos.Add(Controller->PlayerInfo);
@@ -63,10 +70,6 @@ void ALobbyGameMode::UpdatePlayerLists()
 
 	for (auto Player : ConnectedPlayers)
 		Player->UpdatePlayerList(PlayerBaseInfos);
-}
-
-void ALobbyGameMode::SetUserUniqueID_Implementation(AController* NewPlayer)
-{
 }
 
 void ALobbyGameMode::UpdatePlayerMaterial()
