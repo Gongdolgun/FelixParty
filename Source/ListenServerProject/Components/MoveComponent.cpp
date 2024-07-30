@@ -4,6 +4,7 @@
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+//#include "Net/UnrealNetwork.h"
 
 UMoveComponent::UMoveComponent()
 {
@@ -15,6 +16,14 @@ void UMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Owner = Cast<ACharacter>(GetOwner());
+	//CharacterMovement = Owner->GetCharacterMovement();
+}
+
+void UMoveComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//DOREPLIFETIME(ThisClass, CharacterMovement);
 }
 
 void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
