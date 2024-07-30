@@ -15,7 +15,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -29,9 +28,6 @@ public:
 
 private:
 	class ACharacter* Owner;
-
-	//UPROPERTY(Replicated)
-	//class UCharacterMovementComponent* CharacterMovement;
 
 public:
 	bool CanMove = true;
