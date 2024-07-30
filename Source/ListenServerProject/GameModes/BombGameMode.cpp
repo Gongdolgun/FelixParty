@@ -13,13 +13,12 @@ ABombGameMode::ABombGameMode()
 	PlayerControllers = TArray<ADefaultController*>();
 
 	bReplicates = true;
+
 }
 
 void ABombGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	FMath::RandInit(FDateTime::Now().GetMillisecond());
 
 }
 
@@ -40,7 +39,7 @@ void ABombGameMode::OnPostLogin(AController* NewPlayer)
 
 void ABombGameMode::RandomSpawn()
 {
-	if (PlayerControllers.Num() == 0)
+	if (PlayerControllers.Num() == 0) 
 		return;
 
 	if (BombClass)
@@ -50,7 +49,7 @@ void ABombGameMode::RandomSpawn()
 		for (ADefaultController* Controller : PlayerControllers)
 		{
 			ABombCharacter* character = Cast<ABombCharacter>(Controller->GetPawn());
-			if (character)
+			if (character && character->IsAlive())
 			{
 				allPlayers.Add(character);
 			}
@@ -80,6 +79,61 @@ void ABombGameMode::RandomSpawn()
 	}
 }
 
+void ABombGameMode::OnPlayerDead(ABombCharacter* DeadPlayer)
+{
+	// 모든 플레이어 리스트 생성
+	TArray<ABombCharacter*> allPlayers;
+	for (ADefaultController* Controller : PlayerControllers)
+	{
+		ABombCharacter* Character = Cast<ABombCharacter>(Controller->GetPawn());
+		if (Character && !Character->IsHidden())
+		{
+			allPlayers.Add(Character);
+		}
+	}
+
+	// 게임 종료 조건 확인
+	CheckGameEnd();
+
+	// 새로운 폭탄 소유자 선택
+	if (allPlayers.Num() > 1)
+	{
+		int32 randomIndex = FMath::RandRange(0, allPlayers.Num() - 1);
+		ABombCharacter* newBombOwner = allPlayers[randomIndex];
+		if (newBombOwner)
+		{
+			newBombOwner->ServerSpawnBomb(BombClass);
+		}
+	}
+}
+
+void ABombGameMode::CheckGameEnd()
+{
+	// 남아있는 플레이어 수 확인
+	int32 remainingPlayers = 0;
+	ABombCharacter* lastPlayer = nullptr;
+	for (ADefaultController* Controller : PlayerControllers)
+	{
+		ABombCharacter* character = Cast<ABombCharacter>(Controller->GetPawn());
+		if (character && !character->IsHidden())
+		{
+			remainingPlayers++;
+			lastPlayer = character;
+		}
+	}
+
+	// 게임 종료 조건 확인
+	if (remainingPlayers <= 1)
+	{
+		// 게임 종료 로직 (예: 승리자 발표, 게임 리셋 등)
+		if (lastPlayer)
+		{
+			CLog::Log(*lastPlayer->GetName());
+		}
+
+		// 게임을 재시작하거나 종료하는 로직을 추가
+	}
+}
 
 void ABombGameMode::SetHolderController(ADefaultController* NewController)
 {

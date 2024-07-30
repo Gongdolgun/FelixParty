@@ -108,13 +108,15 @@ public:
 	FVector BombLocation;
 
 	UPROPERTY(Replicated)
-	float ElapseTime;
+	bool bBomb = false;
 
 	UPROPERTY(Replicated)
-	bool bBomb = false;
+	bool bIsDead = false;
 
 	bool bAttack = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* NewCountdownSound;
 private:
 	void EnableCollision();
 	void DisableCollision();
@@ -130,6 +132,9 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiDead();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiDestroyCharacter();
+
 	FTimerHandle CollisionTimerHandle;
 
 	FTimerHandle BombTimerHandle;
@@ -137,6 +142,9 @@ private:
 	FTimerHandle BombParticleHandle;
 
 	FTimerHandle DeadTimerHandle;
+
+public:
+	bool IsAlive() const { return !bIsDead; }
 
 };
 

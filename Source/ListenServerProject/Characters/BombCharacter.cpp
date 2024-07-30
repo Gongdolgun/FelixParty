@@ -185,10 +185,10 @@ void ABombCharacter::ServerSpawnBomb_Implementation(TSubclassOf<ABomb> BombSpawn
 			Bomb = spawnBomb;
 			bBomb = true; // 폭탄 소유 상태로 변경(서버)
 
-			Bomb->StartCountdown();
-
 			// 모든 클라이언트에게 폭탄 생성 정보를 전파
 			MultiSpawnBomb(spawnBomb);
+
+			ResetBomb();
 		}
 	}
 }
@@ -258,7 +258,16 @@ void ABombCharacter::OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor)
 
 					DisableCollision();
 
+					HitCharacter->Bomb->CountdownSound = NewCountdownSound;
+
+					HitCharacter->Bomb->StartCountdown();
+					//HitCharacter->Bomb->MultiStartCountdown();
+
+					// 흔들림 효과 초기화
+					HitCharacter->Bomb->ResetShakeEffect();
+
 					HitCharacter->ResetBomb();
+
 				}
 			}
 		}
@@ -273,7 +282,7 @@ void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABombCharacter, bBombReplicate);
 	DOREPLIFETIME(ABombCharacter, bBombReplicateMovement);
 	DOREPLIFETIME(ABombCharacter, BombLocation);
-	DOREPLIFETIME(ABombCharacter, ElapseTime);
+	DOREPLIFETIME(ABombCharacter, bIsDead);
 
 }
 
@@ -292,8 +301,6 @@ void ABombCharacter::BombExplosion()
 {
 	if (bBomb && Bomb)
 	{
-		CLog::Log(TEXT("Bomb exploded!"));
-
 		// 서버에서 Dead 함수를 직접 호출
 		if (HasAuthority())
 		{
@@ -323,8 +330,14 @@ void ABombCharacter::Dead()
 {
 	if (HasAuthority())
 	{
-		MultiDead();
+		bIsDead = true; // 사망 상태로 변경
+		MultiDead();    // 멀티플레이어에서 호출
 	}
+}
+
+void ABombCharacter::MultiDestroyCharacter_Implementation()
+{
+	Destroy();
 }
 
 void ABombCharacter::MultiDead_Implementation()
@@ -332,10 +345,22 @@ void ABombCharacter::MultiDead_Implementation()
 	if (Bomb)
 	{
 		Bomb->Explosion();
-		Bomb->MultiPlayCountdownSound();
 	}
 
 	PlayDead();
+
+	// 캐릭터를 비활성화하고 게임에서 제거
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	bBomb = false; // 폭탄 소유 상태 해제
+	Bomb = nullptr; // 폭탄 참조 해제
+
+	// GameMode에게 캐릭터가 죽었음을 알림
+	if (ABombGameMode* GameMode = Cast<ABombGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->OnPlayerDead(this);
+	}
+
 }
 
 
