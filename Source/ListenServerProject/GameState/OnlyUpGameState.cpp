@@ -1,7 +1,10 @@
 #include "GameState/OnlyUpGameState.h"
+#include "Global.h"
+#include "Net/UnrealNetwork.h"
 
 AOnlyUpGameState::AOnlyUpGameState()
 {
+	bReplicates = true;
 
 }
 
@@ -17,15 +20,21 @@ void AOnlyUpGameState::Tick(float DeltaSeconds)
 
 }
 
-void AOnlyUpGameState::SetTimer(float InTime)
+void AOnlyUpGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	Super::SetTimer(InTime);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-
+	DOREPLIFETIME(ThisClass, PlayerRanking);
 }
 
-void AOnlyUpGameState::SetScore()
+void AOnlyUpGameState::PlayerRank(APlayerController* InController)
 {
-	Super::SetScore();
+	PlayerRanking.AddUnique(InController);
 
+	
 }
+
+
+
+
+

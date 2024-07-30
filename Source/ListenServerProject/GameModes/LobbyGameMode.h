@@ -29,7 +29,7 @@ public:
 
 	// 기본 플레이어 데이터 설정
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FPlayerInGameData DefaultPlayerData;
+	FPlayerData DefaultPlayerData;
 
 public:
 	void UpdatePlayerMaterial();

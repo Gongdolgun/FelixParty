@@ -13,8 +13,9 @@ void UOnlineGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	
 }
 
-void UOnlineGameInstance::SavePlayerInfo_Implementation(const FString& PlayerID, FPlayerInGameData PlayerData)
+void UOnlineGameInstance::SavePlayerInfo_Implementation(const FString& PlayerID, FPlayerData PlayerData)
 {
 	if(PlayerDatas.Contains(PlayerID))
 		PlayerDatas[PlayerID] = PlayerData;
+	
 }
