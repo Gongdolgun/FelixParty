@@ -24,6 +24,7 @@ public:
 public:
 	FORCEINLINE bool GetAction() { return bInAction; }
 	FORCEINLINE bool IsIdleMode() const { return StateType == EStateType::Idle; }
+	FORCEINLINE bool IsActionMode() const { return StateType == EStateType::Action; }
 
 public:
 	void BeginAction();

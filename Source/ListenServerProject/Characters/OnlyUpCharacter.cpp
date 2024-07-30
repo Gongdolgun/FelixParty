@@ -1,8 +1,11 @@
 #include "Characters/OnlyUpCharacter.h"
+
+#include "EnhancedInputComponent.h"
 #include "Components/ParkourComponent.h"
 #include "Global.h"
 #include "MotionWarpingComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Components/MoveComponent.h"
 #include "Components/StateComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -47,8 +50,15 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 			Arrows[i]->ArrowColor = FColor::Green;
 			Arrows[i]->SetRelativeLocation(FVector(0.0f, 30.0f, 20.0f));
 			break;
+
+		case EParkourArrowType::Down:
+			Arrows[i]->ArrowColor = FColor::White;
+			Arrows[i]->SetRelativeLocation(FVector(0.0f, 0.0f, -20.0f));
+			break;
 		}
 	}
+
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
 void AOnlyUpCharacter::BeginPlay()
@@ -67,6 +77,12 @@ void AOnlyUpCharacter::Tick(float DeltaTime)
 void AOnlyUpCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, MoveComponent, &UMoveComponent::Run);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, MoveComponent, &UMoveComponent::Walk);
+	}
 }
 
 void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -86,12 +102,6 @@ void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 void AOnlyUpCharacter::Action()
 {
 	Super::Action();
-
-}
-
-void AOnlyUpCharacter::Jump()
-{
-	Super::Jump();
 
 }
 
@@ -137,7 +147,7 @@ void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2,
 	Target2.Rotation = GetActorRotation();
 	MotionWarpComponent->AddOrUpdateWarpTarget(Target2);
 	
-	PlayParkourMontage();
+	//PlayParkourMontage();
 	
 	FTimerHandle timerhandler;
 	GetWorld()->GetTimerManager().SetTimer(timerhandler, FTimerDelegate::CreateLambda([this]() {
@@ -145,21 +155,21 @@ void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2,
 		}), InMontageLength, false);
 }
 
-void AOnlyUpCharacter::PlayParkourMontage_NMC_Implementation()
+void AOnlyUpCharacter::PlayParkourMontage_NMC_Implementation(EParkourType ParkourType)
 {
-	PlayAnimMontage(ParkourComponent->ParkourMontage);
+	PlayAnimMontage(ParkourComponent->GetPlayParkourMontage(ParkourType));
 }
 
-void AOnlyUpCharacter::PlayParkourMontage_Server_Implementation()
+void AOnlyUpCharacter::PlayParkourMontage_Server_Implementation(EParkourType ParkourType)
 {
-	PlayParkourMontage_NMC();
+	PlayParkourMontage_NMC(ParkourType);
 }
 
-void AOnlyUpCharacter::PlayParkourMontage()
+void AOnlyUpCharacter::PlayParkourMontage(EParkourType ParkourType)
 {
 	if (IsLocallyControlled())
 	{
-		PlayParkourMontage_Server();
+		PlayParkourMontage_Server(ParkourType);
 	}
 
 

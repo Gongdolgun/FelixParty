@@ -41,16 +41,19 @@ private:
 
 protected:
 	virtual void Action() override;
-	virtual void Jump() override;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_Run;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Parkour")
 	float ZOffset_Hand = -60.0f;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
-	float ZOffset_Landing = 0.0f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Parkour")
+	float ZOffset_Landing = 30.0f;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Parkour")
 	float Montage_Length = 1.1f;
 
 	// 초기 추적 거리
@@ -66,13 +69,13 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void PlayParkourMontage_NMC();
+	void PlayParkourMontage_NMC(EParkourType ParkourType);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void PlayParkourMontage_Server();
+	void PlayParkourMontage_Server(EParkourType ParkourType);
 
 	UFUNCTION(BlueprintCallable)
-	void PlayParkourMontage();
+	void PlayParkourMontage(EParkourType ParkourType);
 
 public:
 	// 모드 변경

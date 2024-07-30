@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/Enums.h"
+#include "Misc/Structures.h"
 #include "ParkourComponent.generated.h"
 
 
@@ -34,19 +35,20 @@ public:
 	FVector GetParkourPos2();
 
 	UFUNCTION(BlueprintCallable)
-	void CorrectPlayerLocation();
+	void CorrectPlayerLocation(EParkourType ParkourType);
 
 	void SetCanParkour(bool bInCanParkour);
 
 public:
 	UFUNCTION(BlueprintCallable)
 	void ParkourTrace(
-		FVector& OutLocation1, FVector& OutLocation2,
+		FVector& OutLocation1, FVector& OutLocation2, EParkourType& ParkourType,
 		float InInitialTraceLength, float InSecondaryTraceZOffset,float InFallingHeightMultiplier);
+
+	void ParkourCheck(float InSecondaryTraceZOffset, float InFallingHeightMultiplier, EParkourType ParkourType);
 
 private:
 	void LineTrace(EParkourArrowType InType, float InInitialTraceLength);
-	;
 	bool Check_ObjectRotation();
 
 protected:
@@ -75,10 +77,13 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Replicated, Category = "Correct")
-	float AddPlayerLocationForward = -15.0f;
+	float AddPlayerLocationForward = 0.0f;
 
 	UPROPERTY(EditAnywhere, Replicated, Category = "Correct")
-	float AddPlayerLocationZ = -80.0f;
+	float AddPlayerLocationZ_High = -115.0f;
+
+	UPROPERTY(EditAnywhere, Replicated, Category = "Correct")
+	float AddPlayerLocationZ_Low;
 
 	UPROPERTY(EditAnywhere, Replicated, Category = "Parkour")
 	FVector falling_ImpactPoint = FVector::ZeroVector;
@@ -92,14 +97,27 @@ private:
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
-	UAnimMontage* ParkourMontage;
+	UAnimMontage* Hight_ParkourMontage;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
+	UAnimMontage* Low_ParkourMontage;
 
 	// Arrow Component
 	TArray<class UArrowComponent*> Arrows;
 	TArray<FHitResult> HitResults;
 
 	UPROPERTY(EditAnywhere, Category = " Parkour")
-	float AvailableFrontAngle = 30.0f;
+	float AvailableFrontAngle = 55.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
+	FParkourStruct HighStruct;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
+	FParkourStruct LowStruct;
+
+public:
+	UAnimMontage* GetPlayParkourMontage(EParkourType ParkourType);
+
 };
 
 

@@ -3,6 +3,7 @@
 #include "Global.h"
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UMoveComponent::UMoveComponent()
 {
@@ -48,6 +49,22 @@ void UMoveComponent::Look(const FInputActionValue& Value)
 	{
 		Owner->AddControllerYawInput(LookAxisVector.X);
 		Owner->AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void UMoveComponent::Run()
+{
+	if (Owner != nullptr && CanMove)
+	{
+		Owner->GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+	}
+}
+
+void UMoveComponent::Walk()
+{
+	if (Owner != nullptr && CanMove)
+	{
+		Owner->GetCharacterMovement()->MaxWalkSpeed = 250.0f;
 	}
 }
 
