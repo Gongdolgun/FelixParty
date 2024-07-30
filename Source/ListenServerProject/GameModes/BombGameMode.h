@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Characters/BombCharacter.h"
 #include "GameModes/DefaultGameMode.h"
 #include "BombGameMode.generated.h"
 
@@ -23,6 +24,10 @@ private:
 
 public:
 	void RandomSpawn();
+
+	void OnPlayerDead(ABombCharacter* DeadPlayer);
+
+	void CheckGameEnd();
 
 private:
 	TArray<class ADefaultController*> PlayerControllers;
