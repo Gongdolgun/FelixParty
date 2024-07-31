@@ -4,7 +4,7 @@
 #include "Components/TextBlock.h"
 #include "GameState/OnlyUpGameState.h"
 #include "Widgets/CharacterOverlay.h"
-#include "Widgets/OnlyUpHUD.h"
+#include "Widgets/DefaultHUD.h"
 
 AOnlyUpController::AOnlyUpController()
 {
@@ -15,7 +15,7 @@ void AOnlyUpController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OnlyUpHUD = Cast<AOnlyUpHUD>(GetHUD());
+	OnlyUpHUD = Cast<ADefaultHUD>(GetHUD());
 	OnlyUpGameState = Cast<ADefaultGameState>(UGameplayStatics::GetGameState(this));
 }
 

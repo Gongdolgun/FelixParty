@@ -30,7 +30,7 @@ protected:
 
 private:
 	UPROPERTY()
-	class AOnlyUpHUD* OnlyUpHUD;
+	class ADefaultHUD* OnlyUpHUD;
 
 	UPROPERTY()
 	class ADefaultGameState* OnlyUpGameState;

@@ -165,4 +165,32 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float MontageLength;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FVector OutLocation1;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FVector OutLocation2;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    EParkourType ParkourType;
+};
+
+USTRUCT(BlueprintType)
+struct FParkourRelativeStruct
+{
+    GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationForward = 0.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationZ_High = -115.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationZ_Low = 0.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationZ_Jump = -60.0f;
 };
