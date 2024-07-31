@@ -40,7 +40,7 @@ void ALobbyController::ChangeCharacter_Implementation(const TArray<UMaterialInte
 	{
 		if (GameInstance->PlayerDatas.Contains(GetPlayerState<APlayerState>()->GetPlayerName()))
 		{
-			FPlayerInGameData PlayerData = *GameInstance->PlayerDatas.Find(GetPlayerState<APlayerState>()->GetPlayerName());
+			FPlayerData PlayerData = *GameInstance->PlayerDatas.Find(GetPlayerState<APlayerState>()->GetPlayerName());
 
 			PlayerData.CharacterMaterials = Materials;
 
