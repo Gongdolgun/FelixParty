@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Global.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "SpawnActor/Wall.h"
 
@@ -50,6 +51,8 @@ ABombCharacter::ABombCharacter()
 	//Camera->bUsePawnControlRotation = false;
 
 	Bomb = nullptr;
+
+	LastWallSpawnTime = -WallCoolTime;
 
 }
 
@@ -153,6 +156,18 @@ void ABombCharacter::MultiPlayWall_Implementation()
 
 void ABombCharacter::ServerSpawnWall_Implementation()
 {
+	float currentTime = GetWorld()->GetTimeSeconds();
+
+	if (currentTime - LastWallSpawnTime < WallCoolTime)
+	{
+		return;
+	}
+
+	if (bBomb)
+	{
+		return;;
+	}
+
 	FActorSpawnParameters params;
 	params.Owner = this;
 
@@ -164,6 +179,8 @@ void ABombCharacter::ServerSpawnWall_Implementation()
 	if (WallClass)
 	{
 		this->GetWorld()->SpawnActor<AActor>(WallClass, transform, params);
+
+		LastWallSpawnTime = currentTime;
 	}
 }
 
@@ -187,6 +204,10 @@ void ABombCharacter::ServerSpawnBomb_Implementation(TSubclassOf<ABomb> BombSpawn
 
 			// 모든 클라이언트에게 폭탄 생성 정보를 전파
 			MultiSpawnBomb(spawnBomb);
+
+			GetCharacterMovement()->MaxWalkSpeed = GetCurrentMovementSpeed();
+
+			ResetBomb();
 		}
 	}
 }
@@ -199,6 +220,8 @@ void ABombCharacter::MultiSpawnBomb_Implementation(ABomb* SpawnBomb)
 		SpawnBomb->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform);
 		Bomb = SpawnBomb;
 		bBomb = true; // 폭탄 소유 상태로 변경(클라)
+
+		GetCharacterMovement()->MaxWalkSpeed = GetCurrentMovementSpeed();
 	}
 }
 
@@ -240,8 +263,12 @@ void ABombCharacter::OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor)
 					HitCharacter->Bomb = AttackerBomb;
 					HitCharacter->bBomb = true;
 
+					HitCharacter->GetCharacterMovement()->MaxWalkSpeed = HitCharacter->GetCurrentMovementSpeed();
+
 					AttackerCharacter->Bomb = nullptr;
 					AttackerCharacter->bBomb = false;
+
+					AttackerCharacter->GetCharacterMovement()->MaxWalkSpeed = AttackerCharacter->GetCurrentMovementSpeed();
 
 					// 폭탄 위치 및 상태 업데이트
 					if (ABombGameMode* gameMode = Cast<ABombGameMode>(GetWorld()->GetAuthGameMode()))
@@ -256,7 +283,16 @@ void ABombCharacter::OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor)
 
 					DisableCollision();
 
+					HitCharacter->Bomb->CountdownSound = NewCountdownSound;
+
+					HitCharacter->Bomb->StartCountdown();
+					//HitCharacter->Bomb->MultiStartCountdown();
+
+					// 흔들림 효과 초기화
+					HitCharacter->Bomb->ResetShakeEffect();
+
 					HitCharacter->ResetBomb();
+
 				}
 			}
 		}
@@ -271,6 +307,7 @@ void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABombCharacter, bBombReplicate);
 	DOREPLIFETIME(ABombCharacter, bBombReplicateMovement);
 	DOREPLIFETIME(ABombCharacter, BombLocation);
+	DOREPLIFETIME(ABombCharacter, bIsDead);
 
 }
 
@@ -289,12 +326,9 @@ void ABombCharacter::BombExplosion()
 {
 	if (bBomb && Bomb)
 	{
-		CLog::Log(TEXT("Bomb exploded!"));
-
 		// 서버에서 Dead 함수를 직접 호출
 		if (HasAuthority())
 		{
-
 			Dead();
 		}
 	}
@@ -321,8 +355,23 @@ void ABombCharacter::Dead()
 {
 	if (HasAuthority())
 	{
-		MultiDead();
+		bIsDead = true; // 사망 상태로 변경
+		MultiDead();    // 멀티플레이어에서 호출
 	}
+}
+
+float ABombCharacter::GetCurrentMovementSpeed() const
+{
+	if (bBomb)
+	{
+		return BaseMovementSpeed * BombMovementSpeed;
+	}
+	return BaseMovementSpeed;
+}
+
+void ABombCharacter::MultiDestroyCharacter_Implementation()
+{
+	Destroy();
 }
 
 void ABombCharacter::MultiDead_Implementation()
@@ -333,6 +382,19 @@ void ABombCharacter::MultiDead_Implementation()
 	}
 
 	PlayDead();
+
+	// 캐릭터를 비활성화하고 게임에서 제거
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	bBomb = false; // 폭탄 소유 상태 해제
+	Bomb = nullptr; // 폭탄 참조 해제
+
+	// GameMode에게 캐릭터가 죽었음을 알림
+	if (ABombGameMode* GameMode = Cast<ABombGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->OnPlayerDead(this);
+	}
+
 }
 
 
