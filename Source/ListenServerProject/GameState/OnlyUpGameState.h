@@ -23,6 +23,7 @@ private:
 	TArray<class APlayerController*> PlayerRanking;
 
 public:
-	void PlayerRank(APlayerController* InController);
+	int32 PlayerRank(APlayerController* InController);
+	const TArray<int32> RankScores = { 50, 30, 20, 10 };
 
 };

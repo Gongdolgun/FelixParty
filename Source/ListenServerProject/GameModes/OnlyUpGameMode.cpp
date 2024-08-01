@@ -1,7 +1,7 @@
 #include "GameModes/OnlyUpGameMode.h"
 #include "Global.h"
 #include "Net/UnrealNetwork.h"
-#include "Widgets/OnlyUpHUD.h"
+#include "Widgets/DefaultHUD.h"
 
 AOnlyUpGameMode::AOnlyUpGameMode()
 {

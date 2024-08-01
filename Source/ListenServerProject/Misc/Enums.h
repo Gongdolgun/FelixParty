@@ -48,7 +48,7 @@ enum class EParkourArrowType : uint8
 UENUM(BlueprintType)
 enum class EParkourType : uint8
 {
-	High = 0, Low, Max
+	High = 0, Low, Jump, Max
 };
 
 UENUM(BlueprintType)

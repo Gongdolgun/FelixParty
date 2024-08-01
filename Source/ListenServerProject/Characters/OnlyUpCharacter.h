@@ -65,17 +65,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
 	float Falling_Height_Multiplier = 0.5f;
-	
-
-public:
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void PlayParkourMontage_NMC(EParkourType ParkourType);
-
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void PlayParkourMontage_Server(EParkourType ParkourType);
-
-	UFUNCTION(BlueprintCallable)
-	void PlayParkourMontage(EParkourType ParkourType);
 
 public:
 	// 모드 변경
@@ -88,7 +77,25 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetModeAndCollision(EMovementMode InMovementMode, bool InCollision);
 
+	void Jump() override;
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	void PlayParkour(FVector InParkourPos1, FVector InParkourPos2, float InZOffsetHand, float InZOffsetLanding, float InMontageLength);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Walk_NMC();
+
+	UFUNCTION(Server, Reliable)
+	void Walk_Server();
+
+	void Walk();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Run_NMC();
+
+	UFUNCTION(Server, Reliable)
+	void Run_Server();
+
+	void Run();
 };

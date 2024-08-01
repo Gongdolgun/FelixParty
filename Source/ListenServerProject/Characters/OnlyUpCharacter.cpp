@@ -23,6 +23,7 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 	ParkourComponent->SetIsReplicated(true);
 	StateComponent->SetIsReplicated(true);
 	MotionWarpComponent->SetIsReplicated(true);
+	MoveComponent->SetIsReplicated(true);
 
 	Helpers::CreateComponent<USceneComponent>(this, &ArrowGroup, "ArrowGroup", GetCapsuleComponent());
 	Arrows.SetNum((int32)EParkourArrowType::Max);
@@ -58,7 +59,7 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 		}
 	}
 
-	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 250.0f;
 }
 
 void AOnlyUpCharacter::BeginPlay()
@@ -80,8 +81,8 @@ void AOnlyUpCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, MoveComponent, &UMoveComponent::Run);
-		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, MoveComponent, &UMoveComponent::Walk);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, this, &ThisClass::Run);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, this, &ThisClass::Walk);
 	}
 }
 
@@ -125,8 +126,17 @@ void AOnlyUpCharacter::SetModeAndCollision(EMovementMode InMovementMode, bool In
 	}
 }
 
+void AOnlyUpCharacter::Jump()
+{
+	if (ParkourComponent && ParkourComponent->GetCanParkour() == false)
+	{
+		//MoveComponent->Jump();
+		Super::Jump();
+	}
+}
+
 void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2, float InZOffsetHand,
-	float InZOffsetLanding, float InMontageLength)
+                                   float InZOffsetLanding, float InMontageLength)
 {
 	SetModeAndCollision(EMovementMode::MOVE_Flying, false);
 	
@@ -155,24 +165,32 @@ void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2,
 		}), InMontageLength, false);
 }
 
-void AOnlyUpCharacter::PlayParkourMontage_NMC_Implementation(EParkourType ParkourType)
+void AOnlyUpCharacter::Walk_NMC_Implementation()
 {
-	PlayAnimMontage(ParkourComponent->GetPlayParkourMontage(ParkourType));
+	GetCharacterMovement()->MaxWalkSpeed = 250.0f;
 }
 
-void AOnlyUpCharacter::PlayParkourMontage_Server_Implementation(EParkourType ParkourType)
+void AOnlyUpCharacter::Walk_Server_Implementation()
 {
-	PlayParkourMontage_NMC(ParkourType);
+	Walk_NMC();
 }
 
-void AOnlyUpCharacter::PlayParkourMontage(EParkourType ParkourType)
+void AOnlyUpCharacter::Walk()
 {
-	if (IsLocallyControlled())
-	{
-		PlayParkourMontage_Server(ParkourType);
-	}
-
-
+	Walk_Server();
 }
 
+void AOnlyUpCharacter::Run_NMC_Implementation()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+}
 
+void AOnlyUpCharacter::Run_Server_Implementation()
+{
+	Run_NMC();
+}
+
+void AOnlyUpCharacter::Run()
+{
+	Run_Server();
+}

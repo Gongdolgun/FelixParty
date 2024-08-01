@@ -35,17 +35,15 @@ public:
 	FVector GetParkourPos2();
 
 	UFUNCTION(BlueprintCallable)
-	void CorrectPlayerLocation(EParkourType ParkourType);
+	void CorrectPlayerLocation(EParkourType InParkourType);
 
 	void SetCanParkour(bool bInCanParkour);
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ParkourTrace(
-		FVector& OutLocation1, FVector& OutLocation2, EParkourType& ParkourType,
-		float InInitialTraceLength, float InSecondaryTraceZOffset,float InFallingHeightMultiplier);
+	void ParkourTrace(FParkourStruct InParkourLocation,float InInitialTraceLength, float InSecondaryTraceZOffset,float InFallingHeightMultiplier);
 
-	void ParkourCheck(float InSecondaryTraceZOffset, float InFallingHeightMultiplier, EParkourType ParkourType);
+	void ParkourCheck(float InSecondaryTraceZOffset, float InFallingHeightMultiplier, EParkourType InParkourType);
 
 private:
 	void LineTrace(EParkourArrowType InType, float InInitialTraceLength);
@@ -77,13 +75,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Replicated, Category = "Correct")
-	float AddPlayerLocationForward = 0.0f;
-
-	UPROPERTY(EditAnywhere, Replicated, Category = "Correct")
-	float AddPlayerLocationZ_High = -115.0f;
-
-	UPROPERTY(EditAnywhere, Replicated, Category = "Correct")
-	float AddPlayerLocationZ_Low;
+	FParkourRelativeStruct ParkourRelative;
 
 	UPROPERTY(EditAnywhere, Replicated, Category = "Parkour")
 	FVector falling_ImpactPoint = FVector::ZeroVector;
@@ -93,14 +85,17 @@ private:
 
 	// TraceTypeQuery1 = Visibility, 3 = Parkour
 	UPROPERTY(EditAnywhere, Category = "Debug")
-	TEnumAsByte<ETraceTypeQuery> TraceType = TraceTypeQuery3;
+	TEnumAsByte<ETraceTypeQuery> TraceType = TraceTypeQuery1;
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
-	UAnimMontage* Hight_ParkourMontage;
+	UAnimMontage* High_ParkourMontage;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
 	UAnimMontage* Low_ParkourMontage;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
+	UAnimMontage* Jump_ParkourMontage;
 
 	// Arrow Component
 	TArray<class UArrowComponent*> Arrows;
@@ -113,11 +108,26 @@ public:
 	FParkourStruct HighStruct;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
+	FParkourStruct JumpStruct;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
 	FParkourStruct LowStruct;
 
-public:
-	UAnimMontage* GetPlayParkourMontage(EParkourType ParkourType);
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Parkour")
+	FParkourStruct OutParkourStruct;
 
+public:
+	// Play Montage
+	UFUNCTION(NetMulticast, Reliable)
+	void PlayParkourMontage_NMC(EParkourType ParkourType);
+
+	UFUNCTION(Server, Reliable)
+	void PlayParkourMontage_Server(EParkourType ParkourType);
+
+	UFUNCTION(BlueprintCallable)
+	void PlayParkourMontage(EParkourType ParkourType);
+
+	
 };
 
 

@@ -52,22 +52,6 @@ void UMoveComponent::Look(const FInputActionValue& Value)
 	}
 }
 
-void UMoveComponent::Run()
-{
-	if (Owner != nullptr && CanMove)
-	{
-		Owner->GetCharacterMovement()->MaxWalkSpeed = 500.0f;
-	}
-}
-
-void UMoveComponent::Walk()
-{
-	if (Owner != nullptr && CanMove)
-	{
-		Owner->GetCharacterMovement()->MaxWalkSpeed = 250.0f;
-	}
-}
-
 void UMoveComponent::Jump()
 {
 	if(Owner != nullptr && CanMove)
