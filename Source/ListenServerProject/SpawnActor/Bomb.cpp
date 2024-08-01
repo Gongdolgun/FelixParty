@@ -26,7 +26,7 @@ ABomb::ABomb()
 	Sphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	Sphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
-	CountDownWidget->SetWidgetSpace(EWidgetSpace::World); // 월드 공간으로 설정
+	CountDownWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
 	TotalCountdownTime = 10.0f;
 	ElapseTime = 0.0f;
@@ -65,8 +65,6 @@ void ABomb::BeginPlay()
 			}
 
 			CountDownWidget->AttachToComponent(Sphere, FAttachmentTransformRules::KeepRelativeTransform);
-			CountDownWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
-
 			CountDownWidget->SetDrawAtDesiredSize(true);
 		}
 	}
@@ -82,13 +80,6 @@ void ABomb::Tick(float DeltaTime)
 		UpDateSoundAndColor(DeltaTime);
 		UpdateShakeEffect(DeltaTime);
 		UpdateCountdownWidget(DeltaTime);
-	}
-
-	if (CountDownWidget)
-	{
-		// Bomb의 현재 위치를 기준으로 위젯의 위치를 업데이트
-		FVector NewWidgetLocation = GetActorLocation() + FVector(0.0f, 0.0f, 50.0f); // Z축을 고정
-		CountDownWidget->SetWorldLocation(NewWidgetLocation);
 	}
 }
 

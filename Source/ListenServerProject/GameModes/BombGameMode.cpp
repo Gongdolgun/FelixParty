@@ -7,6 +7,7 @@
 #include "SpawnActor/Bomb.h"
 #include "Utilites/CLog.h"
 #include "Controllers/BombController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ABombGameMode::ABombGameMode()
 {
@@ -32,9 +33,14 @@ void ABombGameMode::OnPostLogin(AController* NewPlayer)
 	{
 		PlayerControllers.Add(Controller);
 
-		GetWorldTimerManager().SetTimer(SpawnCharacterTimerHandle, this, &ABombGameMode::RandomSpawn, 3.0f, false);
-	}
+		//GetWorldTimerManager().SetTimer(SpawnCharacterTimerHandle, this, &ABombGameMode::RandomSpawn, 3.0f, false);
 
+		// 모든 플레이어가 로그인한 후 10초 동안 대기
+        if (PlayerControllers.Num() == 1) // 첫 번째 플레이어가 로그인한 경우
+        {
+            GetWorldTimerManager().SetTimer(GameStartTimerHandle, this, &ABombGameMode::StartGame, 10.0f, false);
+        }
+	}
 }
 
 void ABombGameMode::RandomSpawn()
@@ -73,6 +79,8 @@ void ABombGameMode::RandomSpawn()
 				if (character && character != newBombOwner)
 				{
 					character->Bomb = nullptr;
+					character->bBomb = false;
+					character->GetCharacterMovement()->MaxWalkSpeed = character->GetCurrentMovementSpeed();
 				}
 			}
 		}
@@ -132,6 +140,35 @@ void ABombGameMode::CheckGameEnd()
 		}
 
 		// 게임을 재시작하거나 종료하는 로직을 추가
+	}
+}
+
+void ABombGameMode::StartGame()
+{
+	ShowMessage(TEXT("게임이 시작됩니다. 10초 후 폭탄이 랜덤으로 소유자에게 배정됩니다."));
+
+	// 게임 시작 로직
+	GetWorldTimerManager().SetTimer(SpawnCharacterTimerHandle, this, &ABombGameMode::RandomSpawn, 3.0f, false);
+}
+
+void ABombGameMode::ShowMessage(const FString& Message)
+{
+	for (AController* Controller : PlayerControllers)
+	{
+		if (Controller)
+		{
+			ADefaultController* PlayerController = Cast<ADefaultController>(Controller);
+			if (PlayerController)
+			{
+				// UI 위젯 생성 및 메시지 표시
+				UUserWidget* MessageWidget = CreateWidget<UUserWidget>(PlayerController->GetWorld(), MessageWidgetClass);
+				if (MessageWidget)
+				{
+					MessageWidget->AddToViewport();
+					// 위젯에 메시지를 전달하는 방법에 따라 추가 로직
+				}
+			}
+		}
 	}
 }
 

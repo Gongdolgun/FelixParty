@@ -22,12 +22,19 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABomb> BombClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> MessageWidgetClass;
+
 public:
 	void RandomSpawn();
 
 	void OnPlayerDead(ABombCharacter* DeadPlayer);
 
 	void CheckGameEnd();
+
+	void StartGame();
+
+	void ShowMessage(const FString& Message);
 
 private:
 	TArray<class ADefaultController*> PlayerControllers;
@@ -42,5 +49,7 @@ public:
 	FTimerHandle BombTimerHandle;
 
 	FTimerHandle SpawnCharacterTimerHandle;
+
+	FTimerHandle GameStartTimerHandle;
 
 };

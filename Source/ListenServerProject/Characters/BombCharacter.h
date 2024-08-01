@@ -146,5 +146,19 @@ private:
 public:
 	bool IsAlive() const { return !bIsDead; }
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float BaseMovementSpeed = 600.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float BombMovementSpeed = 1.5f;
+
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentMovementSpeed() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CoolTime")
+	float WallCoolTime = 10.0f; 
+
+	float LastWallSpawnTime;
+
 };
 

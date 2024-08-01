@@ -102,6 +102,7 @@ public:
 	UPROPERTY(Replicated)
 	float ElapseTime;
 
+	UPROPERTY(EditAnywhere)
 	UWidgetComponent* CountDownWidget;
 
 	void UpdateCountdownWidget(float DeltaTime);
