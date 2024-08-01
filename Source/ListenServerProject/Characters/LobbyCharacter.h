@@ -45,14 +45,20 @@ private:
 	UInputAction* IA_Jump;
 
 public:
-	void ChangeMaterial();
+	void ChangeMaterial(FColor InColor);
 
 	UFUNCTION(Server, Reliable)
-	void ChangeMaterial_Server();
+	void ChangeMaterial_Server(FColor InColor);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void ChangeMaterial_NMC(const TArray<UMaterialInterface*>& InMaterials);
+	void ChangeMaterial_NMC(FColor InColor);
 
 	UFUNCTION(Server, Reliable)
 	void UpdatePlayer_Server();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void AddSelectedColor(const FString& InColor);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void RemoveSelectedColor(const FString& InColor);
 };

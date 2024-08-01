@@ -31,7 +31,6 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 		if(GameInstance->PlayerDatas.Contains(PlayerID))
 		{
 			GameInstance->PlayerDatas[PlayerID].PlayerName = FName(*PlayerID);
-			GameInstance->PlayerDatas[PlayerID].UniqueID = PlayerUniqueID;
 		}
 	}
 
@@ -40,16 +39,11 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 	{
 		ConnectedPlayers.Add(Controller);
 
-		if(Controller->IsLocalController())
-			Controller->PlayerInfo.IsReady = true;
-
-		else
-			Controller->PlayerInfo.IsReady = false;
+		Controller->PlayerInfo.IsReady = Controller->IsLocalController();
 
 		if (GameInstance->PlayerDatas.Contains(Controller->GetPlayerState<APlayerState>()->GetPlayerName()))
 		{
 			Controller->PlayerInfo.PlayerName = GameInstance->PlayerDatas[Controller->GetPlayerState<APlayerState>()->GetPlayerName()].PlayerName;
-			Controller->PlayerInfo.UniqueID = GameInstance->PlayerDatas[Controller->GetPlayerState<APlayerState>()->GetPlayerName()].UniqueID;
 		}
 
 		PlayerBaseInfos.Add(Controller->PlayerInfo);
@@ -76,7 +70,18 @@ void ALobbyGameMode::UpdatePlayerMaterial()
 {
 	for (auto Player : ConnectedPlayers)
 	{
-		if (ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(Player->GetPawn()))
-			LobbyCharacter->ChangeMaterial();
+		UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+		if(GameInstance != nullptr)
+		{
+			FString PlayerID = Player->GetPlayerState<APlayerState>()->GetPlayerName();
+
+			if(GameInstance->PlayerDatas.Contains(PlayerID))
+			{
+				if (ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(Player->GetPawn()))
+				{
+					LobbyCharacter->ChangeMaterial(GameInstance->PlayerDatas[PlayerID].PlayerColor);
+				}
+			}
+		}
 	}
 }

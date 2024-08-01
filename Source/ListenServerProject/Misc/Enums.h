@@ -50,3 +50,9 @@ enum class EParkourType : uint8
 {
 	High = 0, Low, Max
 };
+
+UENUM(BlueprintType)
+enum class EPlayerColors : uint8
+{
+	Red = 0, Black, White
+};

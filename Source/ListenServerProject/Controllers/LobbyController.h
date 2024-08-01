@@ -17,7 +17,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void ChangeCharacter(const TArray<UMaterialInterface*>& Materials);
+	void ChangeCharacter(FColor MaterialColor);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdatePlayerList(const TArray<FPlayerBaseInfo>& PlayerBaseInfos);

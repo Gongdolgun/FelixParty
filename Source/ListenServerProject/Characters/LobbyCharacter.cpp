@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Controllers/LobbyController.h"
 #include "GameModes/LobbyGameMode.h"
+#include "GameState/LobbyGameState.h"
 
 ALobbyCharacter::ALobbyCharacter()
 {
@@ -38,7 +39,7 @@ void ALobbyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UpdatePlayer_Server();
+	//UpdatePlayer_Server();
 }
 
 void ALobbyCharacter::Tick(float DeltaTime)
@@ -61,14 +62,13 @@ void ALobbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	}
 }
 
-void ALobbyCharacter::ChangeMaterial()
+void ALobbyCharacter::ChangeMaterial(FColor InColor)
 {
 	if (HasAuthority())
-		if(ALobbyController* LobbyController = Cast<ALobbyController>(Controller))
-			ChangeMaterial_NMC(LobbyController->MyMaterials);
+		ChangeMaterial_NMC(InColor);
 
 	else
-		ChangeMaterial_Server();
+		ChangeMaterial_Server(InColor);
 }
 
 void ALobbyCharacter::UpdatePlayer_Server_Implementation()
@@ -77,19 +77,52 @@ void ALobbyCharacter::UpdatePlayer_Server_Implementation()
 		LobbyGameMode->UpdatePlayerMaterial();
 }
 
-void ALobbyCharacter::ChangeMaterial_Server_Implementation()
+void ALobbyCharacter::ChangeMaterial_Server_Implementation(FColor InColor)
 {
-	if (ALobbyController* LobbyController = Cast<ALobbyController>(Controller))
-		ChangeMaterial_NMC(LobbyController->MyMaterials);
+	ChangeMaterial_NMC(InColor);
 }
 
-void ALobbyCharacter::ChangeMaterial_NMC_Implementation(const TArray<UMaterialInterface*>& InMaterials)
+void ALobbyCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 {
-	if (InMaterials.Num() > 0)
+	int32 MaterialCount = GetMesh()->GetNumMaterials();
+	for(int32 i = 0; i < MaterialCount; i++)
 	{
-		for (int i = 0; i < InMaterials.Num(); i++)
+		UMaterialInstanceDynamic* MaterialInstance = Cast<UMaterialInstanceDynamic>(GetMesh()->GetMaterial(i));
+		if (!MaterialInstance)
+			MaterialInstance = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+
+		if (MaterialInstance)
 		{
-			GetMesh()->SetMaterial(i, InMaterials[i]);
+			if(MaterialInstance)
+				MaterialInstance->SetVectorParameterValue(FName("Tint"), InColor);
+		}
+	}
+}
+
+void ALobbyCharacter::AddSelectedColor_Implementation(const FString& InColor)
+{
+	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
+	if (LobbyGameMode)
+	{
+		ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(LobbyGameMode->GetGameState<ALobbyGameState>());
+		if(LobbyGameState)
+		{
+			if (!LobbyGameState->SelectedColors.Contains(InColor))
+				LobbyGameState->SelectedColors.Add(InColor);
+		}
+	}
+}
+
+void ALobbyCharacter::RemoveSelectedColor_Implementation(const FString& InColor)
+{
+	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
+	if (LobbyGameMode)
+	{
+		ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(LobbyGameMode->GetGameState<ALobbyGameState>());
+		if (LobbyGameState)
+		{
+			if (LobbyGameState->SelectedColors.Contains(InColor))
+				LobbyGameState->SelectedColors.Remove(InColor);
 		}
 	}
 }

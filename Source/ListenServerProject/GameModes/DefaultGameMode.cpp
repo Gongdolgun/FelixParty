@@ -27,14 +27,8 @@ void ADefaultGameMode::BeginPlay()
 		for (auto It = GameInstance->PlayerDatas.CreateConstIterator(); It; ++It)
 		{
 			FString PlayerName = It.Value().PlayerName.ToString();
-			FBPUniqueNetId PlayerUniqueID = It.Value().UniqueID;
-			DefaultGameState->AddPlayerData(PlayerName, 0, PlayerUniqueID);
-			/*FString PlayerName = Controller->GetPlayerState<APlayerState>()->GetPlayerName();
-			if (GameInstance->PlayerDatas.Contains(PlayerName))
-			{
-				FBPUniqueNetId PlayerUniqueID = GameInstance->PlayerDatas.Find(PlayerName)->UniqueID;
-				DefaultGameState->AddPlayerData(PlayerName, 0, PlayerUniqueID);
-			}*/
+			FColor PlayerColor = It.Value().PlayerColor;
+			DefaultGameState->AddPlayerData(PlayerName, 0, PlayerColor);
 		}
 	}
 }
@@ -43,7 +37,18 @@ void ADefaultGameMode::UpdatePlayer()
 {
 	for (auto Player : ConnectedPlayers)
 	{
-		if (ADefaultCharacter* DefaultCharacter = Cast<ADefaultCharacter>(Player->GetPawn()))
-			DefaultCharacter->ChangeMaterial();
+		UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+		if (GameInstance != nullptr)
+		{
+			FString PlayerID = Player->GetPlayerState<APlayerState>()->GetPlayerName();
+
+			if (GameInstance->PlayerDatas.Contains(PlayerID))
+			{
+				if (ADefaultCharacter* DefaultCharacter = Cast<ADefaultCharacter>(Player->GetPawn()))
+				{
+					DefaultCharacter->ChangeMaterial(GameInstance->PlayerDatas[PlayerID].PlayerColor);
+				}
+			}
+		}
 	}
 }

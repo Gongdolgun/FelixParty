@@ -66,11 +66,11 @@ public:
 	void UpdatePlayer_Server();
 
 	UFUNCTION(Server, Reliable)
-	void ChangeMaterial_Server();
+	void ChangeMaterial_Server(FColor InColor);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void ChangeMaterial_NMC(const TArray<UMaterialInterface*>& InMaterials);
+	void ChangeMaterial_NMC(FColor InColor);
 
-	void ChangeMaterial();
+	void ChangeMaterial(FColor InColor);
 
 };

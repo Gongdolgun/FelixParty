@@ -122,10 +122,10 @@ void ADefaultGameState::UpdatePlayerScore(const FString& PlayerName, int32 Score
 			PlayerData.Score += Score;
 }
 
-void ADefaultGameState::AddPlayerData(const FString& PlayerName, int32 Score, FBPUniqueNetId UniqueID)
+void ADefaultGameState::AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor)
 {
 	// 새 플레이어 추가
-	PlayerDatas.Add(FPlayerInGameData(PlayerName, Score, UniqueID));
+	PlayerDatas.Add(FPlayerInGameData(PlayerName, Score, PlayerColor));
 }
 
 FPlayerInGameData ADefaultGameState::GetPlayerData(FString PlayerName)

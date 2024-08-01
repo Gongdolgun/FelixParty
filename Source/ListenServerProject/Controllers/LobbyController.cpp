@@ -32,7 +32,7 @@ void ALobbyController::SetReadyStatus_Implementation()
 	}
 }
 
-void ALobbyController::ChangeCharacter_Implementation(const TArray<UMaterialInterface*>& Materials)
+void ALobbyController::ChangeCharacter_Implementation(FColor MaterialColor)
 {
 	// Game Instance의 Player Data 편집 요청 로그 작성
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
@@ -41,14 +41,19 @@ void ALobbyController::ChangeCharacter_Implementation(const TArray<UMaterialInte
 		if (GameInstance->PlayerDatas.Contains(GetPlayerState<APlayerState>()->GetPlayerName()))
 		{
 			FPlayerData PlayerData = *GameInstance->PlayerDatas.Find(GetPlayerState<APlayerState>()->GetPlayerName());
-
-			PlayerData.CharacterMaterials = Materials;
+			PlayerData.PlayerColor = MaterialColor;
 
 			GameInstance->SavePlayerInfo(GetPlayerState<APlayerState>()->GetPlayerName() , PlayerData);
 		}
 	}
 
-	MyMaterials = Materials;
-	if(ALobbyCharacter* MyCharacter = Cast<ALobbyCharacter>(GetPawn()))
-		MyCharacter->ChangeMaterial();
+	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
+	if(LobbyGameMode != nullptr)
+	{
+		LobbyGameMode->UpdatePlayerMaterial();
+	}
+
+	// MyMaterials = Materials;
+	/*if(ALobbyCharacter* MyCharacter = Cast<ALobbyCharacter>(GetPawn()))
+		MyCharacter->ChangeMaterial(MaterialColor);*/
 }
