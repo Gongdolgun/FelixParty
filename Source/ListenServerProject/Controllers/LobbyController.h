@@ -14,6 +14,9 @@ class LISTENSERVERPROJECT_API ALobbyController : public APlayerController
 public:
 	ALobbyController();
 	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* InPawn) override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
@@ -25,6 +28,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetReadyStatus();
+
+	// Camera
+	UFUNCTION(BlueprintCallable)
+	void SetViewCamera();
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> LobbyCamera_Class;
+
+	UPROPERTY(Replicated)
+	AActor* LobbyCamera;
 
 public:
 	FPlayerBaseInfo PlayerInfo;

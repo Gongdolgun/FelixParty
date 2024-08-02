@@ -7,7 +7,17 @@
 #include "Global.h"
 #include "OnlineSubsystem.h"
 #include "Characters/LobbyCharacter.h"
+#include "Actors/LobbyPlatforms.h"
 #include "Interfaces/OnlineFriendsInterface.h"
+#include "Kismet/KismetArrayLibrary.h"
+
+void ALobbyGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//SetUpPlatforms();
+	
+}
 
 void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 {
@@ -53,6 +63,24 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 			Player->UpdatePlayerList(PlayerBaseInfos);
 		}
 	}
+
+	// Looby Spawn
+	//UpdatePlayersOnPlatforms();
+	
+}
+
+void ALobbyGameMode::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+
+	ALobbyController* lobbyController = Cast<ALobbyController>(Exiting);
+
+	if (lobbyController)
+	{
+		ConnectedPlayers.Remove(lobbyController);
+	}
+
+	//UpdatePlayersOnPlatforms();
 }
 
 void ALobbyGameMode::UpdatePlayerLists()
@@ -64,6 +92,84 @@ void ALobbyGameMode::UpdatePlayerLists()
 
 	for (auto Player : ConnectedPlayers)
 		Player->UpdatePlayerList(PlayerBaseInfos);
+}
+
+void ALobbyGameMode::SetUpPlatforms()
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), Platforms_Class, OutActors);
+
+	for (int32 i = 0; i < OutActors.Num(); i++)
+	{
+		FName nameTag = FName(*FString::Printf(TEXT("%d"), i));
+		//CLog::Print(i, -1, 10, FColor::Red);
+		CLog::Print(nameTag.ToString());
+		TArray<AActor*> PlatformOutActors;
+		UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), Platforms_Class, nameTag, PlatformOutActors);
+		LobbyPlatforms.Add(Cast<ALobbyPlatforms>(PlatformOutActors[0]));
+
+		CLog::Print(LobbyPlatforms[0]);
+	}
+
+	bPlatformSetUpDone = true;
+}
+
+void ALobbyGameMode::UpdatePlayersOnPlatforms()
+{
+	bool bLoopPCAllReadyAdded = false;
+	PlatformsSetUpIsDone();
+
+	for (ALobbyController* Players : ConnectedPlayers)
+	{
+		bLoopPCAllReadyAdded = false;
+
+		for (ALobbyPlatforms* Platforms : LobbyPlatforms)
+		{
+			if (Platforms->LobbyController == Players)
+			{
+				bLoopPCAllReadyAdded = true;
+
+				break;
+			}
+		}
+
+		// Completed
+		if (bLoopPCAllReadyAdded == false)
+		{
+			for (ALobbyPlatforms* Platforms : LobbyPlatforms)
+			{
+				if (Platforms->LobbyController == nullptr)
+				{
+					Platforms->SpawnCharacter(Players);
+
+					break;
+				}
+			}
+		}
+		
+	}
+
+	// Completed
+	for (auto Platforms : LobbyPlatforms)
+	{
+		if (ConnectedPlayers.Contains(Platforms->LobbyController) == false)
+		{
+			Platforms->ClearCharacter();
+		}
+	}
+
+}
+
+void ALobbyGameMode::PlatformsSetUpIsDone()
+{
+	if (bPlatformSetUpDone == false)
+	{
+		FTimerHandle DelayHandle;
+		GetWorld()->GetTimerManager().SetTimer(
+			DelayHandle, this, &ThisClass::PlatformsSetUpIsDone, 0.2f, false);
+	}
+
+	return;
 }
 
 void ALobbyGameMode::UpdatePlayerMaterial()
