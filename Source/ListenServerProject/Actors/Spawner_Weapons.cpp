@@ -35,22 +35,22 @@ void ASpawner_Weapons::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCo
 	}
 }
 
-void ASpawner_Weapons::SpawnActor()
-{
-	if (SpawnActorClass.Num() > 0)
-	{
-		int32 RandomInteger = UKismetMathLibrary::RandomIntegerInRange(0, SpawnActorClass.Num() - 1);
-
-		if (SpawnActorClass[RandomInteger] != nullptr)
-		{
-			FVector Location = GetActorLocation() + SpawnLocation;
-
-			FActorSpawnParameters params;
-			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-			SpawnedActor = GetWorld()->SpawnActor<AActor>(SpawnActorClass[RandomInteger], Location, FRotator::ZeroRotator, params);
-
-			CreateRotatingMovementComponent();
-		}
-	}
-}
+//void ASpawner_Weapons::SpawnActor()
+//{
+//	if (SpawnActorClass.Num() > 0)
+//	{
+//		RandomInteger = UKismetMathLibrary::RandomIntegerInRange(0, SpawnActorClass.Num() - 1);
+//
+//		if (SpawnActorClass[RandomInteger] != nullptr)
+//		{
+//			FVector Location = GetActorLocation() + SpawnLocation;
+//
+//			FActorSpawnParameters params;
+//			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+//
+//			SpawnedActor = GetWorld()->SpawnActor<AActor>(SpawnActorClass[RandomInteger], Location, FRotator::ZeroRotator, params);
+//
+//			CreateRotatingMovementComponent();
+//		}
+//	}
+//}

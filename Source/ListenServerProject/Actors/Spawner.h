@@ -14,6 +14,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
@@ -40,12 +41,21 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	FRotator RotateRate = FRotator(0, 180, 0);
 
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	int32 RandomInteger = 0;
+
 protected:
 	AActor* SpawnedActor;
 
 public:
 	UFUNCTION()
 	virtual void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(Server, Reliable)
+	virtual void SpawnActor();
+
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void SpawnActor_NMC(int InNumber);
 
 protected:
 	virtual void CreateRotatingMovementComponent();

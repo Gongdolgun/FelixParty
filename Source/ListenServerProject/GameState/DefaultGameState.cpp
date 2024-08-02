@@ -1,6 +1,7 @@
 #include "DefaultGameState.h"
 #include "Global.h"
 #include "Net/UnrealNetwork.h"
+#include "Algo/Sort.h"
 
 ADefaultGameState::ADefaultGameState()
 {
@@ -84,17 +85,15 @@ void ADefaultGameState::SetGameState(EGameStateType InGameStateType)
 		{
 		case EGameStateType::GameStart:
 			ChangeGameType(EGameStateType::GameStart);
-			GameStartTime = 5.0f;
-
 			break;
+
 		case EGameStateType::GamePlay:
 			ChangeGameType(EGameStateType::GamePlay);
-			GameMatchTime = 10.0f;
-
 			break;
+
 		case EGameStateType::GameOver:
+			CalRank();
 			ChangeGameType(EGameStateType::GameOver);
-			GameOverTime = 5.0f;
 			break;
 		}
 		
@@ -113,6 +112,14 @@ void ADefaultGameState::ChangeGameType(EGameStateType InGameType)
 
 	if (OnGameStateTypeChanged.IsBound())
 		OnGameStateTypeChanged.Broadcast(prevGameType, GameStateType);
+}
+
+void ADefaultGameState::CalRank()
+{
+	Algo::Sort(PlayerDatas, [](const FPlayerInGameData& A, const FPlayerInGameData& B)
+	{
+		return A.Score > B.Score;
+	});
 }
 
 void ADefaultGameState::UpdatePlayerScore(const FString& PlayerName, int32 Score)
