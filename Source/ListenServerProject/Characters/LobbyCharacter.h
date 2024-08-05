@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "InputAction.h"
 #include "GameFramework/Character.h"
+#include "Misc/Structures.h"
 #include "LobbyCharacter.generated.h"
 
 UCLASS()
@@ -21,28 +22,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* SpringArm;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* Camera;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class UMoveComponent* MoveComponent;
-
-private:
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* IA_Move;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* IA_Look;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* IA_Jump;
 
 public:
 	void ChangeMaterial(FColor InColor);
@@ -61,4 +42,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void RemoveSelectedColor(const FString& InColor);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void PlayReadyMontage_NMC(class UAnimMontage* InMontage);
+
+	UFUNCTION(Server, Reliable)
+	void PlayReadyMontage_Server(class UAnimMontage* InMontage);
+
+	void PlayReadyMontage(class UAnimMontage* InMontage);
 };
