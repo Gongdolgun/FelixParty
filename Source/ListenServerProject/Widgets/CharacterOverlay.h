@@ -15,8 +15,5 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* GameStateType;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Percent;
 	
 };

@@ -5,41 +5,18 @@
 #include "Misc/Structures.h"
 #include "GameInstances/OnlineGameInstance.h"
 #include "GameModes/LobbyGameMode.h"
-#include "Net/UnrealNetwork.h"
 
 ALobbyController::ALobbyController()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	bAutoManageActiveCameraTarget = false;
-
-	bReplicates = true;
 }
 
 void ALobbyController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetViewCamera();
-}
-
-void ALobbyController::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-
-	
-}
-
-void ALobbyController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ThisClass, LobbyCamera);
-	DOREPLIFETIME(ThisClass, PlayerInfo);
 }
 
 void ALobbyController::UpdatePlayerList_Implementation(const TArray<FPlayerBaseInfo>& PlayerBaseInfos)
 {
-
 }
 
 void ALobbyController::SetReadyStatus_Implementation()
@@ -53,25 +30,6 @@ void ALobbyController::SetReadyStatus_Implementation()
 		if (LobbyGameMode)
 			LobbyGameMode->UpdatePlayerLists();
 	}
-
-	ALobbyCharacter* character = Cast<ALobbyCharacter>(GetPawn());
-	if (character && Ready_Montages.Num() > 0)
-	{
-		int32 randomInt = UKismetMathLibrary::RandomIntegerInRange(1, Ready_Montages.Num() - 1);
-
-		// 기본 상태
-		if (PlayerInfo.IsReady == false)
-		{
-			character->PlayReadyMontage(Ready_Montages[0]);
-		}
-		// 레디하셈
-		else
-		{
-			character->PlayReadyMontage(Ready_Montages[randomInt]);
-		}
-	}
-
-	
 }
 
 void ALobbyController::ChangeCharacter_Implementation(FColor MaterialColor)
@@ -98,13 +56,4 @@ void ALobbyController::ChangeCharacter_Implementation(FColor MaterialColor)
 	// MyMaterials = Materials;
 	/*if(ALobbyCharacter* MyCharacter = Cast<ALobbyCharacter>(GetPawn()))
 		MyCharacter->ChangeMaterial(MaterialColor);*/
-}
-
-void ALobbyController::SetViewCamera()
-{
-	LobbyCamera = UGameplayStatics::GetActorOfClass(GetWorld(), LobbyCamera_Class);
-	if (LobbyCamera)
-	{
-		SetViewTargetWithBlend(LobbyCamera, 0.0f);
-	}
 }
