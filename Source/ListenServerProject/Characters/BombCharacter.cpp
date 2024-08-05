@@ -10,7 +10,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "Global.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "SpawnActor/Restraint.h"
 #include "SpawnActor/Wall.h"
 
 ABombCharacter::ABombCharacter()
@@ -18,37 +20,11 @@ ABombCharacter::ABombCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
-	/*Helpers::CreateComponent<USpringArmComponent>(this, &TopDownSpringArm, "TopDownSpringArm", GetCapsuleComponent());
-	Helpers::CreateComponent<UCameraComponent>(this, &TopDownCamera, "TopDownSpringArm", TopDownSpringArm);*/
-
 	HandSphere = CreateDefaultSubobject<USphereComponent>(TEXT("HandSphere"));
 	HandSphere->InitSphereRadius(20.0f);
 	HandSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	HandSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
-
-	TopDownSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TopDownSpringArm"));
-	TopDownCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-
-	TopDownSpringArm->SetupAttachment(RootComponent);
-	TopDownSpringArm->SetUsingAbsoluteRotation(true); // 절대 회전값 사용
-	TopDownSpringArm->TargetArmLength = 1000.f;
-	TopDownSpringArm->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
-	TopDownSpringArm->bUsePawnControlRotation = false;
-	TopDownSpringArm->bDoCollisionTest = false;
-
-	TopDownCamera->SetupAttachment(TopDownSpringArm, USpringArmComponent::SocketName);
-	TopDownCamera->bUsePawnControlRotation = false;
-
-	//SpringArm->SetupAttachment(RootComponent);
-	//SpringArm->SetUsingAbsoluteRotation(true); // 절대 회전값 사용
-	//SpringArm->TargetArmLength = 1000.f;
-	//SpringArm->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
-	//SpringArm->bUsePawnControlRotation = false;
-	//SpringArm->bDoCollisionTest = false;
-
-	//Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-	//Camera->bUsePawnControlRotation = false;
 
 	Bomb = nullptr;
 
@@ -87,7 +63,7 @@ void ABombCharacter::Tick(float DeltaTime)
 		{
 			Bomb->SetActorLocation(spawnLocation);
 			Bomb->BombLocation = spawnLocation; // 복제된 위치 속성
-			CLog::Log(*spawnLocation.ToString());
+			//CLog::Log(*spawnLocation.ToString());
 
 			// 위치 업데이트를 클라이언트에 알림
 			Bomb->OnRep_UpdateBombLocation();
@@ -102,7 +78,8 @@ void ABombCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ABombCharacter::Action);
-		EnhancedInputComponent->BindAction(IA_SubAction, ETriggerEvent::Started, this, &ABombCharacter::ServerPlayWall);
+		EnhancedInputComponent->BindAction(IA_SubAction, ETriggerEvent::Started, this, &ABombCharacter::HandleAction);
+
 	}
 
 }
@@ -122,6 +99,19 @@ void ABombCharacter::Action()
 	}
 }
 
+void ABombCharacter::HandleAction()
+{
+	if (bBomb && Bomb)
+	{
+		ServerPlayRestraint();
+	}
+
+	else if (!bBomb && !Bomb)
+	{
+		ServerPlayWall();
+	}
+}
+
 void ABombCharacter::Attack()
 {
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
@@ -130,15 +120,14 @@ void ABombCharacter::Attack()
 	}
 }
 
-void ABombCharacter::MulticastAttack_Implementation()
-{
-	Attack();
-}
-
-
 void ABombCharacter::ServerAttack_Implementation()
 {
 	MulticastAttack();
+}
+
+void ABombCharacter::MulticastAttack_Implementation()
+{
+	Attack();
 }
 
 void ABombCharacter::ServerPlayWall_Implementation()
@@ -181,6 +170,44 @@ void ABombCharacter::ServerSpawnWall_Implementation()
 		this->GetWorld()->SpawnActor<AActor>(WallClass, transform, params);
 
 		LastWallSpawnTime = currentTime;
+	}
+}
+
+void ABombCharacter::ServerPlayRestraint_Implementation()
+{
+	MultiPlayRestraint();
+}
+
+void ABombCharacter::MultiPlayRestraint_Implementation()
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		AnimInstance->Montage_Play(Restraint_Montage);
+	}
+}
+
+void ABombCharacter::ServerSpawnRestraint_Implementation()
+{
+	if (!bIsSpawningRestraint) // 중복 호출 방지
+	{
+		bIsSpawningRestraint = true;
+		FActorSpawnParameters params;
+		params.Owner = this;
+
+		FVector location = this->GetActorLocation() + this->GetActorForwardVector() * 200;
+		FRotator rotation = FVector(this->GetActorForwardVector()).Rotation();
+		FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
+
+		if (RestraintClass)
+		{
+			this->GetWorld()->SpawnActor<AActor>(RestraintClass, transform, params);
+		}
+
+		// 스폰 후 플래그 리셋
+		GetWorld()->GetTimerManager().SetTimer(ResetSpawnFlagHandle, [this]()
+			{
+				bIsSpawningRestraint = false;
+			}, 1.0f, false); // 1초 후에 리셋 (필요에 따라 조정)
 	}
 }
 
@@ -340,7 +367,7 @@ void ABombCharacter::ResetBomb()
 	GetWorld()->GetTimerManager().ClearTimer(BombTimerHandle);
 
 	// 새로운 타이머 설정
-	GetWorld()->GetTimerManager().SetTimer(BombTimerHandle, this, &ABombCharacter::BombExplosion, 10.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(BombTimerHandle, this, &ABombCharacter::BombExplosion, 20.0f, false);
 }
 
 void ABombCharacter::PlayDead()
@@ -396,6 +423,3 @@ void ABombCharacter::MultiDead_Implementation()
 	}
 
 }
-
-
-

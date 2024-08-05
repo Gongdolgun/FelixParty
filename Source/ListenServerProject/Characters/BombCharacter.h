@@ -32,13 +32,10 @@ private:
 	class UAnimMontage* Wall_Montage;
 
 	UPROPERTY(EditAnywhere)
+	class UAnimMontage* Restraint_Montage;
+
+	UPROPERTY(EditAnywhere)
 	class UAnimMontage* Dead_Montage;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* TopDownSpringArm;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* TopDownCamera;
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -47,6 +44,9 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "Wall")
 	TSubclassOf<class AWall> WallClass;
+
+	UPROPERTY(EditAnywhere, Category = "Restraint")
+	TSubclassOf<class ARestraint> RestraintClass;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_SubAction;
@@ -64,6 +64,8 @@ public:
 public:
 	void Action() override;
 
+	void HandleAction();
+
 	void Attack();
 
 	UFUNCTION(Server, Reliable)
@@ -80,6 +82,15 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnWall();
+
+	UFUNCTION(Server, Reliable)
+	void ServerPlayRestraint();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiPlayRestraint();
+
+	UFUNCTION(Server, Reliable)
+	void ServerSpawnRestraint();
 
 	// ¼­¹ö¿¡¼­ ÆøÅºÀ» »ý¼º
 	UFUNCTION(Server, Reliable)
@@ -115,8 +126,11 @@ public:
 
 	bool bAttack = false;
 
+	bool bIsSpawningRestraint = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* NewCountdownSound;
+
 private:
 	void EnableCollision();
 	void DisableCollision();
@@ -142,6 +156,8 @@ private:
 	FTimerHandle BombParticleHandle;
 
 	FTimerHandle DeadTimerHandle;
+
+	FTimerHandle ResetSpawnFlagHandle;
 
 public:
 	bool IsAlive() const { return !bIsDead; }
