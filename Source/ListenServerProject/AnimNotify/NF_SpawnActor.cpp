@@ -15,7 +15,15 @@ void UNF_SpawnActor::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase*
 	{
 		if (ABombCharacter* character = Cast<ABombCharacter>(MeshComp->GetOwner()))
 		{
-			character->ServerSpawnWall();
+			if (character->Bomb && character->bBomb)
+			{
+				character->ServerSpawnRestraint();
+			}
+
+			else
+			{
+				character->ServerSpawnWall();
+			}
 		}
 	}
 }

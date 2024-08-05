@@ -9,7 +9,10 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Global.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "SpawnActor/Restraint.h"
 #include "SpawnActor/Wall.h"
 
 ABombCharacter::ABombCharacter()
@@ -17,39 +20,15 @@ ABombCharacter::ABombCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
-	/*Helpers::CreateComponent<USpringArmComponent>(this, &TopDownSpringArm, "TopDownSpringArm", GetCapsuleComponent());
-	Helpers::CreateComponent<UCameraComponent>(this, &TopDownCamera, "TopDownSpringArm", TopDownSpringArm);*/
-
 	HandSphere = CreateDefaultSubobject<USphereComponent>(TEXT("HandSphere"));
 	HandSphere->InitSphereRadius(20.0f);
 	HandSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	HandSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
 
-	TopDownSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TopDownSpringArm"));
-	TopDownCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-
-	TopDownSpringArm->SetupAttachment(RootComponent);
-	TopDownSpringArm->SetUsingAbsoluteRotation(true); // 절대 회전값 사용
-	TopDownSpringArm->TargetArmLength = 1000.f;
-	TopDownSpringArm->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
-	TopDownSpringArm->bUsePawnControlRotation = false;
-	TopDownSpringArm->bDoCollisionTest = false;
-
-	TopDownCamera->SetupAttachment(TopDownSpringArm, USpringArmComponent::SocketName);
-	TopDownCamera->bUsePawnControlRotation = false;
-
-	//SpringArm->SetupAttachment(RootComponent);
-	//SpringArm->SetUsingAbsoluteRotation(true); // 절대 회전값 사용
-	//SpringArm->TargetArmLength = 1000.f;
-	//SpringArm->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
-	//SpringArm->bUsePawnControlRotation = false;
-	//SpringArm->bDoCollisionTest = false;
-
-	//Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-	//Camera->bUsePawnControlRotation = false;
-
 	Bomb = nullptr;
+
+	LastWallSpawnTime = -WallCoolTime;
 
 }
 
@@ -84,7 +63,7 @@ void ABombCharacter::Tick(float DeltaTime)
 		{
 			Bomb->SetActorLocation(spawnLocation);
 			Bomb->BombLocation = spawnLocation; // 복제된 위치 속성
-			CLog::Log(*spawnLocation.ToString());
+			//CLog::Log(*spawnLocation.ToString());
 
 			// 위치 업데이트를 클라이언트에 알림
 			Bomb->OnRep_UpdateBombLocation();
@@ -99,7 +78,8 @@ void ABombCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ABombCharacter::Action);
-		EnhancedInputComponent->BindAction(IA_SubAction, ETriggerEvent::Started, this, &ABombCharacter::ServerPlayWall);
+		EnhancedInputComponent->BindAction(IA_SubAction, ETriggerEvent::Started, this, &ABombCharacter::HandleAction);
+
 	}
 
 }
@@ -119,6 +99,19 @@ void ABombCharacter::Action()
 	}
 }
 
+void ABombCharacter::HandleAction()
+{
+	if (bBomb && Bomb)
+	{
+		ServerPlayRestraint();
+	}
+
+	else if (!bBomb && !Bomb)
+	{
+		ServerPlayWall();
+	}
+}
+
 void ABombCharacter::Attack()
 {
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
@@ -127,15 +120,14 @@ void ABombCharacter::Attack()
 	}
 }
 
-void ABombCharacter::MulticastAttack_Implementation()
-{
-	Attack();
-}
-
-
 void ABombCharacter::ServerAttack_Implementation()
 {
 	MulticastAttack();
+}
+
+void ABombCharacter::MulticastAttack_Implementation()
+{
+	Attack();
 }
 
 void ABombCharacter::ServerPlayWall_Implementation()
@@ -153,6 +145,18 @@ void ABombCharacter::MultiPlayWall_Implementation()
 
 void ABombCharacter::ServerSpawnWall_Implementation()
 {
+	float currentTime = GetWorld()->GetTimeSeconds();
+
+	if (currentTime - LastWallSpawnTime < WallCoolTime)
+	{
+		return;
+	}
+
+	if (bBomb)
+	{
+		return;;
+	}
+
 	FActorSpawnParameters params;
 	params.Owner = this;
 
@@ -164,6 +168,36 @@ void ABombCharacter::ServerSpawnWall_Implementation()
 	if (WallClass)
 	{
 		this->GetWorld()->SpawnActor<AActor>(WallClass, transform, params);
+
+		LastWallSpawnTime = currentTime;
+	}
+}
+
+void ABombCharacter::ServerPlayRestraint_Implementation()
+{
+	MultiPlayRestraint();
+}
+
+void ABombCharacter::MultiPlayRestraint_Implementation()
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		AnimInstance->Montage_Play(Restraint_Montage);
+	}
+}
+
+void ABombCharacter::ServerSpawnRestraint_Implementation()
+{
+	FActorSpawnParameters params;
+	params.Owner = this;
+
+	FVector location = this->GetActorLocation() + this->GetActorForwardVector() * Rate;
+	FRotator rotation = FVector(this->GetActorForwardVector()).Rotation();
+	FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
+
+	if (RestraintClass)
+	{
+		this->GetWorld()->SpawnActor<AActor>(RestraintClass, transform, params);
 	}
 }
 
@@ -187,6 +221,10 @@ void ABombCharacter::ServerSpawnBomb_Implementation(TSubclassOf<ABomb> BombSpawn
 
 			// 모든 클라이언트에게 폭탄 생성 정보를 전파
 			MultiSpawnBomb(spawnBomb);
+
+			GetCharacterMovement()->MaxWalkSpeed = GetCurrentMovementSpeed();
+
+			ResetBomb();
 		}
 	}
 }
@@ -199,6 +237,8 @@ void ABombCharacter::MultiSpawnBomb_Implementation(ABomb* SpawnBomb)
 		SpawnBomb->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform);
 		Bomb = SpawnBomb;
 		bBomb = true; // 폭탄 소유 상태로 변경(클라)
+
+		GetCharacterMovement()->MaxWalkSpeed = GetCurrentMovementSpeed();
 	}
 }
 
@@ -240,8 +280,12 @@ void ABombCharacter::OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor)
 					HitCharacter->Bomb = AttackerBomb;
 					HitCharacter->bBomb = true;
 
+					HitCharacter->GetCharacterMovement()->MaxWalkSpeed = HitCharacter->GetCurrentMovementSpeed();
+
 					AttackerCharacter->Bomb = nullptr;
 					AttackerCharacter->bBomb = false;
+
+					AttackerCharacter->GetCharacterMovement()->MaxWalkSpeed = AttackerCharacter->GetCurrentMovementSpeed();
 
 					// 폭탄 위치 및 상태 업데이트
 					if (ABombGameMode* gameMode = Cast<ABombGameMode>(GetWorld()->GetAuthGameMode()))
@@ -256,7 +300,16 @@ void ABombCharacter::OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor)
 
 					DisableCollision();
 
+					HitCharacter->Bomb->CountdownSound = NewCountdownSound;
+
+					HitCharacter->Bomb->StartCountdown();
+					//HitCharacter->Bomb->MultiStartCountdown();
+
+					// 흔들림 효과 초기화
+					HitCharacter->Bomb->ResetShakeEffect();
+
 					HitCharacter->ResetBomb();
+
 				}
 			}
 		}
@@ -271,6 +324,7 @@ void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABombCharacter, bBombReplicate);
 	DOREPLIFETIME(ABombCharacter, bBombReplicateMovement);
 	DOREPLIFETIME(ABombCharacter, BombLocation);
+	DOREPLIFETIME(ABombCharacter, bIsDead);
 
 }
 
@@ -289,12 +343,9 @@ void ABombCharacter::BombExplosion()
 {
 	if (bBomb && Bomb)
 	{
-		CLog::Log(TEXT("Bomb exploded!"));
-
 		// 서버에서 Dead 함수를 직접 호출
 		if (HasAuthority())
 		{
-
 			Dead();
 		}
 	}
@@ -306,7 +357,7 @@ void ABombCharacter::ResetBomb()
 	GetWorld()->GetTimerManager().ClearTimer(BombTimerHandle);
 
 	// 새로운 타이머 설정
-	GetWorld()->GetTimerManager().SetTimer(BombTimerHandle, this, &ABombCharacter::BombExplosion, 10.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(BombTimerHandle, this, &ABombCharacter::BombExplosion, 50.0f, false);
 }
 
 void ABombCharacter::PlayDead()
@@ -321,8 +372,23 @@ void ABombCharacter::Dead()
 {
 	if (HasAuthority())
 	{
-		MultiDead();
+		bIsDead = true; // 사망 상태로 변경
+		MultiDead();    // 멀티플레이어에서 호출
 	}
+}
+
+float ABombCharacter::GetCurrentMovementSpeed() const
+{
+	if (bBomb)
+	{
+		return BaseMovementSpeed * BombMovementSpeed;
+	}
+	return BaseMovementSpeed;
+}
+
+void ABombCharacter::MultiDestroyCharacter_Implementation()
+{
+	Destroy();
 }
 
 void ABombCharacter::MultiDead_Implementation()
@@ -333,7 +399,17 @@ void ABombCharacter::MultiDead_Implementation()
 	}
 
 	PlayDead();
+
+	// 캐릭터를 비활성화하고 게임에서 제거
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	bBomb = false; // 폭탄 소유 상태 해제
+	Bomb = nullptr; // 폭탄 참조 해제
+
+	// GameMode에게 캐릭터가 죽었음을 알림
+	if (ABombGameMode* GameMode = Cast<ABombGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->OnPlayerDead(this);
+	}
+
 }
-
-
-

@@ -19,10 +19,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	class UBoxComponent* Box;
 
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly)
 	class UNiagaraComponent* Niagara;
 
 	UPROPERTY(VisibleDefaultsOnly)
