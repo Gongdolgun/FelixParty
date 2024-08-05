@@ -16,10 +16,10 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FString, FPlayerInGameData> PlayerDatas;
+	TMap<FString, FPlayerData> PlayerDatas;
 
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void SavePlayerInfo(const FString& PlayerID, FPlayerInGameData PlayerData);
+	void SavePlayerInfo(const FString& PlayerID, FPlayerData PlayerData);
 
 };
