@@ -43,5 +43,11 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void RemoveSelectedColor(const FString& InColor);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void PlayReadyMontage_NMC(class UAnimMontage* InMontage);
 
+	UFUNCTION(Server, Reliable)
+	void PlayReadyMontage_Server(class UAnimMontage* InMontage);
+
+	void PlayReadyMontage(class UAnimMontage* InMontage);
 };

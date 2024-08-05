@@ -40,10 +40,14 @@ public:
 	AActor* LobbyCamera;
 
 public:
+	UPROPERTY(Replicated, BlueprintReadOnly)
 	FPlayerBaseInfo PlayerInfo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FPlayerBaseInfo> PlayerInfos;
 
 	TArray<UMaterialInterface*> MyMaterials;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ready Montage")
+	TArray<UAnimMontage*> Ready_Montages;
 };

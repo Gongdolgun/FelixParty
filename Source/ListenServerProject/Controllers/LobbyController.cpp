@@ -9,9 +9,8 @@
 
 ALobbyController::ALobbyController()
 {
-	PrimaryActorTick.bCanEverTick = false;
-	APlayerController::SetIgnoreLookInput(true);
-	APlayerController::SetIgnoreMoveInput(true);
+	PrimaryActorTick.bCanEverTick = true;
+	bAutoManageActiveCameraTarget = false;
 
 	bReplicates = true;
 }
@@ -35,6 +34,7 @@ void ALobbyController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, LobbyCamera);
+	DOREPLIFETIME(ThisClass, PlayerInfo);
 }
 
 void ALobbyController::UpdatePlayerList_Implementation(const TArray<FPlayerBaseInfo>& PlayerBaseInfos)
@@ -53,6 +53,25 @@ void ALobbyController::SetReadyStatus_Implementation()
 		if (LobbyGameMode)
 			LobbyGameMode->UpdatePlayerLists();
 	}
+
+	ALobbyCharacter* character = Cast<ALobbyCharacter>(GetPawn());
+	if (character && Ready_Montages.Num() > 0)
+	{
+		int32 randomInt = UKismetMathLibrary::RandomIntegerInRange(1, Ready_Montages.Num() - 1);
+
+		// 기본 상태
+		if (PlayerInfo.IsReady == false)
+		{
+			character->PlayReadyMontage(Ready_Montages[0]);
+		}
+		// 레디하셈
+		else
+		{
+			character->PlayReadyMontage(Ready_Montages[randomInt]);
+		}
+	}
+
+	
 }
 
 void ALobbyController::ChangeCharacter_Implementation(FColor MaterialColor)
@@ -86,7 +105,6 @@ void ALobbyController::SetViewCamera()
 	LobbyCamera = UGameplayStatics::GetActorOfClass(GetWorld(), LobbyCamera_Class);
 	if (LobbyCamera)
 	{
-		this->SetViewTargetWithBlend(LobbyCamera, 0.0f);
-
+		SetViewTargetWithBlend(LobbyCamera, 0.0f);
 	}
 }

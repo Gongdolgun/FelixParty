@@ -45,6 +45,21 @@ void ALobbyCharacter::ChangeMaterial(FColor InColor)
 		ChangeMaterial_Server(InColor);
 }
 
+void ALobbyCharacter::PlayReadyMontage_NMC_Implementation(UAnimMontage* InMontage)
+{
+	PlayAnimMontage(InMontage);
+}
+
+void ALobbyCharacter::PlayReadyMontage_Server_Implementation(UAnimMontage* InMontage)
+{
+	PlayReadyMontage_NMC(InMontage);
+}
+
+void ALobbyCharacter::PlayReadyMontage(UAnimMontage* InMontage)
+{
+	PlayReadyMontage_Server(InMontage);
+}
+
 void ALobbyCharacter::UpdatePlayer_Server_Implementation()
 {
 	if(ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode()))
