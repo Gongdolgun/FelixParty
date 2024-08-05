@@ -1,8 +1,11 @@
 #include "Characters/OnlyUpCharacter.h"
+
+#include "EnhancedInputComponent.h"
 #include "Components/ParkourComponent.h"
 #include "Global.h"
 #include "MotionWarpingComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Components/MoveComponent.h"
 #include "Components/StateComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -20,6 +23,7 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 	ParkourComponent->SetIsReplicated(true);
 	StateComponent->SetIsReplicated(true);
 	MotionWarpComponent->SetIsReplicated(true);
+	MoveComponent->SetIsReplicated(true);
 
 	Helpers::CreateComponent<USceneComponent>(this, &ArrowGroup, "ArrowGroup", GetCapsuleComponent());
 	Arrows.SetNum((int32)EParkourArrowType::Max);
@@ -47,8 +51,15 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 			Arrows[i]->ArrowColor = FColor::Green;
 			Arrows[i]->SetRelativeLocation(FVector(0.0f, 30.0f, 20.0f));
 			break;
+
+		case EParkourArrowType::Down:
+			Arrows[i]->ArrowColor = FColor::White;
+			Arrows[i]->SetRelativeLocation(FVector(0.0f, 0.0f, -20.0f));
+			break;
 		}
 	}
+
+	GetCharacterMovement()->MaxWalkSpeed = 250.0f;
 }
 
 void AOnlyUpCharacter::BeginPlay()
@@ -67,6 +78,12 @@ void AOnlyUpCharacter::Tick(float DeltaTime)
 void AOnlyUpCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, this, &ThisClass::Run);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, this, &ThisClass::Walk);
+	}
 }
 
 void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -86,12 +103,6 @@ void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 void AOnlyUpCharacter::Action()
 {
 	Super::Action();
-
-}
-
-void AOnlyUpCharacter::Jump()
-{
-	Super::Jump();
 
 }
 
@@ -115,8 +126,17 @@ void AOnlyUpCharacter::SetModeAndCollision(EMovementMode InMovementMode, bool In
 	}
 }
 
+void AOnlyUpCharacter::Jump()
+{
+	if (ParkourComponent && ParkourComponent->GetCanParkour() == false)
+	{
+		//MoveComponent->Jump();
+		Super::Jump();
+	}
+}
+
 void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2, float InZOffsetHand,
-	float InZOffsetLanding, float InMontageLength)
+                                   float InZOffsetLanding, float InMontageLength)
 {
 	SetModeAndCollision(EMovementMode::MOVE_Flying, false);
 	
@@ -137,7 +157,7 @@ void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2,
 	Target2.Rotation = GetActorRotation();
 	MotionWarpComponent->AddOrUpdateWarpTarget(Target2);
 	
-	PlayParkourMontage();
+	//PlayParkourMontage();
 	
 	FTimerHandle timerhandler;
 	GetWorld()->GetTimerManager().SetTimer(timerhandler, FTimerDelegate::CreateLambda([this]() {
@@ -145,24 +165,32 @@ void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2,
 		}), InMontageLength, false);
 }
 
-void AOnlyUpCharacter::PlayParkourMontage_NMC_Implementation()
+void AOnlyUpCharacter::Walk_NMC_Implementation()
 {
-	PlayAnimMontage(ParkourComponent->ParkourMontage);
+	GetCharacterMovement()->MaxWalkSpeed = 250.0f;
 }
 
-void AOnlyUpCharacter::PlayParkourMontage_Server_Implementation()
+void AOnlyUpCharacter::Walk_Server_Implementation()
 {
-	PlayParkourMontage_NMC();
+	Walk_NMC();
 }
 
-void AOnlyUpCharacter::PlayParkourMontage()
+void AOnlyUpCharacter::Walk()
 {
-	if (IsLocallyControlled())
-	{
-		PlayParkourMontage_Server();
-	}
-
-
+	Walk_Server();
 }
 
+void AOnlyUpCharacter::Run_NMC_Implementation()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+}
 
+void AOnlyUpCharacter::Run_Server_Implementation()
+{
+	Run_NMC();
+}
+
+void AOnlyUpCharacter::Run()
+{
+	Run_Server();
+}

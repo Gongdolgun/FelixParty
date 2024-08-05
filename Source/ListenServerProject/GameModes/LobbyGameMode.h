@@ -16,12 +16,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerLists();
 
-	UFUNCTION(BlueprintNativeEvent)
-	void SetUserUniqueID(AController* NewPlayer);
-	void SetUserUniqueID_Implementation(AController* NewPlayer);
-
 public:
 	// 로비 게임모드에서 관리할 플레이어 컨트롤러들과 기본 정보들
+	UPROPERTY(BlueprintReadOnly)
 	TArray<class ALobbyController*> ConnectedPlayers;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

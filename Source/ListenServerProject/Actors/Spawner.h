@@ -14,6 +14,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
@@ -29,7 +30,7 @@ public:
 	class USphereComponent* Sphere;
 
 	UPROPERTY(EditAnywhere, Category = "Settings")
-	TSubclassOf<AActor> SpawnActorClass;
+	TArray<TSubclassOf<AActor>> SpawnActorClass;
 
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	FVector SpawnLocation = FVector(0, 0, 60);
@@ -39,8 +40,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	FRotator RotateRate = FRotator(0, 180, 0);
-
-protected:
+	
+	UPROPERTY(Replicated)
 	AActor* SpawnedActor;
 
 public:
@@ -49,4 +50,5 @@ public:
 
 protected:
 	virtual void CreateRotatingMovementComponent();
+	virtual void SpawnActor();
 };

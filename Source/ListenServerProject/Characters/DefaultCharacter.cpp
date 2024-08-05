@@ -101,29 +101,33 @@ void ADefaultCharacter::UpdatePlayer_Server_Implementation()
 		DefaultGameMode->UpdatePlayer();
 }
 
-void ADefaultCharacter::ChangeMaterial()
+void ADefaultCharacter::ChangeMaterial(FColor InColor)
 {
 	if (HasAuthority())
-		if (ADefaultController* DefaultController = Cast<ADefaultController>(Controller))
-			ChangeMaterial_NMC(DefaultController->MyMaterials);
+		ChangeMaterial_NMC(InColor);
 
 	else
-		ChangeMaterial_Server();
+		ChangeMaterial_Server(InColor);
 }
 
-void ADefaultCharacter::ChangeMaterial_Server_Implementation()
+void ADefaultCharacter::ChangeMaterial_Server_Implementation(FColor InColor)
 {
-	if (ADefaultController* DefaultController = Cast<ADefaultController>(Controller))
-		ChangeMaterial_NMC(DefaultController->MyMaterials);
+	ChangeMaterial_NMC(InColor);
 }
 
-void ADefaultCharacter::ChangeMaterial_NMC_Implementation(const TArray<UMaterialInterface*>& InMaterials)
+void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 {
-	if (InMaterials.Num() > 0)
+	int32 MaterialCount = GetMesh()->GetNumMaterials();
+	for (int32 i = 0; i < MaterialCount; i++)
 	{
-		for (int i = 0; i < InMaterials.Num(); i++)
+		UMaterialInstanceDynamic* MaterialInstance = Cast<UMaterialInstanceDynamic>(GetMesh()->GetMaterial(i));
+		if (!MaterialInstance)
+			MaterialInstance = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+
+		if (MaterialInstance)
 		{
-			GetMesh()->SetMaterial(i, InMaterials[i]);
+			if (MaterialInstance)
+				MaterialInstance->SetVectorParameterValue(FName("Tint"), InColor);
 		}
 	}
 }

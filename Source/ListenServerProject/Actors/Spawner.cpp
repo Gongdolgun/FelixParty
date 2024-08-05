@@ -2,10 +2,13 @@
 #include "Global.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/RotatingMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 ASpawner::ASpawner()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
+
 	Helpers::CreateComponent(this, &Root, "Root");
 	Helpers::CreateComponent(this, &Sphere, "Sphere", Root);
 	Helpers::CreateComponent(this, &Mesh, "Mesh", Root);
@@ -21,17 +24,14 @@ void ASpawner::BeginPlay()
 
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnComponentBeginOverlap);
 
-	if(SpawnActorClass)
-	{
-		FVector Location = GetActorLocation() + SpawnLocation;
+	SpawnActor();
+}
 
-		FActorSpawnParameters params;
-		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		SpawnedActor = GetWorld()->SpawnActor<AActor>(SpawnActorClass, Location, FRotator::ZeroRotator, params);
-
-		CreateRotatingMovementComponent();
-	}
+void ASpawner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ThisClass, SpawnedActor);
 }
 
 void ASpawner::Tick(float DeltaTime)
@@ -45,6 +45,25 @@ void ASpawner::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	
 }
 
+void ASpawner::SpawnActor()
+{
+	if (SpawnActorClass.Num() > 0 && HasAuthority())
+	{
+		int32 RandomInteger = UKismetMathLibrary::RandomIntegerInRange(0, SpawnActorClass.Num() - 1);
+		if (SpawnActorClass[RandomInteger] != nullptr)
+		{
+			FVector Location = GetActorLocation() + SpawnLocation;
+
+			FActorSpawnParameters params;
+			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			SpawnedActor = GetWorld()->SpawnActor<AActor>(SpawnActorClass[RandomInteger], Location, FRotator::ZeroRotator, params);
+
+			CreateRotatingMovementComponent();
+		}
+	}
+}
+
 void ASpawner::CreateRotatingMovementComponent()
 {
 	if (isRotate && SpawnedActor)
@@ -53,6 +72,7 @@ void ASpawner::CreateRotatingMovementComponent()
 		if (RotatingMovementComponent)
 		{
 			RotatingMovementComponent->RegisterComponent();
+			RotatingMovementComponent->SetIsReplicated(true);
 			RotatingMovementComponent->SetUpdatedComponent(SpawnedActor->GetRootComponent());
 
 			RotatingMovementComponent->RotationRate = RotateRate;

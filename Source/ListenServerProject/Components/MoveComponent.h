@@ -24,6 +24,7 @@ public:
 	void Look(const FInputActionValue& Value);
 	void Jump();
 
+
 private:
 	class ACharacter* Owner;
 

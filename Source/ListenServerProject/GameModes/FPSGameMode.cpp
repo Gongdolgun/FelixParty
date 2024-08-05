@@ -21,7 +21,7 @@ void AFPSGameMode::RespawnPlayer(AController* controller)
 
                 FActorSpawnParameters params;
                 params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-                AFPSCharacter* NewCharacter = World->SpawnActor<AFPSCharacter>(DefaultPawnClass, params);
+                AFPSCharacter* NewCharacter = World->SpawnActor<AFPSCharacter>(DefaultPawnClass, PlayerStarts[RandomIndex]->GetActorTransform(), params);
 
                 if (NewCharacter)
                 {

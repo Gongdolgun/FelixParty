@@ -1,6 +1,7 @@
 #include "Actors/FinishLine.h"
 #include "Global.h"
 #include "Components/BoxComponent.h"
+#include "Controllers/OnlyUpController.h"
 #include "GameState/OnlyUpGameState.h"
 
 AFinishLine::AFinishLine()
@@ -33,14 +34,12 @@ void AFinishLine::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 	if (character && (OtherActor != this))
 	{
 		AOnlyUpGameState* GameState = GetWorld()->GetGameState<AOnlyUpGameState>();
-		if (GameState)
-		{
-			APlayerController* PlayerController = Cast<APlayerController>(character->GetController());
-			if (PlayerController)
-			{
-				GameState->PlayerRank(PlayerController);
+		AOnlyUpController* OnlyUpController = Cast<AOnlyUpController>(character->GetController());
 
-			}
+		if (OnlyUpController != nullptr && GameState != nullptr)
+		{
+			FString PlayerName = OnlyUpController->GetPlayerState<APlayerState>()->GetPlayerName();
+			GameState->UpdatePlayerScore(PlayerName, GameState->PlayerRank(OnlyUpController));
 		}
 	}
 }

@@ -19,23 +19,4 @@ public:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
-public:
-	FString EnumToString(EGameStateType InGameStateType);
-
-	void SetHUDTime();
-	void SetGameStateType();
-
-
-protected:
-
-private:
-	UPROPERTY()
-	class AOnlyUpHUD* OnlyUpHUD;
-
-	UPROPERTY()
-	class ADefaultGameState* OnlyUpGameState;
-
-private:
-	float TimeLeft;
-
 };

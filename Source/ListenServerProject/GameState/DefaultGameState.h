@@ -26,6 +26,7 @@ protected:
 	virtual void SetScore() {};
 
 public:
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable)
 	FGameStateTypeChanged OnGameStateTypeChanged;
 
 public:
@@ -39,7 +40,6 @@ public:
 	UPROPERTY(EditAnywhere, Replicated, Category = "Game State")
 	float GameOverTime = 5.0f;
 
-	//Scores
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	TArray<FPlayerInGameData> PlayerDatas;
 
@@ -60,10 +60,11 @@ public:
 
 private:
 	void ChangeGameType(EGameStateType InGameType);
+	void CalRank();
 
 public:
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerScore(const FString& PlayerName, int32 Score);
 
-	void AddPlayerData(const FString& PlayerName, int32 Score, FBPUniqueNetId UniqueID);
+	void AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor);
 };

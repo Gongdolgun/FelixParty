@@ -34,18 +34,3 @@ void ASpawner_Weapons::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCo
 		}
 	}
 }
-
-void ASpawner_Weapons::SpawnActor()
-{
-	if (SpawnActorClass)
-	{
-		FVector Location = GetActorLocation() + SpawnLocation;
-
-		FActorSpawnParameters params;
-		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		SpawnedActor = GetWorld()->SpawnActor<AActor>(SpawnActorClass, Location, FRotator::ZeroRotator, params);
-
-		CreateRotatingMovementComponent();
-	}
-}

@@ -3,6 +3,7 @@
 #include "Global.h"
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UMoveComponent::UMoveComponent()
 {

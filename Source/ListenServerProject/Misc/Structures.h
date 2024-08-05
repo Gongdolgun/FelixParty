@@ -16,9 +16,6 @@ public:
 	bool IsReady = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FBPUniqueNetId UniqueID;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName PlayerName = FName(TEXT("Player Name"));
 };
 
@@ -27,14 +24,11 @@ struct FPlayerData
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UMaterialInterface*> CharacterMaterials;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FBPUniqueNetId UniqueID;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName PlayerName = FName(TEXT("Player Name"));
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FColor PlayerColor;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int TotalScore = 0;
@@ -129,10 +123,10 @@ struct FPlayerInGameData
     FString PlayerName;
 
     UPROPERTY(BlueprintReadOnly)
-    int32 Score;
+    FColor PlayerColor;
 
     UPROPERTY(BlueprintReadOnly)
-    FBPUniqueNetId UniqueID;
+    int32 Score;
 
     FPlayerInGameData()
         : PlayerName(TEXT(""))
@@ -144,9 +138,53 @@ struct FPlayerInGameData
         , Score(InScore)
     {}
 
-    FPlayerInGameData(const FString& InPlayerName, int32 InScore, FBPUniqueNetId InUniqueID)
+    FPlayerInGameData(const FString& InPlayerName, int32 InScore, FColor InColor)
         : PlayerName(InPlayerName)
         , Score(InScore)
-		, UniqueID(InUniqueID)
+		, PlayerColor(InColor)
     {}
+};
+
+USTRUCT(BlueprintType)
+struct FParkourStruct
+{
+    GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float ZOffsetHand;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float ZOffsetLanding;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float MontageLength;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FVector OutLocation1;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FVector OutLocation2;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    EParkourType ParkourType;
+};
+
+USTRUCT(BlueprintType)
+struct FParkourRelativeStruct
+{
+    GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationForward = 0.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationZ_High = -115.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationZ_Low = 0.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationZ_Jump = -60.0f;
 };

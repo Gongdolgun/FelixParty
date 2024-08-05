@@ -27,12 +27,26 @@ void AOnlyUpGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ThisClass, PlayerRanking);
 }
 
-void AOnlyUpGameState::PlayerRank(APlayerController* InController)
+int32 AOnlyUpGameState::PlayerRank(APlayerController* InController)
 {
-	PlayerRanking.AddUnique(InController);
+	if (InController == nullptr) return 0.0f; 
 
-	
+	if (!PlayerRanking.Contains(InController))
+	{
+		PlayerRanking.Add(InController);
+
+		int32 index = PlayerRanking.Num() - 1; 
+
+		if (index < RankScores.Num())
+		{
+			return RankScores[index]; 
+		}
+	}
+
+	return 0;
 }
+
+
 
 
 

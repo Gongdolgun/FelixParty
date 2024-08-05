@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/Enums.h"
+#include "Misc/Structures.h"
 #include "ParkourComponent.generated.h"
 
 
@@ -34,19 +35,18 @@ public:
 	FVector GetParkourPos2();
 
 	UFUNCTION(BlueprintCallable)
-	void CorrectPlayerLocation();
+	void CorrectPlayerLocation(EParkourType InParkourType);
 
 	void SetCanParkour(bool bInCanParkour);
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ParkourTrace(
-		FVector& OutLocation1, FVector& OutLocation2,
-		float InInitialTraceLength, float InSecondaryTraceZOffset,float InFallingHeightMultiplier);
+	void ParkourTrace(FParkourStruct InParkourLocation,float InInitialTraceLength, float InSecondaryTraceZOffset,float InFallingHeightMultiplier);
+
+	void ParkourCheck(float InSecondaryTraceZOffset, float InFallingHeightMultiplier, EParkourType InParkourType);
 
 private:
 	void LineTrace(EParkourArrowType InType, float InInitialTraceLength);
-	;
 	bool Check_ObjectRotation();
 
 protected:
@@ -75,10 +75,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Replicated, Category = "Correct")
-	float AddPlayerLocationForward = -15.0f;
-
-	UPROPERTY(EditAnywhere, Replicated, Category = "Correct")
-	float AddPlayerLocationZ = -80.0f;
+	FParkourRelativeStruct ParkourRelative;
 
 	UPROPERTY(EditAnywhere, Replicated, Category = "Parkour")
 	FVector falling_ImpactPoint = FVector::ZeroVector;
@@ -88,18 +85,49 @@ private:
 
 	// TraceTypeQuery1 = Visibility, 3 = Parkour
 	UPROPERTY(EditAnywhere, Category = "Debug")
-	TEnumAsByte<ETraceTypeQuery> TraceType = TraceTypeQuery3;
+	TEnumAsByte<ETraceTypeQuery> TraceType = TraceTypeQuery1;
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
-	UAnimMontage* ParkourMontage;
+	UAnimMontage* High_ParkourMontage;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
+	UAnimMontage* Low_ParkourMontage;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
+	UAnimMontage* Jump_ParkourMontage;
 
 	// Arrow Component
 	TArray<class UArrowComponent*> Arrows;
 	TArray<FHitResult> HitResults;
 
 	UPROPERTY(EditAnywhere, Category = " Parkour")
-	float AvailableFrontAngle = 30.0f;
+	float AvailableFrontAngle = 55.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
+	FParkourStruct HighStruct;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
+	FParkourStruct JumpStruct;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
+	FParkourStruct LowStruct;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Parkour")
+	FParkourStruct OutParkourStruct;
+
+public:
+	// Play Montage
+	UFUNCTION(NetMulticast, Reliable)
+	void PlayParkourMontage_NMC(EParkourType ParkourType);
+
+	UFUNCTION(Server, Reliable)
+	void PlayParkourMontage_Server(EParkourType ParkourType);
+
+	UFUNCTION(BlueprintCallable)
+	void PlayParkourMontage(EParkourType ParkourType);
+
+	
 };
 
 
