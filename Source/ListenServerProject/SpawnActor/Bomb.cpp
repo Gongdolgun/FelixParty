@@ -106,7 +106,6 @@ void ABomb::OnRep_UpdateBombLocation()
 
 void ABomb::OnRep_CountdownSound()
 {
-	// 추가한 부분
 	if (Audio && CountdownSound)
 	{
 		Audio->SetSound(CountdownSound);
@@ -183,7 +182,7 @@ void ABomb::UpdateShakeEffect(float DeltaTime)
 
 	SetActorLocation(newLocation);
 
-	// 흔들림 효과 위치를 복제
+	// 흔들림 효과 위치 복제
 	BombLocation = newLocation;
 }
 
