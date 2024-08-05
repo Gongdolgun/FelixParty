@@ -3,7 +3,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Characters/BombCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "NiagaraComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 ARestraint::ARestraint()
@@ -12,16 +11,17 @@ ARestraint::ARestraint()
 	bReplicates = true;
 
 	Helpers::CreateComponent<UCapsuleComponent>(this, &Capsule, "Capsule");
-	Helpers::CreateComponent<UNiagaraComponent>(this, &Niagara, "Niagara", Capsule);
 	Helpers::CreateComponent<UStaticMeshComponent>(this, &StaticMesh, "StaticMesh", Capsule);
 	Helpers::CreateActorComponent<UProjectileMovementComponent>(this, &Projectile, "Projectile");
 
 	Projectile->ProjectileGravityScale = 0;
 	Projectile->Activate();
 
+	Capsule->SetSimulatePhysics(false);
 	Capsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Capsule->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	Capsule->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
 }
 
 void ARestraint::BeginPlay()
@@ -48,7 +48,23 @@ void ARestraint::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 		ABombCharacter* BombCharacter = Cast<ABombCharacter>(OtherActor);
 		if (BombCharacter)
 		{
+			if (BombCharacter->Bomb && BombCharacter->bBomb)
+			{
+				Destroy();
+				return;
+			}
+
 			DisableMovement(BombCharacter);
+
+			Destroy();
+
+			if (Particle)
+			{
+				FVector spawnLocation = BombCharacter->GetActorLocation() + FVector(0, 0, -50.0f);
+				FRotator spawnRotation = BombCharacter->GetActorRotation();
+
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, spawnLocation, spawnRotation);
+			}
 		}
 	}
 }

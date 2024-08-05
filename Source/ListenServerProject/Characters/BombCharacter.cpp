@@ -188,16 +188,26 @@ void ABombCharacter::MultiPlayRestraint_Implementation()
 
 void ABombCharacter::ServerSpawnRestraint_Implementation()
 {
-	FActorSpawnParameters params;
-	params.Owner = this;
-
-	FVector location = this->GetActorLocation() + this->GetActorForwardVector() * Rate;
-	FRotator rotation = FVector(this->GetActorForwardVector()).Rotation();
-	FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
-
-	if (RestraintClass)
+	if (!bIsSpawningRestraint) // 중복 호출 방지
 	{
-		this->GetWorld()->SpawnActor<AActor>(RestraintClass, transform, params);
+		bIsSpawningRestraint = true;
+		FActorSpawnParameters params;
+		params.Owner = this;
+
+		FVector location = this->GetActorLocation() + this->GetActorForwardVector() * 200;
+		FRotator rotation = FVector(this->GetActorForwardVector()).Rotation();
+		FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
+
+		if (RestraintClass)
+		{
+			this->GetWorld()->SpawnActor<AActor>(RestraintClass, transform, params);
+		}
+
+		// 스폰 후 플래그 리셋
+		GetWorld()->GetTimerManager().SetTimer(ResetSpawnFlagHandle, [this]()
+			{
+				bIsSpawningRestraint = false;
+			}, 1.0f, false); // 1초 후에 리셋 (필요에 따라 조정)
 	}
 }
 
@@ -357,7 +367,7 @@ void ABombCharacter::ResetBomb()
 	GetWorld()->GetTimerManager().ClearTimer(BombTimerHandle);
 
 	// 새로운 타이머 설정
-	GetWorld()->GetTimerManager().SetTimer(BombTimerHandle, this, &ABombCharacter::BombExplosion, 50.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(BombTimerHandle, this, &ABombCharacter::BombExplosion, 20.0f, false);
 }
 
 void ABombCharacter::PlayDead()

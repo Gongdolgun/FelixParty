@@ -23,8 +23,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UCapsuleComponent* Capsule;
 
-	UPROPERTY(EditDefaultsOnly)
-	class UNiagaraComponent* Niagara;
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* Particle;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	UStaticMeshComponent* StaticMesh;

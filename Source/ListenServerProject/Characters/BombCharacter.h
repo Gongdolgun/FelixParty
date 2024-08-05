@@ -126,6 +126,8 @@ public:
 
 	bool bAttack = false;
 
+	bool bIsSpawningRestraint = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* NewCountdownSound;
 
@@ -154,6 +156,8 @@ private:
 	FTimerHandle BombParticleHandle;
 
 	FTimerHandle DeadTimerHandle;
+
+	FTimerHandle ResetSpawnFlagHandle;
 
 public:
 	bool IsAlive() const { return !bIsDead; }
