@@ -25,6 +25,9 @@ public:
 	void SetHUDTime();
 	void SetGameStateType();
 
+	UFUNCTION(Client, Reliable)
+	void LeaveSessionInProgress();
+
 private:
 	UPROPERTY()
 	class ADefaultHUD* DefaultHUD;

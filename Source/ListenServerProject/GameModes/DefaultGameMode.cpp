@@ -9,9 +9,23 @@ void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 {
 	Super::OnPostLogin(NewPlayer);
 
-	if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
+	FString ParamValue;
+	UKismetSystemLibrary::ParseParamValue(OptionsString, FString("playercount"), ParamValue);
+	
+	if(ConnectedPlayers.Num() < FCString::Atoi(*ParamValue))
 	{
-		ConnectedPlayers.Add(Controller);
+		if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
+		{
+			ConnectedPlayers.Add(Controller);
+		}
+	}
+
+	else
+	{
+		if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
+		{
+			Controller->LeaveSessionInProgress();
+		}
 	}
 }
 

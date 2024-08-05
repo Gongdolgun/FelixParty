@@ -23,9 +23,9 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 	{
 		FString PlayerID = Controller->GetPlayerState<APlayerState>()->GetPlayerName();
 
-		TSharedPtr<const FUniqueNetId> UniqueNetId = Controller->GetPlayerState<APlayerState>()->GetUniqueId().GetUniqueNetId();
+		/*TSharedPtr<const FUniqueNetId> UniqueNetId = Controller->GetPlayerState<APlayerState>()->GetUniqueId().GetUniqueNetId();
 		FBPUniqueNetId PlayerUniqueID;
-		PlayerUniqueID.SetUniqueNetId(UniqueNetId);
+		PlayerUniqueID.SetUniqueNetId(UniqueNetId);*/
 
 		GameInstance->PlayerDatas.Add(PlayerID, DefaultPlayerData);
 		if(GameInstance->PlayerDatas.Contains(PlayerID))
@@ -53,6 +53,8 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 			Player->UpdatePlayerList(PlayerBaseInfos);
 		}
 	}
+
+	
 }
 
 void ALobbyGameMode::UpdatePlayerLists()

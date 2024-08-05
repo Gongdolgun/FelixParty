@@ -81,6 +81,12 @@ void ADefaultController::SetGameStateType()
 	DefaultHUD->CharacterOverlay->GameStateType->SetText(FText::FromString(EnumToString(DefaultGameState->GetGameStateType())));
 }
 
+void ADefaultController::LeaveSessionInProgress_Implementation()
+{
+	UGameplayStatics::OpenLevel(this, "MainMenu");
+}
+
+
 FString ADefaultController::EnumToString(EGameStateType InGameStateType)
 {
 	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EGameStateType"), true);
