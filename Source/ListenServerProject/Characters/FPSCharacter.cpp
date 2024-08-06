@@ -2,7 +2,9 @@
 #include "AnimInstance_DefaultCharacter.h"
 #include "Global.h"
 #include "Components/MoveComponent.h"
+#include "Controllers/DefaultController.h"
 #include "GameModes/FPSGameMode.h"
+#include "GameState/DefaultGameState.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
 
@@ -29,18 +31,23 @@ void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 			// Ragdoll 처리, 장착중인 무기 Destroy
 			Dead_NMC();
 
-			// Game Mode에 리스폰 요청
-			AFPSGameMode* GameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
-			FTimerHandle RespawnTimer;
-			GetWorld()->GetTimerManager().SetTimer(RespawnTimer, FTimerDelegate::CreateLambda([&]()
+			// Attacker에게 점수 추가
+			ADefaultCharacter* Attacker = Cast<ADefaultCharacter>(InActor);
+			AFPSGameMode* FPSGameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+			
+			if(Attacker != nullptr && FPSGameMode != nullptr)
 			{
-				if (GameMode != nullptr)
-					GameMode->RespawnPlayer(GetController());
+				ADefaultGameState* DefaultGameState = Cast<ADefaultGameState>(FPSGameMode->GetGameState<ADefaultGameState>());
+				ADefaultController* AttackerController = Cast<ADefaultController>(Attacker->GetController());
+				if(DefaultGameState != nullptr && AttackerController != nullptr)
+				{
+					FString AttackerName = AttackerController->GetPlayerState<APlayerState>()->GetPlayerName();
+					DefaultGameState->UpdatePlayerScore(AttackerName, 20);
+				}
+			}
 
-				GetWorld()->GetTimerManager().ClearTimer(RespawnTimer);
-
-				Destroy();
-			}),Respawn_time, false);
+			// Game Mode에 리스폰 요청
+			GetWorld()->GetTimerManager().SetTimer(RespawnTimer, this, &ThisClass::RespawnCharacter, Respawn_time, false);
 		}
 	}
 }
@@ -91,9 +98,11 @@ void AFPSCharacter::LineTrace(FWeaponData WeaponData, FHitData HitData)
 	FHitResult hitResult;
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTyps;
 	TEnumAsByte<EObjectTypeQuery> CharacterMesh = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1);
-	TEnumAsByte<EObjectTypeQuery> WorldStatic = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_EngineTraceChannel1);
+	TEnumAsByte<EObjectTypeQuery> WorldStatic = UEngineTypes::ConvertToObjectType(ECC_WorldStatic);
+	TEnumAsByte<EObjectTypeQuery> WorldDynamic = UEngineTypes::ConvertToObjectType(ECC_WorldDynamic);
 	ObjectTyps.Add(CharacterMesh);
 	ObjectTyps.Add(WorldStatic);
+	ObjectTyps.Add(WorldDynamic);
 
 	if (UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), start, end, ObjectTyps, false, ignores, EDrawDebugTrace::None, hitResult, true))
 	{
@@ -116,6 +125,17 @@ void AFPSCharacter::LineTrace(FWeaponData WeaponData, FHitData HitData)
 	}
 
 	FireEvent_NMC(direction, hitResult);
+}
+
+void AFPSCharacter::RespawnCharacter()
+{
+	AFPSGameMode* FPSGameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+	if (FPSGameMode != nullptr)
+		FPSGameMode->RespawnPlayer(GetController());
+
+	GetWorld()->GetTimerManager().ClearTimer(RespawnTimer);
+
+	Destroy();
 }
 
 void AFPSCharacter::Dead_NMC_Implementation()

@@ -1,6 +1,7 @@
 #include "DefaultGameState.h"
 #include "Global.h"
 #include "Net/UnrealNetwork.h"
+#include "Algo/Sort.h"
 
 ADefaultGameState::ADefaultGameState()
 {
@@ -35,7 +36,7 @@ void ADefaultGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 	DOREPLIFETIME(ThisClass, GameStateType);
 
-	DOREPLIFETIME(ThisClass, Score);
+	DOREPLIFETIME(ThisClass, PlayerDatas);
 }
 
 void ADefaultGameState::SetTimer(float InTime)
@@ -74,7 +75,6 @@ void ADefaultGameState::SetTimer(float InTime)
 
 		break;
 	}
-
 }
 
 void ADefaultGameState::SetGameState(EGameStateType InGameStateType)
@@ -85,17 +85,15 @@ void ADefaultGameState::SetGameState(EGameStateType InGameStateType)
 		{
 		case EGameStateType::GameStart:
 			ChangeGameType(EGameStateType::GameStart);
-			GameStartTime = 5.0f;
-
 			break;
+
 		case EGameStateType::GamePlay:
 			ChangeGameType(EGameStateType::GamePlay);
-			GameMatchTime = 10.0f;
-
 			break;
+
 		case EGameStateType::GameOver:
+			CalRank();
 			ChangeGameType(EGameStateType::GameOver);
-			GameOverTime = 5.0f;
 			break;
 		}
 		
@@ -116,6 +114,32 @@ void ADefaultGameState::ChangeGameType(EGameStateType InGameType)
 		OnGameStateTypeChanged.Broadcast(prevGameType, GameStateType);
 }
 
+void ADefaultGameState::CalRank()
+{
+	Algo::Sort(PlayerDatas, [](const FPlayerInGameData& A, const FPlayerInGameData& B)
+	{
+		return A.Score > B.Score;
+	});
+}
 
+void ADefaultGameState::UpdatePlayerScore(const FString& PlayerName, int32 Score)
+{
+	for (FPlayerInGameData& PlayerData : PlayerDatas)
+		if (PlayerData.PlayerName == PlayerName)
+			PlayerData.Score += Score;
+}
 
+void ADefaultGameState::AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor)
+{
+	// 새 플레이어 추가
+	PlayerDatas.Add(FPlayerInGameData(PlayerName, Score, PlayerColor));
+}
 
+FPlayerInGameData ADefaultGameState::GetPlayerData(FString PlayerName)
+{
+	for (FPlayerInGameData& PlayerData : PlayerDatas)
+		if (PlayerData.PlayerName == PlayerName)
+			return PlayerData;
+
+	return FPlayerInGameData();
+}

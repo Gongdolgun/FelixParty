@@ -42,5 +42,17 @@ enum class EThrow : uint8
 UENUM(BlueprintType)
 enum class EParkourArrowType : uint8
 {
-	Left = 0, Center, Right, Max
+	Left = 0, Center, Right, Down, Max
+};
+
+UENUM(BlueprintType)
+enum class EParkourType : uint8
+{
+	High = 0, Low, Jump, Max
+};
+
+UENUM(BlueprintType)
+enum class EPlayerColors : uint8
+{
+	Red = 0, Black, White
 };

@@ -11,12 +11,12 @@ class LISTENSERVERPROJECT_API UCharacterOverlay : public UUserWidget
 
 public:
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* ScoreText;
-
-	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* CountdownText;
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* GameStateType;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float Percent;
 	
 };

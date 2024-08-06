@@ -16,25 +16,22 @@ public:
 	bool IsReady = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FBPUniqueNetId UniqueID;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName PlayerName = FName(TEXT("Player Name"));
 };
 
 USTRUCT(BlueprintType)
-struct FPlayerInGameData
+struct FPlayerData
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UMaterialInterface*> CharacterMaterials;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FBPUniqueNetId UniqueID;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName PlayerName = FName(TEXT("Player Name"));
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FColor PlayerColor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int TotalScore = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -117,3 +114,77 @@ public:
 
 };
 
+USTRUCT(BlueprintType)
+struct FPlayerInGameData
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly)
+    FString PlayerName;
+
+    UPROPERTY(BlueprintReadOnly)
+    FColor PlayerColor;
+
+    UPROPERTY(BlueprintReadOnly)
+    int32 Score;
+
+    FPlayerInGameData()
+        : PlayerName(TEXT(""))
+        , Score(0)
+    {}
+
+    FPlayerInGameData(const FString& InPlayerName, int32 InScore)
+        : PlayerName(InPlayerName)
+        , Score(InScore)
+    {}
+
+    FPlayerInGameData(const FString& InPlayerName, int32 InScore, FColor InColor)
+        : PlayerName(InPlayerName)
+        , Score(InScore)
+		, PlayerColor(InColor)
+    {}
+};
+
+USTRUCT(BlueprintType)
+struct FParkourStruct
+{
+    GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float ZOffsetHand;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float ZOffsetLanding;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float MontageLength;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FVector OutLocation1;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FVector OutLocation2;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    EParkourType ParkourType;
+};
+
+USTRUCT(BlueprintType)
+struct FParkourRelativeStruct
+{
+    GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationForward = 0.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationZ_High = -115.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationZ_Low = 0.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Correct")
+    float AddPlayerLocationZ_Jump = -60.0f;
+};

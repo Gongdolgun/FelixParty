@@ -169,3 +169,6 @@ void CLog::LogAndPrint(const FString& InFileName, const FString& InFuncName, int
 	Log(InFileName, InFuncName, InLineNumber);
 	Print(InFileName, InFuncName, InLineNumber);
 }
+
+
+

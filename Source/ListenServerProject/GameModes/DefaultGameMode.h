@@ -11,12 +11,11 @@ class LISTENSERVERPROJECT_API ADefaultGameMode : public AGameModeBase
 
 public:
 	virtual void OnPostLogin(AController* NewPlayer) override;
+	virtual void BeginPlay() override;
 
 public:
 	TArray<class ADefaultController*> ConnectedPlayers;
-	TMap<FString, int> PlayerScores;
 
 public:
 	void UpdatePlayer();
-	void UpdatePlayerScore(class ADefaultCharacter InPlayer, int InScore);
 };

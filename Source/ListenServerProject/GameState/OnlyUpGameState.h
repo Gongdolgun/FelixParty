@@ -16,11 +16,14 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
-	virtual void SetTimer(float InTime) override;
-	virtual void SetScore() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
+	UPROPERTY(VisibleAnywhere, Replicated)
+	TArray<class APlayerController*> PlayerRanking;
 
-	
-	
+public:
+	int32 PlayerRank(APlayerController* InController);
+	const TArray<int32> RankScores = { 50, 30, 20, 10 };
+
 };
