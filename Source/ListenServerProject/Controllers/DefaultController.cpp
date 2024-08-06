@@ -20,6 +20,11 @@ void ADefaultController::BeginPlay()
 
 	DefaultHUD = Cast<ADefaultHUD>(GetHUD());
 	DefaultGameState = Cast<ADefaultGameState>(UGameplayStatics::GetGameState(this));
+
+	// 매치 시간 초기값 세팅
+	GameStartTime = DefaultGameState->GameStartTime;
+	GamePlayTime = DefaultGameState->GamePlayTime;
+	GameOverTime = DefaultGameState->GameOverTime;
 }
 
 void ADefaultController::Tick(float DeltaSeconds)
@@ -53,7 +58,19 @@ void ADefaultController::SetHUDTime()
 		break;
 
 	case EGameStateType::GamePlay:
-		TimeLeft = DefaultGameState->GameMatchTime;
+		TimeLeft = DefaultGameState->GamePlayTime;
+
+		// Percent 계산
+		if (TimeLeft > 0.15) 
+		{
+			Percent = TimeLeft / GamePlayTime; 
+			Percent = FMath::Clamp(Percent, 0.0f, 1.0f);
+		}
+		else
+		{
+			Percent = 0.0f;
+		}
+
 		break;
 
 	case EGameStateType::GameOver:
@@ -64,6 +81,7 @@ void ADefaultController::SetHUDTime()
 		break;
 	}
 
+
 	uint32 CountdownInt = FMath::CeilToInt(TimeLeft);
 
 	// CountText
@@ -72,6 +90,9 @@ void ADefaultController::SetHUDTime()
 
 	FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 	DefaultHUD->CharacterOverlay->CountdownText->SetText(FText::FromString(CountdownText));
+
+	// Percent
+	DefaultHUD->CharacterOverlay->Percent = Percent;
 }
 
 void ADefaultController::SetGameStateType()
