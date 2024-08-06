@@ -31,7 +31,7 @@ void ADefaultGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, GameStartTime);
-	DOREPLIFETIME(ThisClass, GameMatchTime);
+	DOREPLIFETIME(ThisClass, GamePlayTime);
 	DOREPLIFETIME(ThisClass, GameOverTime);
 
 	DOREPLIFETIME(ThisClass, GameStateType);
@@ -56,10 +56,10 @@ void ADefaultGameState::SetTimer(float InTime)
 		break;
 
 	case EGameStateType::GamePlay:
-		if (GameMatchTime >= 0.0f)
+		if (GamePlayTime >= 0.0f)
 		{
-			GameMatchTime -= InTime;
-			if (GameMatchTime <= 0.0f)
+			GamePlayTime -= InTime;
+			if (GamePlayTime <= 0.0f)
 			{
 				SetGameState(EGameStateType::GameOver);
 			}

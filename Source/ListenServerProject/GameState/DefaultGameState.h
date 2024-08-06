@@ -35,7 +35,7 @@ public:
 	float GameStartTime = 5.0f;
 
 	UPROPERTY(EditAnywhere, Replicated, Category = "Game State")
-	float GameMatchTime = 10.0f;
+	float GamePlayTime = 30.0f;
 
 	UPROPERTY(EditAnywhere, Replicated, Category = "Game State")
 	float GameOverTime = 5.0f;
