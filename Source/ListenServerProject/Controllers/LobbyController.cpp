@@ -70,8 +70,6 @@ void ALobbyController::SetReadyStatus_Implementation()
 			character->PlayReadyMontage(Ready_Montages[randomInt]);
 		}
 	}
-
-	
 }
 
 void ALobbyController::ChangeCharacter_Implementation(FColor MaterialColor)
