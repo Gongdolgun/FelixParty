@@ -101,7 +101,7 @@ void ABomb::OnRep_UpdateBombLocation()
 	// 클라이언트들에게 위치 변경을 알리기 위해
 	SetActorLocation(BombLocation);
 	UpdateShakeEffect(GetWorld()->GetDeltaSeconds());
-	CLog::Log(*BombLocation.ToString());
+	//CLog::Log(*BombLocation.ToString());
 }
 
 void ABomb::OnRep_CountdownSound()

@@ -8,6 +8,9 @@
 #include "Utilites/CLog.h"
 #include "Controllers/BombController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameState/BombGameState.h"
+#include "GameState/DefaultGameState.h"
+#include "Widgets/BombGameStartMessage.h"
 
 ABombGameMode::ABombGameMode()
 {
@@ -40,6 +43,15 @@ void ABombGameMode::OnPostLogin(AController* NewPlayer)
         {
             GetWorldTimerManager().SetTimer(GameStartTimerHandle, this, &ABombGameMode::StartGame, 3.0f, false);
         }
+
+		// 새로운 플레이어의 점수 초기화
+		if (ABombGameState* gameState = Cast<ABombGameState>(GetWorld()->GetGameState()))
+		{
+			FPlayerInGameData newPlayerData;
+			newPlayerData.PlayerName = Controller->GetName();
+			newPlayerData.Score = 0;
+			gameState->PlayerDatas.Add(newPlayerData);
+		}
 	}
 }
 
@@ -103,6 +115,21 @@ void ABombGameMode::OnPlayerDead(ABombCharacter* DeadPlayer)
 	// 게임 종료 조건 확인
 	CheckGameEnd();
 
+	ABombGameState* gameState = Cast<ABombGameState>(GetWorld()->GetGameState());
+	if (gameState)
+	{
+		// 남아있는 플레이어에게 점수 부여
+		for (ABombCharacter* character : allPlayers)
+		{
+			ADefaultController* characterController = Cast<ADefaultController>(character->GetController());
+			if (character && character != DeadPlayer && character->IsAlive() && characterController)
+			{
+				FString characterName = characterController->GetPlayerState<APlayerState>()->GetPlayerName();
+				gameState->UpdatePlayerScore(characterName, 5);
+			}
+		}
+	}
+
 	// 새로운 폭탄 소유자 선택
 	if (allPlayers.Num() > 1)
 	{
@@ -113,6 +140,7 @@ void ABombGameMode::OnPlayerDead(ABombCharacter* DeadPlayer)
 			newBombOwner->ServerSpawnBomb(BombClass);
 		}
 	}
+
 }
 
 void ABombGameMode::CheckGameEnd()
@@ -120,6 +148,8 @@ void ABombGameMode::CheckGameEnd()
 	// 남아있는 플레이어 수 확인
 	int32 remainingPlayers = 0;
 	ABombCharacter* lastPlayer = nullptr;
+	ABombGameState* gameState = Cast<ABombGameState>(GetWorld()->GetGameState());
+
 	for (ADefaultController* Controller : PlayerControllers)
 	{
 		ABombCharacter* character = Cast<ABombCharacter>(Controller->GetPawn());
@@ -134,9 +164,14 @@ void ABombGameMode::CheckGameEnd()
 	if (remainingPlayers <= 1)
 	{
 		// 게임 종료 로직 (예: 승리자 발표, 게임 리셋 등)
-		if (lastPlayer)
+		if (lastPlayer && gameState)
 		{
+			FString characterName = lastPlayer->GetController()->GetPlayerState<APlayerState>()->GetPlayerName();
+			int32 playerScore = gameState->GetPlayerScore(characterName);
+
 			CLog::Log(*lastPlayer->GetName());
+			CLog::Log(playerScore);
+
 		}
 
 		// 게임을 재시작하거나 종료하는 로직을 추가
@@ -147,8 +182,21 @@ void ABombGameMode::StartGame()
 {
 	ShowMessage(TEXT("게임이 시작됩니다. 10초 후 폭탄이 랜덤으로 소유자에게 배정됩니다."));
 
+	// 모든 캐릭터의 입력 비활성화
+	for (AController* Controller : PlayerControllers)
+	{
+		if (Controller)
+		{
+			ADefaultController* PlayerController = Cast<ADefaultController>(Controller);
+			if (PlayerController)
+			{
+				PlayerController->DisableInput(PlayerController);
+			}
+		}
+	}
+
 	// 게임 시작 로직
-	GetWorldTimerManager().SetTimer(SpawnCharacterTimerHandle, this, &ABombGameMode::RandomSpawn, 3.0f, false);
+	GetWorldTimerManager().SetTimer(SpawnCharacterTimerHandle, this, &ABombGameMode::RandomSpawn, 10.0f, false);
 }
 
 void ABombGameMode::ShowMessage(const FString& Message)
@@ -161,11 +209,17 @@ void ABombGameMode::ShowMessage(const FString& Message)
 			if (PlayerController)
 			{
 				// UI 위젯 생성 및 메시지 표시
-				UUserWidget* MessageWidget = CreateWidget<UUserWidget>(PlayerController->GetWorld(), MessageWidgetClass);
+				UBombGameStartMessage* MessageWidget = CreateWidget<UBombGameStartMessage>(PlayerController->GetWorld(), MessageWidgetClass);
 				if (MessageWidget)
 				{
+					MessageWidget->InputText = Message;
 					MessageWidget->AddToViewport();
-					// 위젯에 메시지를 전달하는 방법에 따라 추가 로직
+
+					PlayerController->GetWorldTimerManager().SetTimer(WidgetTimerHandle, [PlayerController, MessageWidget]()
+						{
+							MessageWidget->RemoveFromViewport();
+							PlayerController->EnableInput(PlayerController);
+						}, 10.0f, false);
 				}
 			}
 		}

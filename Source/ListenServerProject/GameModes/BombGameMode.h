@@ -52,4 +52,6 @@ public:
 
 	FTimerHandle GameStartTimerHandle;
 
+	FTimerHandle WidgetTimerHandle;
+
 };
