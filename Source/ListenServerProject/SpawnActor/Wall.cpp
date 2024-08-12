@@ -10,9 +10,7 @@ AWall::AWall()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
-	Helpers::CreateComponent<UBoxComponent>(this, &Box, "Box");
-	Helpers::CreateComponent<UNiagaraComponent>(this, &Niagara, "Niagara", Box);
-	Helpers::CreateComponent<UStaticMeshComponent>(this, &StaticMesh, "StaticMesh", Box);
+	Helpers::CreateComponent<UStaticMeshComponent>(this, &StaticMesh, "StaticMesh");
 
 
 }
@@ -20,6 +18,8 @@ AWall::AWall()
 void AWall::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetLifeSpan(10);
 	
 }
 

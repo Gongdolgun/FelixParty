@@ -38,11 +38,7 @@ void ABombGameMode::OnPostLogin(AController* NewPlayer)
 
 		//GetWorldTimerManager().SetTimer(SpawnCharacterTimerHandle, this, &ABombGameMode::RandomSpawn, 3.0f, false);
 
-		// 모든 플레이어가 로그인한 후 10초 동안 대기
-        if (PlayerControllers.Num() == 1) // 첫 번째 플레이어가 로그인한 경우
-        {
-            GetWorldTimerManager().SetTimer(GameStartTimerHandle, this, &ABombGameMode::StartGame, 3.0f, false);
-        }
+		GetWorldTimerManager().SetTimer(GameStartTimerHandle, this, &ABombGameMode::StartGame, 3.0f, false);
 
 		// 새로운 플레이어의 점수 초기화
 		if (ABombGameState* gameState = Cast<ABombGameState>(GetWorld()->GetGameState()))
@@ -180,50 +176,32 @@ void ABombGameMode::CheckGameEnd()
 
 void ABombGameMode::StartGame()
 {
-	ShowMessage(TEXT("게임이 시작됩니다. 10초 후 폭탄이 랜덤으로 소유자에게 배정됩니다."));
-
-	// 모든 캐릭터의 입력 비활성화
-	for (AController* Controller : PlayerControllers)
+	// 게임 시작 시 모든 플레이어의 움직임 정지
+	for (ADefaultController* Controller : PlayerControllers)
 	{
-		if (Controller)
+		if (ABombCharacter* Character = Cast<ABombCharacter>(Controller->GetPawn()))
 		{
-			ADefaultController* PlayerController = Cast<ADefaultController>(Controller);
-			if (PlayerController)
-			{
-				PlayerController->DisableInput(PlayerController);
-			}
+			Character->GetCharacterMovement()->DisableMovement(); // 움직임 비활성화
 		}
 	}
 
-	// 게임 시작 로직
-	GetWorldTimerManager().SetTimer(SpawnCharacterTimerHandle, this, &ABombGameMode::RandomSpawn, 10.0f, false);
+	// 10초 후에 플레이어의 움직임을 재개하고 폭탄을 스폰
+	GetWorldTimerManager().SetTimer(GameStartTimerHandle, this, &ABombGameMode::EnableMovementAndSpawnBomb, 10.0f, false);
+
+	//GetWorldTimerManager().SetTimer(SpawnCharacterTimerHandle, this, &ABombGameMode::RandomSpawn, 10.0f, false);
 }
 
-void ABombGameMode::ShowMessage(const FString& Message)
+void ABombGameMode::EnableMovementAndSpawnBomb()
 {
-	for (AController* Controller : PlayerControllers)
+	for (ADefaultController* Controller : PlayerControllers)
 	{
-		if (Controller)
+		if (ABombCharacter* character = Cast<ABombCharacter>(Controller->GetPawn()))
 		{
-			ADefaultController* PlayerController = Cast<ADefaultController>(Controller);
-			if (PlayerController)
-			{
-				// UI 위젯 생성 및 메시지 표시
-				UBombGameStartMessage* MessageWidget = CreateWidget<UBombGameStartMessage>(PlayerController->GetWorld(), MessageWidgetClass);
-				if (MessageWidget)
-				{
-					MessageWidget->InputText = Message;
-					MessageWidget->AddToViewport();
-
-					PlayerController->GetWorldTimerManager().SetTimer(WidgetTimerHandle, [PlayerController, MessageWidget]()
-						{
-							MessageWidget->RemoveFromViewport();
-							PlayerController->EnableInput(PlayerController);
-						}, 10.0f, false);
-				}
-			}
+			character->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 		}
 	}
+
+	RandomSpawn();
 }
 
 void ABombGameMode::SetHolderController(ADefaultController* NewController)

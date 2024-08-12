@@ -46,6 +46,7 @@ void ARestraint::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	if (OtherActor && OtherActor != this)
 	{
 		ABombCharacter* BombCharacter = Cast<ABombCharacter>(OtherActor);
+
 		if (BombCharacter)
 		{
 			if (BombCharacter->Bomb && BombCharacter->bBomb)
@@ -56,8 +57,6 @@ void ARestraint::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 
 			DisableMovement(BombCharacter);
 
-			Destroy();
-
 			if (Particle)
 			{
 				FVector spawnLocation = BombCharacter->GetActorLocation() + FVector(0, 0, -50.0f);
@@ -66,6 +65,8 @@ void ARestraint::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, spawnLocation, spawnRotation);
 			}
 		}
+
+		Destroy();
 	}
 }
 

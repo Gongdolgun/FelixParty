@@ -34,7 +34,7 @@ public:
 
 	void StartGame();
 
-	void ShowMessage(const FString& Message);
+	void EnableMovementAndSpawnBomb();
 
 private:
 	TArray<class ADefaultController*> PlayerControllers;

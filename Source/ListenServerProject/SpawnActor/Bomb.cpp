@@ -164,7 +164,7 @@ void ABomb::UpDateSoundAndColor(float DeltaTime)
 	float remainingTime = TotalCountdownTime - ElapseTime;
 
 	float progress = ElapseTime / TotalCountdownTime;
-	BombColor = FVector(FLinearColor::LerpUsingHSV(FLinearColor::Blue, FLinearColor::Red, progress));
+	BombColor = FVector(FLinearColor::LerpUsingHSV(FLinearColor::Black, FLinearColor::Red, progress));
 
 	if (HasAuthority())
 	{

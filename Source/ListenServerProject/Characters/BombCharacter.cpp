@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Global.h"
+#include "Camera/CameraActor.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -29,6 +30,7 @@ ABombCharacter::ABombCharacter()
 	Bomb = nullptr;
 
 	LastWallSpawnTime = -WallCoolTime;
+	LastRestraintSpawnTime = -RestraintCoolTime;
 
 }
 
@@ -37,6 +39,20 @@ void ABombCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerCharacter = Cast<ABombCharacter>(GetOwner());
+
+	// Scene에서 카메라 액터 찾기
+	TArray<AActor*> CameraActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), CameraActors);
+	if (CameraActors.Num() > 0)
+	{
+		CameraActor = Cast<ACameraActor>(CameraActors[0]);
+	}
+
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController && CameraActor)
+	{
+		PlayerController->SetViewTarget(CameraActor); // 기존 카메라로 뷰 전환
+	}
 
 	// Hand_R_Sphere에 SphereComponent 장착
 	if (USkeletalMeshComponent* MeshComp = GetMesh())
@@ -161,7 +177,7 @@ void ABombCharacter::ServerSpawnWall_Implementation()
 	params.Owner = this;
 
 	FVector location = this->GetActorLocation() + this->GetActorForwardVector() * Rate;
-	location.Z += 50.0f;
+	location.Z -= 90.0f;
 	FRotator rotation = FVector(this->GetActorForwardVector()).Rotation();
 	FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
 
@@ -188,6 +204,18 @@ void ABombCharacter::MultiPlayRestraint_Implementation()
 
 void ABombCharacter::ServerSpawnRestraint_Implementation()
 {
+	float currentTime = GetWorld()->GetTimeSeconds();
+
+	if (currentTime - LastRestraintSpawnTime < RestraintCoolTime)
+	{
+		return; // 쿨타임이 남아있는 경우
+	}
+
+	if (!bBomb)
+	{
+		return; 
+	}
+
 	if (!bIsSpawningRestraint) // 중복 호출 방지
 	{
 		bIsSpawningRestraint = true;
@@ -201,6 +229,9 @@ void ABombCharacter::ServerSpawnRestraint_Implementation()
 		if (RestraintClass)
 		{
 			this->GetWorld()->SpawnActor<AActor>(RestraintClass, transform, params);
+
+			LastRestraintSpawnTime = currentTime;
+
 		}
 
 		// 스폰 후 플래그 리셋
