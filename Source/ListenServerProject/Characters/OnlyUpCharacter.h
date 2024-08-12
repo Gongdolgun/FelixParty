@@ -46,6 +46,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Run;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_Crouch;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Parkour")
 	float ZOffset_Hand = -60.0f;
@@ -78,6 +81,7 @@ public:
 	void SetModeAndCollision(EMovementMode InMovementMode, bool InCollision);
 
 	void Jump() override;
+	void Landed(const FHitResult& Hit) override;
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -98,4 +102,5 @@ protected:
 	void Run_Server();
 
 	void Run();
+
 };

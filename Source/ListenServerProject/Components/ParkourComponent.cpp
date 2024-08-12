@@ -17,9 +17,9 @@ UParkourComponent::UParkourComponent()
 	HighStruct.ZOffsetLanding = 30.0f;
 	HighStruct.MontageLength = 1.1f;
 
-	LowStruct.ZOffsetHand = 5.0f;
-	LowStruct.ZOffsetLanding = 20.0f;
-	LowStruct.MontageLength = 0.6f;
+	LowStruct.ZOffsetHand = 0.0f;
+	LowStruct.ZOffsetLanding = 25.0f;
+	LowStruct.MontageLength = 0.8f;
 
 	JumpStruct.ZOffsetHand = 0.0f;
 	JumpStruct.ZOffsetLanding = 30.0f;
@@ -152,12 +152,15 @@ void UParkourComponent::ParkourTrace(FParkourStruct InParkourLocation, float InI
 	{
 		if (i < HitResults.Num()) // HitResults의 범위 체크
 		{
-			if (!HitResults[i].bBlockingHit)
+			if (i != (int32)EParkourArrowType::Down)
 			{
-				bAllHit = false; // 블로킹 히트가 없으면 false로 설정
+				if (!HitResults[i].bBlockingHit)
+				{
+					bAllHit = false; // 블로킹 히트가 없으면 false로 설정
+				}
 			}
 
-			if (i == (int32)EParkourArrowType::Down)
+			else
 			{
 				bDownHit = HitResults[i].bBlockingHit; // Down 방향의 체크
 			}
@@ -193,7 +196,6 @@ void UParkourComponent::ParkourTrace(FParkourStruct InParkourLocation, float InI
 		}
 		else
 		{
-			CLog::Print("Wrong Return");
 			return;
 		}
 	}

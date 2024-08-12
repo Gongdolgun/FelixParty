@@ -24,6 +24,13 @@ public:
 	void Look(const FInputActionValue& Value);
 	void Jump();
 
+	void DoCrouch();
+	void Crouch();
+	void UnCrouch();
+
+	void EnableControlRotation();
+	void DisableControlRotation();
+
 
 private:
 	class ACharacter* Owner;

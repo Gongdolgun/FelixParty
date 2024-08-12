@@ -32,6 +32,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Value")
 	bool bUseControlYaw;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Value")
+	bool bIsCrouching;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "WeaponType")
 	EWeaponType WeaponType = EWeaponType::Gun;
@@ -48,4 +51,6 @@ private:
 	UFUNCTION()
 	void OnWeaponTypeChanged(EWeaponType InPrevType, EWeaponType InNewType);
 
+private:
+	FRotator PrevRotation;
 };
