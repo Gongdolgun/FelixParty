@@ -28,6 +28,9 @@ public:
 	UFUNCTION(Client, Reliable)
 	void LeaveSessionInProgress();
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void UpdateReadyStatus();
+
 private:
 	UPROPERTY()
 	class ADefaultHUD* DefaultHUD;

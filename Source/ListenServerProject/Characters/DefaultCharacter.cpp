@@ -101,6 +101,10 @@ void ADefaultCharacter::UpdatePlayer_Server_Implementation()
 		DefaultGameMode->UpdatePlayer();
 }
 
+void ADefaultCharacter::PlayMaterialEvent_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)
+{
+}
+
 void ADefaultCharacter::ChangeMaterial(FColor InColor)
 {
 	if (HasAuthority())
@@ -126,8 +130,8 @@ void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 
 		if (MaterialInstance)
 		{
-			if (MaterialInstance)
-				MaterialInstance->SetVectorParameterValue(FName("Tint"), InColor);
+			MyMaterials.Add(MaterialInstance);
+			MaterialInstance->SetVectorParameterValue(FName("Tint"), InColor);
 		}
 	}
 }

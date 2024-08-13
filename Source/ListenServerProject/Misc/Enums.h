@@ -6,7 +6,7 @@
 UENUM(BlueprintType)
 enum class EGameStateType : uint8
 {
-	GameStart = 0, GamePlay, GameOver, Max
+	Ready = 0, GameStart, GamePlay, GameOver, Max
 };
 
 UENUM(BlueprintType)

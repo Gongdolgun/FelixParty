@@ -4,6 +4,7 @@
 #include "InputAction.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/IDamage.h"
+#include "Misc/Enums.h"
 #include "DefaultCharacter.generated.h"
 
 UCLASS()
@@ -54,6 +55,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Action;
 
+	UPROPERTY(BlueprintReadOnly)
+	TArray<UMaterialInstanceDynamic*> MyMaterials;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Action();
@@ -70,6 +74,10 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void ChangeMaterial_NMC(FColor InColor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PlayMaterialEvent(EGameStateType InPrevGameType, EGameStateType InNewGameType);
+	void PlayMaterialEvent_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
 	void ChangeMaterial(FColor InColor);
 

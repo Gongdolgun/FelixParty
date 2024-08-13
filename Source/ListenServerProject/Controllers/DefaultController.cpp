@@ -102,6 +102,20 @@ void ADefaultController::SetGameStateType()
 	DefaultHUD->CharacterOverlay->GameStateType->SetText(FText::FromString(EnumToString(DefaultGameState->GetGameStateType())));
 }
 
+void ADefaultController::UpdateReadyStatus_Implementation()
+{
+	if (DefaultGameState == nullptr) return;
+
+	for(auto& PlayerData : DefaultGameState->PlayerDatas)
+	{
+		if(PlayerData.PlayerName == GetPlayerState<APlayerState>()->GetPlayerName())
+		{
+			PlayerData.Ready = !PlayerData.Ready;
+			break;
+		}
+	}
+}
+
 void ADefaultController::LeaveSessionInProgress_Implementation()
 {
 	UGameplayStatics::OpenLevel(this, "MainMenu");
