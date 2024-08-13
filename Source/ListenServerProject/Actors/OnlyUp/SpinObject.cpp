@@ -24,7 +24,6 @@ void ASpinObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// 회전 업데이트
 	FRotator RotationDelta = RotationSpeed * DeltaTime;
 	AddActorLocalRotation(RotationDelta);
 }

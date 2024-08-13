@@ -40,16 +40,10 @@ private:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Value")
-	float SwingAmount = 0.0f;
+	float MaxSwingAmount = 5.0f; // 최대 Roll 각도
 
 	UPROPERTY(EditAnywhere, Category = "Value")
-	float MaxSwingAmount = 100.0f; // 최대 흔들림 강도
-
-	UPROPERTY(EditAnywhere, Category = "Value")
-	float SwingDuration = 2.0f; // 흔드는 시간
-
-	UPROPERTY(EditAnywhere, Category = "Value")
-	float SwingElapsedTime = 0.0f; // 경과 시간
+	float SwingSpeed = 400.0f; // 흔들림 속도
 
 	FVector OriginalLocation;
 

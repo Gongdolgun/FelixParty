@@ -38,7 +38,7 @@ void APunchObject::Tick(float DeltaTime)
         // 이동 거리가 도달하면 돌아오기 시작
         if (FVector::Dist(StartLocation, GetActorLocation()) >= MoveDistance)
         {
-            bIsMovingForward = false; // 이동 상태 변경
+            bIsMovingForward = false; 
             GetWorld()->GetTimerManager().SetTimer(MoveTimerHandle, this, &APunchObject::StartMoving, RepeatDelay, false);
         }
     }
@@ -50,14 +50,14 @@ void APunchObject::Tick(float DeltaTime)
         SetActorLocation(NewLocation);
 
         // 원래 위치에 도달하면 정지
-        if (FVector::Dist(StartLocation, GetActorLocation()) <= 1.0f) // 약간의 오차를 두고 체크
+        if (FVector::Dist(StartLocation, GetActorLocation()) <= 1.0f) 
         {
-            SetActorLocation(StartLocation); // 정확히 원래 위치로 설정
+            SetActorLocation(StartLocation); 
         }
     }
 }
 
 void APunchObject::StartMoving()
 {
-    bIsMovingForward = true; // 이동 시작
+    bIsMovingForward = true; 
 }

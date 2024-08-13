@@ -34,7 +34,7 @@ void AJumpObject::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 
 	if (character && (OtherActor != this))
 	{
-		FVector LaunchVelocity = FVector(0.0f, 0.0f, 2000.0f);
+		FVector LaunchVelocity = FVector(0.0f, 0.0f, 1300.0f);
 		character->LaunchCharacter(LaunchVelocity, true, true);
 		
 	}
