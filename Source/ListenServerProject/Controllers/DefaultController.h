@@ -37,5 +37,10 @@ private:
 
 private:
 	float TimeLeft;
+	float Percent;
+
+	float GameStartTime;
+	float GamePlayTime;
+	float GameOverTime;
 
 };

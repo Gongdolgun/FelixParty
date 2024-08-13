@@ -38,7 +38,7 @@ void ABombGameMode::OnPostLogin(AController* NewPlayer)
 		// 모든 플레이어가 로그인한 후 10초 동안 대기
         if (PlayerControllers.Num() == 1) // 첫 번째 플레이어가 로그인한 경우
         {
-            GetWorldTimerManager().SetTimer(GameStartTimerHandle, this, &ABombGameMode::StartGame, 10.0f, false);
+            GetWorldTimerManager().SetTimer(GameStartTimerHandle, this, &ABombGameMode::StartGame, 3.0f, false);
         }
 	}
 }

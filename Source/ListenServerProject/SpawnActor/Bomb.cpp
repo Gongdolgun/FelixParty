@@ -28,7 +28,7 @@ ABomb::ABomb()
 
 	CountDownWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
-	TotalCountdownTime = 10.0f;
+	TotalCountdownTime = 20.0f;
 	ElapseTime = 0.0f;
 	
 }
@@ -61,7 +61,7 @@ void ABomb::BeginPlay()
 			UCountDown* CountdownWidget = Cast<UCountDown>(CountDownWidget->GetWidget());
 			if (CountdownWidget)
 			{
-				CountdownWidget->UpdateCountdown(10); // 초기 카운트다운 값을 설정
+				CountdownWidget->UpdateCountdown(20.0f); // 초기 카운트다운 값을 설정
 			}
 
 			CountDownWidget->AttachToComponent(Sphere, FAttachmentTransformRules::KeepRelativeTransform);
@@ -106,7 +106,6 @@ void ABomb::OnRep_UpdateBombLocation()
 
 void ABomb::OnRep_CountdownSound()
 {
-	// 추가한 부분
 	if (Audio && CountdownSound)
 	{
 		Audio->SetSound(CountdownSound);
@@ -148,7 +147,7 @@ void ABomb::StartCountdown()
 
 void ABomb::MultiStartCountdown_Implementation()
 {
-	TotalCountdownTime = 10.0f;
+	TotalCountdownTime = 20.0f;
 	ElapseTime = 0.0f;
 
 	if (Audio && CountdownSound)
@@ -183,14 +182,14 @@ void ABomb::UpdateShakeEffect(float DeltaTime)
 
 	SetActorLocation(newLocation);
 
-	// 흔들림 효과 위치를 복제
+	// 흔들림 효과 위치 복제
 	BombLocation = newLocation;
 }
 
 void ABomb::ResetShakeEffect()
 {
 	ElapseTime = 0.0f;
-	TotalCountdownTime = 10.0f;
+	TotalCountdownTime = 20.0f;
 }
 
 void ABomb::UpdateCountdownWidget(float DeltaTime)
