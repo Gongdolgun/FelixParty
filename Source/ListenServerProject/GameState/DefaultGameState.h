@@ -43,6 +43,9 @@ public:
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	TArray<FPlayerInGameData> PlayerDatas;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool IsReady = false;
+
 protected:
 	// Game State
 	UPROPERTY(Replicated, BlueprintReadOnly)

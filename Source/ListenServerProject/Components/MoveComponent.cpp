@@ -57,3 +57,47 @@ void UMoveComponent::Jump()
 	if(Owner != nullptr && CanMove)
 		Owner->Jump();
 }
+
+void UMoveComponent::DoCrouch()
+{
+	if (Owner->GetMovementComponent()->IsCrouching())
+	{
+		UnCrouch();
+	}
+
+	else
+	{
+		Crouch();
+	}
+}
+
+void UMoveComponent::Crouch()
+{
+	if (Owner != nullptr && CanMove && Owner->CanJump() == true)
+	{
+		Owner->Crouch();
+		EnableControlRotation();
+	}
+		
+}
+
+void UMoveComponent::UnCrouch()
+{
+	if (Owner != nullptr && CanMove)
+	{
+		Owner->UnCrouch();
+		DisableControlRotation();
+	}
+}
+
+void UMoveComponent::EnableControlRotation()
+{
+	Owner->bUseControllerRotationYaw = true;
+	Owner->GetCharacterMovement()->bOrientRotationToMovement = false;
+}
+
+void UMoveComponent::DisableControlRotation()
+{
+	Owner->bUseControllerRotationYaw = false;
+	Owner->GetCharacterMovement()->bOrientRotationToMovement = true;
+}

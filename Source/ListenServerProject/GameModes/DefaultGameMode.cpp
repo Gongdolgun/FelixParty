@@ -11,20 +11,35 @@ void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 
 	FString ParamValue;
 	UKismetSystemLibrary::ParseParamValue(OptionsString, FString("playercount"), ParamValue);
-	
-	if(ConnectedPlayers.Num() < FCString::Atoi(*ParamValue))
+
+	if (!IsDebugging)
 	{
-		if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
+		// 플레이어들 접속 확인
+		if (ConnectedPlayers.Num() < FCString::Atoi(*ParamValue))
 		{
-			ConnectedPlayers.Add(Controller);
+			if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
+			{
+				ConnectedPlayers.Add(Controller);
+			}
+		}
+
+		else
+		{
+			if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
+			{
+				Controller->LeaveSessionInProgress();
+			}
 		}
 	}
 
 	else
 	{
-		if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
+		if (ConnectedPlayers.Num() < FCString::Atoi(*ParamValue))
 		{
-			Controller->LeaveSessionInProgress();
+			if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
+			{
+				ConnectedPlayers.Add(Controller);
+			}
 		}
 	}
 }

@@ -26,8 +26,14 @@ void UAnimInstance_DefaultCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	Speed = OwnerCharacter->GetVelocity().Size2D();
 	bFalling = OwnerCharacter->GetCharacterMovement()->IsFalling();
 	bUseControlYaw = OwnerCharacter->bUseControllerRotationYaw;
+	bIsCrouching = OwnerCharacter->GetMovementComponent()->IsCrouching();
 
-	// 일정 속도 이상일 때만 움직일 수 있도록. 쓸만한지는 모르겠음 그냥 Unreal 5에서 구현되어있길래 만듦
+	FRotator rotator = OwnerCharacter->GetVelocity().ToOrientationRotator();
+	FRotator rotator2 = OwnerCharacter->GetControlRotation();
+	FRotator delta = UKismetMathLibrary::NormalizedDeltaRotator(rotator, rotator2);
+	PrevRotation = UKismetMathLibrary::RInterpTo(PrevRotation, delta, DeltaSeconds, 25);
+	Direction = PrevRotation.Yaw;
+
 	if (Speed > 3.0f)
 	{
 		FVector CurrentAcceleration = OwnerCharacter->GetCharacterMovement()->GetCurrentAcceleration();

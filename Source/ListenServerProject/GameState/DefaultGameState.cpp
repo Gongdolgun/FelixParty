@@ -8,7 +8,7 @@ ADefaultGameState::ADefaultGameState()
 	PrimaryActorTick.bCanEverTick = true;
 
 	bReplicates = true;
-	GameStateType = EGameStateType::GameStart;
+	GameStateType = EGameStateType::Ready;
 }
 
 void ADefaultGameState::BeginPlay()
@@ -22,7 +22,10 @@ void ADefaultGameState::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	SetTimer(DeltaSeconds);
+	if (IsReady)
+	{
+		SetTimer(DeltaSeconds);
+	}
 
 }
 
@@ -43,6 +46,10 @@ void ADefaultGameState::SetTimer(float InTime)
 {
 	switch (GameStateType)
 	{
+	case EGameStateType::Ready:
+		SetGameState(EGameStateType::GameStart);
+		break;
+
 	case EGameStateType::GameStart:
 		if (GameStartTime >= 0.0f)
 		{

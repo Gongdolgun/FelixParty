@@ -16,6 +16,9 @@ public:
 public:
 	TArray<class ADefaultController*> ConnectedPlayers;
 
+	UPROPERTY(EditAnywhere)
+	bool IsDebugging = false;
+
 public:
 	void UpdatePlayer();
 };

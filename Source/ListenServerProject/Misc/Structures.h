@@ -128,6 +128,9 @@ struct FPlayerInGameData
     UPROPERTY(BlueprintReadOnly)
     int32 Score;
 
+    UPROPERTY(BlueprintReadOnly)
+    bool Ready = false;
+
     FPlayerInGameData()
         : PlayerName(TEXT(""))
         , Score(0)
