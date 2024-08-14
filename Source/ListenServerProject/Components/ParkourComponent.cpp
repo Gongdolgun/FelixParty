@@ -150,19 +150,19 @@ void UParkourComponent::ParkourTrace(FParkourStruct InParkourLocation, float InI
 	// 각 방향의 히트 결과 확인
 	for (int32 i = 0; i < Arrows.Num(); i++)
 	{
-		if (i < HitResults.Num()) // HitResults의 범위 체크
+		if (i < HitResults.Num()) 
 		{
 			if (i != (int32)EParkourArrowType::Down)
 			{
 				if (!HitResults[i].bBlockingHit)
 				{
-					bAllHit = false; // 블로킹 히트가 없으면 false로 설정
+					bAllHit = false; 
 				}
 			}
 
 			else
 			{
-				bDownHit = HitResults[i].bBlockingHit; // Down 방향의 체크
+				bDownHit = HitResults[i].bBlockingHit; 
 			}
 		}
 	}
@@ -174,7 +174,6 @@ void UParkourComponent::ParkourTrace(FParkourStruct InParkourLocation, float InI
 		if (OwnerCharacter->GetCharacterMovement()->IsFalling())
 		{
 			OutParkourStruct.ParkourType = EParkourType::Jump;
-
 		}
 
 		else
@@ -276,7 +275,25 @@ void UParkourComponent::ParkourCheck(float InSecondaryTraceZOffset, float InFall
 		// High Or Low
 		else
 		{
-			ParkourPos1 = falling_HitResult.ImpactPoint + (OwnerCharacter->GetActorForwardVector() * -10.0f);
+			float Height = falling_ImpactPoint.Z - OwnerCharacter->GetActorLocation().Z;
+			CLog::Print(Height);
+			bool bHeightCheck = true;
+			bHeightCheck &= 20.0f < Height;
+			bHeightCheck &= Height < 45.0f;
+
+			// 일반 파쿠르에서 Low와 High 의 사이
+			if (bHeightCheck == true)
+			{
+				OutParkourStruct.ParkourType = EParkourType::Jump;
+				ParkourPos1 = falling_HitResult.ImpactPoint + (OwnerCharacter->GetActorForwardVector() * 8.0f);
+			}
+
+			else
+			{
+				ParkourPos1 = falling_HitResult.ImpactPoint + (OwnerCharacter->GetActorForwardVector() * -10.0f);
+			}
+
+			
 		}
 
 		ParkourPos2 = falling_HitResult.ImpactPoint + (OwnerCharacter->GetActorForwardVector() * 120.0f);

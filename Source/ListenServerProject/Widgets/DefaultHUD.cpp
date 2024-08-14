@@ -38,7 +38,6 @@ void ADefaultHUD::AddCharacterOverlay()
 		CharacterOverlay->AddToViewport();
 	}
 
-
 }
 
 
