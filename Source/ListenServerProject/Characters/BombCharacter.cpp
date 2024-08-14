@@ -48,10 +48,25 @@ void ABombCharacter::BeginPlay()
 		CameraActor = Cast<ACameraActor>(CameraActors[0]);
 	}
 
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-	if (PlayerController && CameraActor)
+	TArray<AActor*> TempPlayerControllers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController::StaticClass(), TempPlayerControllers);
+
+	TArray<APlayerController*> PlayerControllers;
+	for (AActor* Actor : TempPlayerControllers)
 	{
-		PlayerController->SetViewTarget(CameraActor); // 기존 카메라로 뷰 전환
+		APlayerController* PC = Cast<APlayerController>(Actor);
+		if (PC)
+		{
+			PlayerControllers.Add(PC); // 유효한 APlayerController만 배열에 추가
+		}
+	}
+
+	for (APlayerController* PC : PlayerControllers)
+	{
+		if (PC && CameraActor)
+		{
+			PC->SetViewTarget(CameraActor); // 각 플레이어 컨트롤러에 대해 카메라 설정
+		}
 	}
 
 	// Hand_R_Sphere에 SphereComponent 장착
@@ -222,7 +237,7 @@ void ABombCharacter::ServerSpawnRestraint_Implementation()
 		FActorSpawnParameters params;
 		params.Owner = this;
 
-		FVector location = this->GetActorLocation() + this->GetActorForwardVector() * 200;
+		FVector location = this->GetActorLocation() + this->GetActorForwardVector() * 100;
 		FRotator rotation = FVector(this->GetActorForwardVector()).Rotation();
 		FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
 
