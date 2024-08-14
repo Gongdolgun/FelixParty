@@ -75,9 +75,12 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void ChangeMaterial_NMC(FColor InColor);
 
+	UFUNCTION()
+	void PlayMaterialEventOnGameStart(EGameStateType InPrevGameType, EGameStateType InNewGameType);
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void PlayMaterialEvent(EGameStateType InPrevGameType, EGameStateType InNewGameType);
-	void PlayMaterialEvent_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType);
+	void PlayMaterialEvent();
+	void PlayMaterialEvent_Implementation();
 
 	void ChangeMaterial(FColor InColor);
 

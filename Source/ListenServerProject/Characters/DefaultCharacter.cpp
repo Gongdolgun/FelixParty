@@ -10,6 +10,7 @@
 #include "Global.h"
 #include "Controllers/DefaultController.h"
 #include "GameModes/DefaultGameMode.h"
+#include "GameState/DefaultGameState.h"
 
 ADefaultCharacter::ADefaultCharacter()
 {
@@ -57,6 +58,10 @@ void ADefaultCharacter::BeginPlay()
 		}
 	}
 
+	ADefaultGameState* DefaultGameState = GetWorld()->GetGameState<ADefaultGameState>();
+	if (DefaultGameState != nullptr)
+		DefaultGameState->OnGameStateTypeChanged.AddDynamic(this, &ADefaultCharacter::PlayMaterialEventOnGameStart);
+
 	UpdatePlayer_Server();
 }
 
@@ -101,7 +106,14 @@ void ADefaultCharacter::UpdatePlayer_Server_Implementation()
 		DefaultGameMode->UpdatePlayer();
 }
 
-void ADefaultCharacter::PlayMaterialEvent_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)
+void ADefaultCharacter::PlayMaterialEventOnGameStart(EGameStateType InPrevGameType, EGameStateType InNewGameType)
+{
+	// 게임 시작 시 머티리얼 이벤트 발생
+	if (InNewGameType == EGameStateType::GameStart)
+		PlayMaterialEvent();
+}
+
+void ADefaultCharacter::PlayMaterialEvent_Implementation()
 {
 }
 
@@ -134,4 +146,15 @@ void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 			MaterialInstance->SetVectorParameterValue(FName("Tint"), InColor);
 		}
 	}
+
+	/*if(GetMesh()->GetOverlayMaterial() != nullptr)
+	{
+		UMaterialInstanceDynamic* MaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+
+		if (MaterialInstance)
+		{
+			MaterialInstance->SetVectorParameterValue(FName("Color"), InColor);
+			GetMesh()->SetOverlayMaterial(MaterialInstance);
+		}
+	}*/
 }
