@@ -21,6 +21,9 @@ void ADefaultController::BeginPlay()
 	DefaultHUD = Cast<ADefaultHUD>(GetHUD());
 	DefaultGameState = Cast<ADefaultGameState>(UGameplayStatics::GetGameState(this));
 
+	if (DefaultGameState != nullptr)
+		DefaultGameState->OnGameStateTypeChanged.AddDynamic(this, &ADefaultController::WidgetTypeChange_NMC);
+
 	// 매치 시간 초기값 세팅
 	GameStartTime = DefaultGameState->GameStartTime;
 	GamePlayTime = DefaultGameState->GamePlayTime;
@@ -89,17 +92,47 @@ void ADefaultController::SetHUDTime()
 	int32 Seconds = CountdownInt - Minutes * 60;
 
 	FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
-	DefaultHUD->CharacterOverlay->CountdownText->SetText(FText::FromString(CountdownText));
 
-	// Percent
-	DefaultHUD->CharacterOverlay->Percent = Percent;
+	UCharacterOverlay* CharacterOverlay = Cast<UCharacterOverlay>(DefaultHUD->CharacterOverlay);
+	if (CharacterOverlay != nullptr)
+	{
+		CharacterOverlay->CountdownText->SetText(FText::FromString(CountdownText));
+
+		// Percent
+		CharacterOverlay->Percent = Percent;
+	}
 }
 
 void ADefaultController::SetGameStateType()
 {
 	if (DefaultHUD == nullptr) return;
 
-	DefaultHUD->CharacterOverlay->GameStateType->SetText(FText::FromString(EnumToString(DefaultGameState->GetGameStateType())));
+	UCharacterOverlay* CharacterOverlay = Cast<UCharacterOverlay>(DefaultHUD->CharacterOverlay);
+	if (CharacterOverlay != nullptr)
+	{
+		CharacterOverlay->GameStateType->SetText(FText::FromString(EnumToString(DefaultGameState->GetGameStateType())));
+	}
+}
+
+void ADefaultController::WidgetTypeChange_NMC_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)
+{
+	if (DefaultHUD == nullptr) return;
+
+	DefaultHUD->ChangeWidgetClass(InPrevGameType, InNewGameType);
+}
+
+void ADefaultController::UpdateReadyStatus_Implementation()
+{
+	if (DefaultGameState == nullptr) return;
+
+	for(auto& PlayerData : DefaultGameState->PlayerDatas)
+	{
+		if(PlayerData.PlayerName == GetPlayerState<APlayerState>()->GetPlayerName())
+		{
+			PlayerData.Ready = !PlayerData.Ready;
+			break;
+		}
+	}
 }
 
 void ADefaultController::LeaveSessionInProgress_Implementation()

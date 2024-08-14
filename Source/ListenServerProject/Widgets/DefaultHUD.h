@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "GameState/DefaultGameState.h"
 #include "DefaultHUD.generated.h"
 
 UCLASS()
@@ -13,18 +14,21 @@ public:
 	virtual void DrawHUD() override;
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
-	TSubclassOf<class UUserWidget> CharacterOverlayClass;
+	TArray<TSubclassOf<class UUserWidget>> CharacterOverlayClasses;
 
-	class UCharacterOverlay* CharacterOverlay;
+	UUserWidget* CharacterOverlay;
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
 public:
-	void AddCharacterOverlay();
+	void AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacterOverlay);
 
-private:
-
+public:
+	UFUNCTION()
+	void ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
 };
+
+

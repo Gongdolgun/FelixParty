@@ -17,8 +17,8 @@ void ADefaultHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AddCharacterOverlay();
-
+	if(CharacterOverlayClasses.Num() > 0)
+		AddCharacterOverlay(CharacterOverlayClasses[0]);
 }
 
 void ADefaultHUD::Tick(float DeltaSeconds)
@@ -27,19 +27,35 @@ void ADefaultHUD::Tick(float DeltaSeconds)
 
 }
 
-void ADefaultHUD::AddCharacterOverlay()
+void ADefaultHUD::AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacterOverlay)
 {
 	APlayerController* PlayerController = GetOwningPlayerController();
 	if (PlayerController == nullptr) return;
 
-	if (CharacterOverlayClass)
+	if (InCharacterOverlay)
 	{
-		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
-		CharacterOverlay->AddToViewport();
+		if (CharacterOverlay != nullptr)
+			CharacterOverlay->RemoveFromParent();
+
+		CharacterOverlay = CreateWidget<UUserWidget>(PlayerController, InCharacterOverlay);
+
+		if(CharacterOverlay != nullptr)
+			CharacterOverlay->AddToViewport();
 	}
-
-
 }
 
+void ADefaultHUD::ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateType InNewGameType)
+{
+	switch (InNewGameType)
+	{
+	case EGameStateType::GameStart:
+		if(CharacterOverlayClasses.Num() >= 2)
+			AddCharacterOverlay(CharacterOverlayClasses[1]);
+		break;
 
-
+	case EGameStateType::GameOver:
+		if (CharacterOverlayClasses.Num() >= 3)
+			AddCharacterOverlay(CharacterOverlayClasses[2]);
+		break;
+	}
+}

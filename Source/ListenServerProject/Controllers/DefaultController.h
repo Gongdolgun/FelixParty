@@ -28,6 +28,12 @@ public:
 	UFUNCTION(Client, Reliable)
 	void LeaveSessionInProgress();
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void UpdateReadyStatus();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void WidgetTypeChange_NMC(EGameStateType InPrevGameType, EGameStateType InNewGameType);
+
 private:
 	UPROPERTY()
 	class ADefaultHUD* DefaultHUD;

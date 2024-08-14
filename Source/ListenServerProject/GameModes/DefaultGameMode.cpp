@@ -14,6 +14,7 @@ void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 
 	if (!IsDebugging)
 	{
+		// 플레이어들 접속 확인
 		if (ConnectedPlayers.Num() < FCString::Atoi(*ParamValue))
 		{
 			if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
