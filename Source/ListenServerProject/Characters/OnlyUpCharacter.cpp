@@ -44,12 +44,12 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 	
 		case EParkourArrowType::Left:
 			Arrows[i]->ArrowColor = FColor::Blue;
-			Arrows[i]->SetRelativeLocation(FVector(0.0f, -30.0f, 20.0f));
+			Arrows[i]->SetRelativeLocation(FVector(0.0f, -20.0f, 20.0f));
 			break;
 	
 		case EParkourArrowType::Right:
 			Arrows[i]->ArrowColor = FColor::Green;
-			Arrows[i]->SetRelativeLocation(FVector(0.0f, 30.0f, 20.0f));
+			Arrows[i]->SetRelativeLocation(FVector(0.0f, 20.0f, 20.0f));
 			break;
 
 		case EParkourArrowType::Down:
@@ -66,12 +66,12 @@ void AOnlyUpCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 }
 
 void AOnlyUpCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 
 }
 
@@ -83,6 +83,8 @@ void AOnlyUpCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	{
 		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, this, &ThisClass::Run);
 		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, this, &ThisClass::Walk);
+
+		EnhancedInputComponent->BindAction(IA_Crouch, ETriggerEvent::Started, MoveComponent, &UMoveComponent::DoCrouch);
 	}
 }
 
@@ -132,6 +134,21 @@ void AOnlyUpCharacter::Jump()
 	{
 		//MoveComponent->Jump();
 		Super::Jump();
+	}
+
+	if (GetMovementComponent()->IsCrouching() == true)
+	{
+		MoveComponent->UnCrouch();
+	}
+}
+
+void AOnlyUpCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	if (GetMovementComponent()->IsCrouching() == true)
+	{
+		MoveComponent->UnCrouch();
 	}
 }
 
@@ -194,3 +211,4 @@ void AOnlyUpCharacter::Run()
 {
 	Run_Server();
 }
+
