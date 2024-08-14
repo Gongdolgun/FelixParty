@@ -19,15 +19,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(EditAnywhere)
-	class UBoxComponent* Box;
-
-	UPROPERTY(EditDefaultsOnly)
-	class UNiagaraComponent* Niagara;
-
 	UPROPERTY(VisibleDefaultsOnly)
 	UStaticMeshComponent* StaticMesh;
 
-public:
 
 };

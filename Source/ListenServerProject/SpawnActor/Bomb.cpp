@@ -101,7 +101,7 @@ void ABomb::OnRep_UpdateBombLocation()
 	// 클라이언트들에게 위치 변경을 알리기 위해
 	SetActorLocation(BombLocation);
 	UpdateShakeEffect(GetWorld()->GetDeltaSeconds());
-	CLog::Log(*BombLocation.ToString());
+	//CLog::Log(*BombLocation.ToString());
 }
 
 void ABomb::OnRep_CountdownSound()
@@ -164,7 +164,7 @@ void ABomb::UpDateSoundAndColor(float DeltaTime)
 	float remainingTime = TotalCountdownTime - ElapseTime;
 
 	float progress = ElapseTime / TotalCountdownTime;
-	BombColor = FVector(FLinearColor::LerpUsingHSV(FLinearColor::Blue, FLinearColor::Red, progress));
+	BombColor = FVector(FLinearColor::LerpUsingHSV(FLinearColor::Black, FLinearColor::Red, progress));
 
 	if (HasAuthority())
 	{

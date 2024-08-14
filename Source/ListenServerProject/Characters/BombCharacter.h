@@ -24,6 +24,10 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	ACameraActor* CameraActor;
+
 private:
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* Attack_Montage;
@@ -172,9 +176,13 @@ public:
 	float GetCurrentMovementSpeed() const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CoolTime")
-	float WallCoolTime = 10.0f; 
+	float WallCoolTime = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CoolTime")
+	float RestraintCoolTime = 30.0f;
 
 	float LastWallSpawnTime;
 
+	float LastRestraintSpawnTime;
 };
 

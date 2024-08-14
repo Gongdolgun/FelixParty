@@ -11,12 +11,12 @@
 
 ADefaultController::ADefaultController()
 {
+
 }
 
 void ADefaultController::BeginPlay()
 {
 	Super::BeginPlay();
-
 
 	DefaultHUD = Cast<ADefaultHUD>(GetHUD());
 	DefaultGameState = Cast<ADefaultGameState>(UGameplayStatics::GetGameState(this));
@@ -28,6 +28,7 @@ void ADefaultController::BeginPlay()
 	GameStartTime = DefaultGameState->GameStartTime;
 	GamePlayTime = DefaultGameState->GamePlayTime;
 	GameOverTime = DefaultGameState->GameOverTime;
+
 }
 
 void ADefaultController::Tick(float DeltaSeconds)
