@@ -2,11 +2,20 @@
 
 void UStartTimer::UpdateTimer(float CurrentTime)
 {
-	TimerText->SetText(FText::AsNumber(CurrentTime));
-	//TimerText->SetText(FText::FromString(FString::Printf(TEXT("%.2f"), CurrentTime)));
+	if (TimerText)
+	{
+		TimerText->SetText(FText::FromString(FString::Printf(TEXT("%.2f"), FMath::Clamp(CurrentTime, 0.0f, 60.0f))));
+	}
 }
 
-void UStartTimer::PauseTimer()
+void UStartTimer::UpdateRandomTime(float RandomTime)
 {
+	if (RandomTimeText)
+	{
+		RandomTimeText->SetText(FText::FromString(FString::Printf(TEXT("Random Time : %.2f"), RandomTime)));
 
+	/*	FString DisplayText = FString::Printf(TEXT("·£´ý ½Ã°£: %.2f"), RandomTime);
+		RandomTimeText->SetText(FText::FromString(DisplayText));*/
+	}
 }
+

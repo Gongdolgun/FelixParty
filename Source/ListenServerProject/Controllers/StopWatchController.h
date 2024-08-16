@@ -9,5 +9,8 @@ UCLASS()
 class LISTENSERVERPROJECT_API AStopWatchController : public ADefaultController
 {
 	GENERATED_BODY()
-	
+
+public:
+	float RandomTime;
+
 };

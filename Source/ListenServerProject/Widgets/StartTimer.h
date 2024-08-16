@@ -18,7 +18,10 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TimerText;
 
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* RandomTimeText;
+
 	void UpdateTimer(float CurrentTime);
 
-	void PauseTimer(); 
+	void UpdateRandomTime(float RandomTime);
 };

@@ -45,7 +45,7 @@ void AStopWatchCharacter::Action()
 	{
 		GameMode->StopTimer();
 
-		// 위젯에서 타이머 업데이트 정지
+		StopTime = GameMode->ElapsedTime;
 		GameMode->CheckResult(GameMode->ElapsedTime); // 멈춘 시간으로 결과 확인
 	}
 }

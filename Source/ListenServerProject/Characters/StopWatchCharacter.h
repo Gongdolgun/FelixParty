@@ -32,6 +32,8 @@ public:
 	UFUNCTION(Client, Reliable)
 	void MultiStopTimer(float Time);
 
+public:
+	float StopTime;
 };
 
 

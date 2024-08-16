@@ -30,22 +30,29 @@ public:
 
 	void StopTimer();
 
-	void PauseTimer();
-
 	UFUNCTION(NetMulticast, Reliable)
-	void MultiStartTimer(float Duration);
+	void MultiStartTimer();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiStopTimer();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MultiPauseTimer();
+	void MultiRandomTimer();
+
+	UFUNCTION(Server, Reliable)
+	void ServerStartTImer();
+
+	UFUNCTION(Server, Reliable)
+	void ServerStopTImer();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRandomTImer();
 
 	void RandomTimer();
 
 	void TimerEnd();
 
-	void CheckResult(float StopdTime);
+	void CheckResult(float StopTime);
 
 private:
 	TArray<class ADefaultController*> PlayerControllers;
@@ -53,11 +60,14 @@ private:
 public:
 	UStartTimer* StartTimerWidget;
 
-	float RandomTime;
-	
 	float ElapsedTime; // 경과 시간
 
 	bool bGameActive; // 게임 활성화 상태
 
+	TMap<AController*, float> PlayerRandomTimes;
+
 	FTimerHandle TimerHandle;
+
+	FTimerHandle RandomTimerHandle;
+
 };
