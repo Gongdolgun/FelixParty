@@ -58,6 +58,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TArray<UMaterialInstanceDynamic*> MyMaterials;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInterface* OverlayMaterial;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Action();

@@ -62,6 +62,7 @@ void ADefaultCharacter::BeginPlay()
 	if (DefaultGameState != nullptr)
 		DefaultGameState->OnGameStateTypeChanged.AddDynamic(this, &ADefaultCharacter::PlayMaterialEventOnGameStart);
 
+	
 	UpdatePlayer_Server();
 }
 
@@ -133,6 +134,7 @@ void ADefaultCharacter::ChangeMaterial_Server_Implementation(FColor InColor)
 
 void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 {
+	// Mesh Material 변경
 	int32 MaterialCount = GetMesh()->GetNumMaterials();
 	for (int32 i = 0; i < MaterialCount; i++)
 	{
@@ -147,14 +149,26 @@ void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 		}
 	}
 
-	/*if(GetMesh()->GetOverlayMaterial() != nullptr)
+	if(OverlayMaterial != nullptr)
 	{
-		UMaterialInstanceDynamic* MaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+		UMaterialInstanceDynamic* MaterialInstance = UMaterialInstanceDynamic::Create(OverlayMaterial, this);
 
-		if (MaterialInstance)
+		if(MaterialInstance)
 		{
-			MaterialInstance->SetVectorParameterValue(FName("Color"), InColor);
+			MaterialInstance->SetVectorParameterValue(FName("Color"), FLinearColor(InColor));
 			GetMesh()->SetOverlayMaterial(MaterialInstance);
+		}
+	}
+
+	// Overlay Material 변경
+	/*if(OverlayMaterial!= nullptr)
+	{
+		UMaterialInstanceDynamic* OverlayMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+
+		if (OverlayMaterial)
+		{
+			OverlayMaterial->SetVectorParameterValue(FName("Color"), FLinearColor(InColor));
+			GetMesh()->SetOverlayMaterial(OverlayMaterial);
 		}
 	}*/
 }

@@ -3,6 +3,7 @@
 #include "Global.h"
 #include "Components/MoveComponent.h"
 #include "Controllers/DefaultController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameModes/FPSGameMode.h"
 #include "GameState/DefaultGameState.h"
 #include "Net/UnrealNetwork.h"
@@ -16,6 +17,11 @@ void AFPSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	HP = MaxHP;
+}
+
+void AFPSCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
 }
 
 void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
@@ -52,10 +58,26 @@ void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 	}
 }
 
+void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, this, &ThisClass::SetSpeed, 800.f, true);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, this, &ThisClass::SetSpeed, 500.f, false);
+	}
+}
+
 void AFPSCharacter::Action()
 {
-	if(WeaponComponent != nullptr)
+	if (WeaponComponent != nullptr)
+	{
+		if (isRun)
+			SetSpeed(500.f, false);
+
 		WeaponComponent->Begin_Fire();
+	}
 }
 
 void AFPSCharacter::End_Action()
@@ -126,6 +148,27 @@ void AFPSCharacter::LineTrace(FWeaponData WeaponData, FHitData HitData)
 
 	FireEvent_NMC(direction, hitResult);
 }
+
+void AFPSCharacter::SetSpeed(float InSpeed, bool InIsRun)
+{
+	if (!isAim)
+	{
+		isRun = InIsRun;
+		SetSpeed_Server(InSpeed);
+	}
+}
+
+void AFPSCharacter::SetSpeed_Server_Implementation(float InSpeed)
+{
+	SetSpeed_NMC(InSpeed);
+}
+
+void AFPSCharacter::SetSpeed_NMC_Implementation(float InSpeed)
+{
+	
+	GetCharacterMovement()->MaxWalkSpeed = InSpeed;
+}
+
 
 void AFPSCharacter::RespawnCharacter()
 {
