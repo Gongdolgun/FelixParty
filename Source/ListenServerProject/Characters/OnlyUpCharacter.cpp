@@ -212,3 +212,8 @@ void AOnlyUpCharacter::Run()
 	Run_Server();
 }
 
+void AOnlyUpCharacter::PlayerMaterialEventOnSpawn_Implementation()
+{
+
+}
+
