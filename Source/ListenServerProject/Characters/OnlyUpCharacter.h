@@ -83,6 +83,8 @@ public:
 	void Jump() override;
 	void Landed(const FHitResult& Hit) override;
 
+	FORCEINLINE int32 GetSpawnIndex() { return SpawnIndex; }
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	void PlayParkour(FVector InParkourPos1, FVector InParkourPos2, float InZOffsetHand, float InZOffsetLanding, float InMontageLength);
@@ -102,5 +104,15 @@ protected:
 	void Run_Server();
 
 	void Run();
+
+public:
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PlayerMaterialEventOnSpawn();
+	void PlayerMaterialEventOnSpawn_Implementation();
+
+private:
+	int32 SpawnIndex = 2;
+
+
 
 };
