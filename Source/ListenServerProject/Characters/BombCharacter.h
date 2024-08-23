@@ -65,6 +65,8 @@ public:
 
 	class ABomb* Bomb;
 
+	ACameraActor* TopDownCameraActor;
+
 public:
 	void Action() override;
 
