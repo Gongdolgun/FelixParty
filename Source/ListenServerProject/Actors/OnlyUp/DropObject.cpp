@@ -49,8 +49,6 @@ void ADropObject::StartSwing()
 
 void ADropObject::Swing()
 {
-	CLog::Print("Swing");
-
 	// 현재 Roll 각도 계산
 	float CurrentRoll = FMath::Sin(GetWorld()->GetTimeSeconds() * SwingSpeed) * MaxSwingAmount;
 
@@ -61,7 +59,6 @@ void ADropObject::Swing()
 
 void ADropObject::DropObject()
 {
-	CLog::Print("Drop");
 	GetWorld()->GetTimerManager().ClearTimer(SwingTimerHandle);
 
 	StaticMesh->SetSimulatePhysics(true);
