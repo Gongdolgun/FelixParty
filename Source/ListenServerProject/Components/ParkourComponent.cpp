@@ -24,7 +24,7 @@ UParkourComponent::UParkourComponent()
 	JumpStruct.ZOffsetHand = 0.0f;
 	JumpStruct.ZOffsetLanding = 30.0f;
 	JumpStruct.MontageLength = 0.9f;
-}
+}			 
 
 void UParkourComponent::BeginPlay()
 {
@@ -47,6 +47,7 @@ void UParkourComponent::BeginPlay()
 void UParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 
 }
 
@@ -113,8 +114,8 @@ void UParkourComponent::CorrectPlayerLocation(EParkourType ParkourType)
 	}
 
 	falling_ImpactPoint = FVector(
-		location.X, location.Y, falling_ImpactPoint.Z + AddPlayerLocationZ)
-		+ FVector(forward * ParkourRelative.AddPlayerLocationForward);
+		location.X, location.Y,falling_ImpactPoint.Z + AddPlayerLocationZ)
+	+ FVector(forward * ParkourRelative.AddPlayerLocationForward);
 
 	OwnerCharacter->SetActorLocation(falling_ImpactPoint);
 }
@@ -150,19 +151,19 @@ void UParkourComponent::ParkourTrace(FParkourStruct InParkourLocation, float InI
 	// 각 방향의 히트 결과 확인
 	for (int32 i = 0; i < Arrows.Num(); i++)
 	{
-		if (i < HitResults.Num())
+		if (i < HitResults.Num()) 
 		{
 			if (i != (int32)EParkourArrowType::Down)
 			{
 				if (!HitResults[i].bBlockingHit)
 				{
-					bAllHit = false;
+					bAllHit = false; 
 				}
 			}
 
 			else
 			{
-				bDownHit = HitResults[i].bBlockingHit;
+				bDownHit = HitResults[i].bBlockingHit; 
 			}
 		}
 	}
@@ -179,12 +180,12 @@ void UParkourComponent::ParkourTrace(FParkourStruct InParkourLocation, float InI
 		else
 		{
 			OutParkourStruct.ParkourType = EParkourType::High;
-
+			
 		}
 	}
 
 	// Down 방향에서만 충돌하면서, 점프 중이 아닐 때
-	else if (bDownHit && !OwnerCharacter->GetCharacterMovement()->IsFalling())
+	else if (bDownHit && !OwnerCharacter->GetCharacterMovement()->IsFalling()) 
 	{
 		// Down 방향에서만 충돌이 발생했는지 확인
 		if (!HitResults[(int32)EParkourArrowType::Left].bBlockingHit &&
@@ -254,7 +255,7 @@ void UParkourComponent::ParkourCheck(float InSecondaryTraceZOffset, float InFall
 		falling_ImpactPoint = falling_HitResult.ImpactPoint;
 
 		// Jump
-		if (parkourType == EParkourType::Jump)
+		if(parkourType == EParkourType::Jump)
 		{
 			// 30 이상이면 High로 변경
 			bool bHeightCheck = (falling_ImpactPoint.Z - OwnerCharacter->GetActorLocation().Z) > 50.0f;
@@ -279,7 +280,7 @@ void UParkourComponent::ParkourCheck(float InSecondaryTraceZOffset, float InFall
 			CLog::Print(Height);
 			bool bHeightCheck = true;
 			bHeightCheck &= 20.0f < Height;
-			bHeightCheck &= Height < 70.0f;
+			bHeightCheck &= Height < 45.0f;
 
 			// 일반 파쿠르에서 Low와 High 의 사이
 			if (bHeightCheck == true)
@@ -293,7 +294,7 @@ void UParkourComponent::ParkourCheck(float InSecondaryTraceZOffset, float InFall
 				ParkourPos1 = falling_HitResult.ImpactPoint + (OwnerCharacter->GetActorForwardVector() * -10.0f);
 			}
 
-
+			
 		}
 
 		ParkourPos2 = falling_HitResult.ImpactPoint + (OwnerCharacter->GetActorForwardVector() * 120.0f);
@@ -423,3 +424,5 @@ void UParkourComponent::PlayParkourMontage(EParkourType ParkourType)
 	if (OwnerCharacter->IsLocallyControlled())
 		PlayParkourMontage_Server(ParkourType);
 }
+
+

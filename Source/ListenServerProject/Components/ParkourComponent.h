@@ -8,18 +8,18 @@
 #include "ParkourComponent.generated.h"
 
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LISTENSERVERPROJECT_API UParkourComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
+public:	
 	UParkourComponent();
 
 protected:
 	virtual void BeginPlay() override;
 
-public:
+public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
@@ -41,7 +41,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ParkourTrace(FParkourStruct InParkourLocation, float InInitialTraceLength, float InSecondaryTraceZOffset, float InFallingHeightMultiplier);
+	void ParkourTrace(FParkourStruct InParkourLocation,float InInitialTraceLength, float InSecondaryTraceZOffset,float InFallingHeightMultiplier);
 
 	void ParkourCheck(float InSecondaryTraceZOffset, float InFallingHeightMultiplier, EParkourType InParkourType);
 
@@ -127,5 +127,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayParkourMontage(EParkourType ParkourType);
 
-
+	
 };
+
+
+
