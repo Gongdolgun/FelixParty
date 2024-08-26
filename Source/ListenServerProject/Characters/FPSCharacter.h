@@ -42,8 +42,17 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool isAim;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool isAction;
+
 private:
 	FTimerHandle RespawnTimer;
+
+	UPROPERTY(Replicated)
+	float CurrentSpeed;
+
+	UPROPERTY(Replicated)
+	bool canRun = false;
 
 public:
 	void SeperateServer(FWeaponData WeaponData, FHitData HitData);
@@ -59,13 +68,10 @@ public:
 	void Dead_NMC();
 
 	UFUNCTION(Server, Reliable)
-	void SetSpeed_Server(float InSpeed);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void SetSpeed_NMC(float InSpeed);
+	void SetSpeed_Server(bool InCanRun);
 
 	UFUNCTION(BlueprintCallable)
-	void SetSpeed(float InSpeed, bool InIsRun);
+	void SetSpeed(bool InIsRun);
 
 	void RespawnCharacter();
 };

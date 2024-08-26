@@ -17,11 +17,21 @@ void AFPSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	HP = MaxHP;
+	CurrentSpeed = GetCharacterMovement()->MaxWalkSpeed;
 }
 
 void AFPSCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	
+	if (canRun)
+		CurrentSpeed = FMath::Lerp(CurrentSpeed, 800.f, 2 * DeltaSeconds);
+
+	else
+		CurrentSpeed = 500.f;
+		//CurrentSpeed = FMath::Lerp(CurrentSpeed, 500.f, 2 * DeltaSeconds);
+
+	GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
 }
 
 void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
@@ -40,7 +50,7 @@ void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 			// Attacker에게 점수 추가
 			ADefaultCharacter* Attacker = Cast<ADefaultCharacter>(InActor);
 			AFPSGameMode* FPSGameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
-			
+			SetSpeed(isRun);
 			if(Attacker != nullptr && FPSGameMode != nullptr)
 			{
 				ADefaultGameState* DefaultGameState = Cast<ADefaultGameState>(FPSGameMode->GetGameState<ADefaultGameState>());
@@ -64,26 +74,29 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, this, &ThisClass::SetSpeed, 800.f, true);
-		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, this, &ThisClass::SetSpeed, 500.f, false);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, this, &ThisClass::SetSpeed, true);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, this, &ThisClass::SetSpeed, false);
 	}
 }
 
 void AFPSCharacter::Action()
 {
-	if (WeaponComponent != nullptr)
+	if (WeaponComponent != nullptr && MoveComponent->CanMove)
 	{
-		if (isRun)
-			SetSpeed(500.f, false);
-
+		isAction = true;
+		SetSpeed(isRun);
 		WeaponComponent->Begin_Fire();
 	}
 }
 
 void AFPSCharacter::End_Action()
 {
-	if (WeaponComponent != nullptr)
+	if (WeaponComponent != nullptr && MoveComponent->CanMove)
+	{
+		isAction = false;
+		SetSpeed(isRun);
 		WeaponComponent->End_Fire();
+	}
 }
 
 void AFPSCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -91,6 +104,8 @@ void AFPSCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, HP);
+	DOREPLIFETIME(ThisClass, canRun);
+	DOREPLIFETIME(ThisClass, CurrentSpeed);
 }
 
 void AFPSCharacter::SeperateServer(FWeaponData WeaponData, FHitData HitData)
@@ -149,26 +164,21 @@ void AFPSCharacter::LineTrace(FWeaponData WeaponData, FHitData HitData)
 	FireEvent_NMC(direction, hitResult);
 }
 
-void AFPSCharacter::SetSpeed(float InSpeed, bool InIsRun)
+void AFPSCharacter::SetSpeed(bool InIsRun)
 {
-	if (!isAim)
-	{
-		isRun = InIsRun;
-		SetSpeed_Server(InSpeed);
-	}
+	isRun = InIsRun;
+
+	if (!isAction && !isAim && isRun)
+		SetSpeed_Server(true);
+
+	else
+		SetSpeed_Server(false);
 }
 
-void AFPSCharacter::SetSpeed_Server_Implementation(float InSpeed)
+void AFPSCharacter::SetSpeed_Server_Implementation(bool InCanRun)
 {
-	SetSpeed_NMC(InSpeed);
+	canRun = InCanRun;
 }
-
-void AFPSCharacter::SetSpeed_NMC_Implementation(float InSpeed)
-{
-	
-	GetCharacterMovement()->MaxWalkSpeed = InSpeed;
-}
-
 
 void AFPSCharacter::RespawnCharacter()
 {
