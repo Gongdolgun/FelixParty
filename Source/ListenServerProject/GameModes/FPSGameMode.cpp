@@ -24,6 +24,7 @@ void AFPSGameMode::RespawnPlayer(AController* controller)
                 if (NewCharacter)
                 {
                     controller->Possess(NewCharacter);
+                    UpdatePlayer();
                     NewCharacter->PlayMaterialEvent();
                 }
             }

@@ -85,12 +85,14 @@ void AWeapon::Fire_Event(FVector direction, FHitResult HitResult)
 	if (WeaponData.Bullet != nullptr)
 	{
 		FVector location = Mesh->GetSocketLocation("Bullet");
+		FVector HitLocation = HitResult.Location; // 히트 지점
+		FVector BulletDirection = (HitLocation - location).GetSafeNormal(); // 발사 방향
 
 		FActorSpawnParameters params;
 		params.Owner = Owner;
 		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		AActor* bullet = GetWorld()->SpawnActor<AActor>(WeaponData.Bullet, location, direction.Rotation(), params);
+		AActor* bullet = GetWorld()->SpawnActor<AActor>(WeaponData.Bullet, location, BulletDirection.Rotation(), params);
 	}
 
 	// 카메라 셰이크

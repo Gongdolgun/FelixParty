@@ -29,6 +29,8 @@ void ADefaultController::BeginPlay()
 	GamePlayTime = DefaultGameState->GamePlayTime;
 	GameOverTime = DefaultGameState->GameOverTime;
 
+	SetShowMouseCursor(true);
+	SetInputMode(FInputModeUIOnly());
 }
 
 void ADefaultController::Tick(float DeltaSeconds)
@@ -118,6 +120,9 @@ void ADefaultController::SetGameStateType()
 void ADefaultController::WidgetTypeChange_NMC_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)
 {
 	if (DefaultHUD == nullptr) return;
+
+	SetShowMouseCursor(false);
+	SetInputMode(FInputModeGameOnly());
 
 	DefaultHUD->ChangeWidgetClass(InPrevGameType, InNewGameType);
 }

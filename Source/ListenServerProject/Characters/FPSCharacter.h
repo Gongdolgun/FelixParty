@@ -13,12 +13,18 @@ class LISTENSERVERPROJECT_API AFPSCharacter : public ADefaultCharacter
 public:
 	AFPSCharacter();
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 protected:
 	virtual void Action() override;
 	virtual void End_Action() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+public:
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_Run;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -30,8 +36,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Respawn_time = 3.f;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool isRun;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool isAim;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool isAction;
+
 private:
 	FTimerHandle RespawnTimer;
+
+	UPROPERTY(Replicated)
+	float CurrentSpeed;
+
+	UPROPERTY(Replicated)
+	bool canRun = false;
 
 public:
 	void SeperateServer(FWeaponData WeaponData, FHitData HitData);
@@ -45,6 +66,12 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Dead_NMC();
+
+	UFUNCTION(Server, Reliable)
+	void SetSpeed_Server(bool InCanRun);
+
+	UFUNCTION(BlueprintCallable)
+	void SetSpeed(bool InIsRun);
 
 	void RespawnCharacter();
 };

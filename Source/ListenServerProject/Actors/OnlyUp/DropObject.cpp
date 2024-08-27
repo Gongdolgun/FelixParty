@@ -65,7 +65,7 @@ void ADropObject::DropObject()
 	GetWorld()->GetTimerManager().ClearTimer(SwingTimerHandle);
 
 	StaticMesh->SetSimulatePhysics(true);
-	StaticMesh->AddImpulse(FVector(0, 0, -500.0f), NAME_None, true);
+	StaticMesh->AddImpulse(FVector(0, 0, -1000.0f), NAME_None, true);
 
 	// 5초 후 원래 위치로 돌아가는 타이머 설정
 	GetWorld()->GetTimerManager().SetTimer(DropTimerHandle, this, &ThisClass::RespawnOriginialLocation, 3.0f, false);
