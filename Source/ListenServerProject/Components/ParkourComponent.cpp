@@ -17,9 +17,9 @@ UParkourComponent::UParkourComponent()
     HighStruct.ZOffsetLanding = 30.0f;
     HighStruct.MontageLength = 1.1f;
 
-    LowStruct.ZOffsetHand = 0.0f;
-    LowStruct.ZOffsetLanding = 25.0f;
-    LowStruct.MontageLength = 0.8f;
+    LowStruct.ZOffsetHand = 5.0f;
+    LowStruct.ZOffsetLanding = 20.0f;
+    LowStruct.MontageLength = 0.6f;
 
     JumpStruct.ZOffsetHand = 0.0f;
     JumpStruct.ZOffsetLanding = 30.0f;
@@ -360,9 +360,26 @@ void UParkourComponent::LineTrace(EParkourArrowType InType, float InInitialTrace
     FVector end = start + (OwnerCharacter->GetActorForwardVector() * InInitialTraceLength);
     TArray<AActor*> ignores;
 
+    // 구의 반지름 설정
+    float sphereRadius = 5.0f; // 3cm의 반지름
+
     // 오브젝트 체크
-    UKismetSystemLibrary::LineTraceSingle(OwnerCharacter->GetWorld(), start, end, TraceType, false,
-        ignores, DrawDebug_Parkour, HitResults[(int32)InType], true, color, FLinearColor::White);
+    UKismetSystemLibrary::SphereTraceSingle(
+        OwnerCharacter->GetWorld(),
+        start,
+        end,
+        sphereRadius,
+        TraceType,
+        false,
+        ignores,
+        DrawDebug_Parkour,
+        HitResults[(int32)InType],
+        true,
+        color,
+        FLinearColor::White
+    );
+
+
 }
 
 bool UParkourComponent::Check_ObjectRotation()

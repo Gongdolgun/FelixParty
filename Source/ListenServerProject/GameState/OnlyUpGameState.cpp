@@ -12,6 +12,7 @@ void AOnlyUpGameState::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 }
 
 void AOnlyUpGameState::Tick(float DeltaSeconds)

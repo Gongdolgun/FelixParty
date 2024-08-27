@@ -99,6 +99,7 @@ void ADefaultController::SetHUDTime()
 	UCharacterOverlay* CharacterOverlay = Cast<UCharacterOverlay>(DefaultHUD->CharacterOverlay);
 	if (CharacterOverlay != nullptr)
 	{
+		// CountDown
 		CharacterOverlay->CountdownText->SetText(FText::FromString(CountdownText));
 
 		// Percent
@@ -122,7 +123,9 @@ void ADefaultController::WidgetTypeChange_NMC_Implementation(EGameStateType InPr
 	if (DefaultHUD == nullptr) return;
 
 	SetShowMouseCursor(false);
-	SetInputMode(FInputModeGameOnly());
+
+	if (InNewGameType == EGameStateType::GamePlay)
+		SetInputMode(FInputModeGameOnly());
 
 	DefaultHUD->ChangeWidgetClass(InPrevGameType, InNewGameType);
 }

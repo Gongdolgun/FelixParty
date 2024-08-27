@@ -116,6 +116,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Parkour")
 	FParkourStruct OutParkourStruct;
 
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Parkour")
+	FVector CharacterLocation;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Parkour")
+	FVector CharacterForward;
+
 public:
 	// Play Montage
 	UFUNCTION(NetMulticast, Reliable)
