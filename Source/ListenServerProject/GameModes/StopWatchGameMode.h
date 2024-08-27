@@ -22,44 +22,19 @@ protected:
 	void OnPostLogin(AController* NewPlayer) override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<UStartTimer> StartTimerWidgetClass; 
-
-public:
 	void StartTimer();
 
 	void StopTimer();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiStartTimer();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiStopTimer();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiRandomTimer();
-
-	UFUNCTION(Server, Reliable)
-	void ServerStartTImer();
-
-	UFUNCTION(Server, Reliable)
-	void ServerStopTImer();
-
-	UFUNCTION(Server, Reliable)
-	void ServerRandomTImer();
-
-	void RandomTimer();
-
-	void TimerEnd();
-
 	void CheckResult(float StopTime);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiUpdateTimer(float UpdateTime);
 
 private:
 	TArray<class ADefaultController*> PlayerControllers;
 
 public:
-	UStartTimer* StartTimerWidget;
-
 	float ElapsedTime; // 경과 시간
 
 	bool bGameActive; // 게임 활성화 상태

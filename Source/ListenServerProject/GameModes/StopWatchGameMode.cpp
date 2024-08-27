@@ -8,21 +8,16 @@ AStopWatchGameMode::AStopWatchGameMode()
 	PrimaryActorTick.bCanEverTick = true;
 
 	bReplicates = true;
+
 	bGameActive = false;
+
+	ElapsedTime = 0.0f;
 }
 
 void AStopWatchGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (StartTimerWidgetClass)
-	{
-		StartTimerWidget = CreateWidget<UStartTimer>(GetWorld(), StartTimerWidgetClass);
-		if (StartTimerWidget)
-		{
-			StartTimerWidget->AddToViewport();
-		}
-	}
 
 }
 
@@ -32,13 +27,18 @@ void AStopWatchGameMode::Tick(float DeltaSeconds)
 
 	if (bGameActive)
 	{
-		ElapsedTime += DeltaSeconds; // 경과 시간 업데이트
-		if (StartTimerWidget)
-		{
-			StartTimerWidget->UpdateTimer(ElapsedTime);
-		}
-		CLog::Log(ElapsedTime);
+		ElapsedTime += DeltaSeconds; 
 
+		if (ElapsedTime >= 60.0f)
+		{
+			ElapsedTime = 60.0f; 
+			StopTimer();
+		}
+
+		if (HasAuthority())
+		{
+			MultiUpdateTimer(ElapsedTime);
+		}
 	}
 }
 
@@ -54,82 +54,26 @@ void AStopWatchGameMode::OnPostLogin(AController* NewPlayer)
 
 		if (PlayerControllers.Num() == 1)
 		{
-			GetWorldTimerManager().SetTimer(RandomTimerHandle, this, &AStopWatchGameMode::RandomTimer, 3.0f, false);
-
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AStopWatchGameMode::StartTimer, 5.0f, false);
 		}
 	}
 }
 
 void AStopWatchGameMode::StartTimer()
 {
-	bGameActive = true; // 게임 활성화 상태
-	ElapsedTime = 0.0f; // 경과 시간 초기화
+	if (HasAuthority())
+	{
+		bGameActive = true;
+		ElapsedTime = 0.0f;
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AStopWatchGameMode::TimerEnd, 60.0f, false);
-
+	}
 }
 
 void AStopWatchGameMode::StopTimer()
 {
-	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 	bGameActive = false;
 
-	MultiStopTimer();
-}
-
-void AStopWatchGameMode::MultiRandomTimer_Implementation()
-{
-
-}
-
-void AStopWatchGameMode::ServerStartTImer_Implementation()
-{
-
-}
-
-void AStopWatchGameMode::ServerStopTImer_Implementation()
-{
-
-}
-
-void AStopWatchGameMode::ServerRandomTImer_Implementation()
-{
-
-}
-
-void AStopWatchGameMode::MultiStartTimer_Implementation()
-{
-	StartTimer();
-}
-
-void AStopWatchGameMode::MultiStopTimer_Implementation()
-{
-	StopTimer();
-}
-
-void AStopWatchGameMode::RandomTimer()
-{
-	for (ADefaultController* Controller : PlayerControllers)
-	{
-		if (AStopWatchController* StopWatchController = Cast<AStopWatchController>(Controller))
-		{
-			StopWatchController->RandomTime = FMath::RandRange(10, 30);
-			PlayerRandomTimes.Add(Controller, StopWatchController->RandomTime);
-			CLog::Log(StopWatchController->RandomTime);
-
-			if (StartTimerWidget)
-			{
-				StartTimerWidget->UpdateRandomTime(StopWatchController->RandomTime);
-			}
-		}
-	}
-
-
-}
-
-void AStopWatchGameMode::TimerEnd()
-{
-	StopTimer();
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 }
 
 void AStopWatchGameMode::CheckResult(float StopTime)
@@ -157,3 +101,20 @@ void AStopWatchGameMode::CheckResult(float StopTime)
 		CLog::Print(FString::Printf(TEXT("순위 %d: %s, 차이: %.2f"), i + 1, *Results[i].Key->GetName(), Results[i].Value));
 	}
 }
+
+void AStopWatchGameMode::MultiUpdateTimer_Implementation(float UpdateTime)
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (PC && PC->GetPawn())
+		{
+			AStopWatchCharacter* Character = Cast<AStopWatchCharacter>(PC->GetPawn());
+			if (Character)
+			{
+				Character->UpdateTimer(UpdateTime); // 클라이언트에게 경과 시간 업데이트
+			}
+		}
+	}
+}
+
