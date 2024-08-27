@@ -18,6 +18,7 @@ void ADropObject::BeginPlay()
 	Super::BeginPlay();
 
 	OriginalLocation = GetActorLocation();
+	OriginalRotation = GetActorRotation();
 
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnComponentBeginOverlap);
 }
@@ -49,19 +50,16 @@ void ADropObject::StartSwing()
 
 void ADropObject::Swing()
 {
-	CLog::Print("Swing");
-
 	// 현재 Roll 각도 계산
 	float CurrentRoll = FMath::Sin(GetWorld()->GetTimeSeconds() * SwingSpeed) * MaxSwingAmount;
 
 	// Roll 적용
-	FRotator NewRotation = FRotator(0.0f, 0.0f, CurrentRoll); // Pitch와 Yaw는 0으로 설정
+	FRotator NewRotation = FRotator(CurrentRoll, 0.0f, 0.0f); // Pitch와 Yaw는 0으로 설정
 	SetActorRotation(NewRotation);
 }
 
 void ADropObject::DropObject()
 {
-	CLog::Print("Drop");
 	GetWorld()->GetTimerManager().ClearTimer(SwingTimerHandle);
 
 	StaticMesh->SetSimulatePhysics(true);
@@ -73,7 +71,6 @@ void ADropObject::DropObject()
 
 void ADropObject::RespawnOriginialLocation()
 {
-	CLog::Print("Call Me Respawn");
 
 	GetWorld()->GetTimerManager().ClearTimer(DropTimerHandle);
 
@@ -83,7 +80,7 @@ void ADropObject::RespawnOriginialLocation()
 	FActorSpawnParameters SpawnParams; 
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	ADropObject* NewObject = GetWorld()->SpawnActor<ADropObject>(GetClass(), OriginalLocation, FRotator::ZeroRotator, SpawnParams);
+	ADropObject* NewObject = GetWorld()->SpawnActor<ADropObject>(GetClass(), OriginalLocation, OriginalRotation, SpawnParams);
 
 	Destroy();
 
