@@ -31,7 +31,7 @@ public:
 
 public:
 	// Time
-	UPROPERTY(EditAnywhere, Replicated, Category = "Game State")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Game State")
 	float GameStartTime = 5.0f;
 
 	UPROPERTY(EditAnywhere, Replicated, Category = "Game State")

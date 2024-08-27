@@ -53,9 +53,14 @@ void ADefaultHUD::ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateTyp
 			AddCharacterOverlay(CharacterOverlayClasses[1]);
 		break;
 
-	case EGameStateType::GameOver:
+	case EGameStateType::GamePlay:
 		if (CharacterOverlayClasses.Num() >= 3)
 			AddCharacterOverlay(CharacterOverlayClasses[2]);
+		break;
+
+	case EGameStateType::GameOver:
+		if (CharacterOverlayClasses.Num() >= 4)
+			AddCharacterOverlay(CharacterOverlayClasses[3]);
 		break;
 	}
 }
