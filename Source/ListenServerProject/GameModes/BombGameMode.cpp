@@ -186,7 +186,7 @@ void ABombGameMode::StartGame()
 	}
 
 	// 10초 후에 플레이어의 움직임을 재개하고 폭탄을 스폰
-	GetWorldTimerManager().SetTimer(GameStartTimerHandle, this, &ABombGameMode::EnableMovementAndSpawnBomb, 10.0f, false);
+	GetWorldTimerManager().SetTimer(GameStartTimerHandle, this, &ABombGameMode::EnableMovementAndSpawnBomb, 5.0f, false);
 
 	//GetWorldTimerManager().SetTimer(SpawnCharacterTimerHandle, this, &ABombGameMode::RandomSpawn, 10.0f, false);
 }

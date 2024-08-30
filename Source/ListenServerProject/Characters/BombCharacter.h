@@ -4,7 +4,16 @@
 #include "Characters/DefaultCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "SpawnActor/TargetDecal.h"
 #include "BombCharacter.generated.h"
+
+enum class EActionState
+{
+	Idle,
+	InAction,
+	Dead
+};
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentBeginOverlap, class ACharacter*, InAttacker, AActor*, InAttackCuaser, class ACharacter*, InOther);
 
@@ -24,9 +33,9 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-	ACameraActor* CameraActor;
+//public:
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+//	ACameraActor* CameraActor;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -52,6 +61,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Restraint")
 	TSubclassOf<class ARestraint> RestraintClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Wall")
+	TSubclassOf<class ADecalActor> DecalClass;
+
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_SubAction;
 
@@ -65,7 +77,11 @@ public:
 
 	class ABomb* Bomb;
 
-	ACameraActor* TopDownCameraActor;
+	EActionState CurrentActionState = EActionState::Idle;
+
+	ATargetDecal* TargetDecal;
+
+	//ACameraActor* TopDownCameraActor;
 
 public:
 	void Action() override;
@@ -112,6 +128,14 @@ public:
 	UFUNCTION()
 	void OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor);
 
+	void ShowDecal(FVector TargetLocation);
+
+	void PlaceWall();
+
+	void SetActionState(EActionState NewState);
+
+	bool IsInAction() const;
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
@@ -133,6 +157,8 @@ public:
 	bool bAttack = false;
 
 	bool bIsSpawningRestraint = false;
+
+	bool bIsDecal = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* NewCountdownSound;
@@ -187,4 +213,5 @@ public:
 
 	float LastRestraintSpawnTime;
 };
+
 
