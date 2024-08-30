@@ -122,6 +122,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Parkour")
 	FVector CharacterForward;
 
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Parkour")
+	float AddPlayerLocationZ;
+
 public:
 	// Play Montage
 	UFUNCTION(NetMulticast, Reliable)
@@ -132,6 +135,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayParkourMontage(EParkourType ParkourType);
-
 
 };
