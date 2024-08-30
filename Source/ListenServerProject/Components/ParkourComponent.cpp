@@ -70,6 +70,10 @@ void UParkourComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
     DOREPLIFETIME(ThisClass, falling_ImpactPoint);
 
     DOREPLIFETIME(ThisClass, OutParkourStruct);
+
+    DOREPLIFETIME(ThisClass, CharacterLocation);
+    DOREPLIFETIME(ThisClass, CharacterForward);
+    DOREPLIFETIME(ThisClass, AddPlayerLocationZ);
 }
 
 FVector UParkourComponent::GetParkourPos1()
@@ -84,11 +88,10 @@ FVector UParkourComponent::GetParkourPos2()
 
 void UParkourComponent::CorrectPlayerLocation(EParkourType ParkourType)
 {
-    FVector location = OwnerCharacter->GetActorLocation();
-    FVector forward = OwnerCharacter->GetActorForwardVector();
+    CharacterLocation = OwnerCharacter->GetActorLocation();
+    CharacterForward = OwnerCharacter->GetActorForwardVector();
 
-    float AddPlayerLocationZ = 0.0f;
-    float addPlayerLocationForward = 0.0f;
+    AddPlayerLocationZ = 0.0f;
 
     switch (ParkourType)
     {
@@ -100,7 +103,6 @@ void UParkourComponent::CorrectPlayerLocation(EParkourType ParkourType)
     case EParkourType::Low:
         AddPlayerLocationZ = ParkourRelative.AddPlayerLocationZ_Low;
         ParkourRelative.AddPlayerLocationForward = 0.0f;
-        addPlayerLocationForward = 0.0f;
         break;
 
     case EParkourType::Jump:
@@ -114,8 +116,8 @@ void UParkourComponent::CorrectPlayerLocation(EParkourType ParkourType)
     }
 
     falling_ImpactPoint = FVector(
-        location.X, location.Y, falling_ImpactPoint.Z + AddPlayerLocationZ)
-        + FVector(forward * ParkourRelative.AddPlayerLocationForward);
+        CharacterLocation.X, CharacterLocation.Y, falling_ImpactPoint.Z + AddPlayerLocationZ)
+        + FVector(CharacterForward * ParkourRelative.AddPlayerLocationForward);
 
     OwnerCharacter->SetActorLocation(falling_ImpactPoint);
 }
@@ -277,7 +279,7 @@ void UParkourComponent::ParkourCheck(float InSecondaryTraceZOffset, float InFall
         else
         {
             float Height = falling_ImpactPoint.Z - OwnerCharacter->GetActorLocation().Z;
-            CLog::Print(Height);
+            //CLog::Print(Height);
             bool bHeightCheck = true;
             bHeightCheck &= 20.0f < Height;
             bHeightCheck &= Height < 45.0f;
