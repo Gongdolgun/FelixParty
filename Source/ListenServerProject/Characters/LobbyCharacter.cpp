@@ -1,5 +1,4 @@
 #include "Characters/LobbyCharacter.h"
-
 #include "EnhancedInputComponent.h"
 #include "Global.h"
 #include "Components/MoveComponent.h"
