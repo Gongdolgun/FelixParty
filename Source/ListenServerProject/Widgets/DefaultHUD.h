@@ -30,5 +30,3 @@ public:
 	void ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
 };
-
-
