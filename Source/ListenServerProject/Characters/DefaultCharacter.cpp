@@ -86,6 +86,8 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ThisClass::Action);
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Completed, this, &ThisClass::End_Action);
+
+		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::ViewOption);
 	}
 }
 
@@ -171,4 +173,13 @@ void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 			GetMesh()->SetOverlayMaterial(OverlayMaterial);
 		}
 	}*/
+}
+
+
+void ADefaultCharacter::ViewOption()
+{
+	ADefaultController* controller = Cast<ADefaultController>(GetController());
+	if (controller == nullptr) return;
+
+	controller->ViewOption();
 }

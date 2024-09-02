@@ -55,6 +55,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Action;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_Option;
+
 	UPROPERTY(BlueprintReadOnly)
 	TArray<UMaterialInstanceDynamic*> MyMaterials;
 
@@ -86,5 +89,7 @@ public:
 	void PlayMaterialEvent_Implementation();
 
 	void ChangeMaterial(FColor InColor);
+
+	virtual void ViewOption();
 
 };

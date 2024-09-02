@@ -42,7 +42,14 @@ void ASpinObject::Tick(float DeltaTime)
 
 	if (bCheck == true)
 	{
-		AddRotation(DeltaTime);
+		if (HasAuthority())
+		{
+			AddRotation_NMC(DeltaTime);
+		}
+		else
+		{
+			AddRotation_Server(DeltaTime);
+		}
 	}
 }
 

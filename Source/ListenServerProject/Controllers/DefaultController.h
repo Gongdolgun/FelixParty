@@ -10,6 +10,7 @@ class LISTENSERVERPROJECT_API ADefaultController : public APlayerController
 {
 	GENERATED_BODY()
 
+
 public:
 	ADefaultController();
 
@@ -34,6 +35,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void WidgetTypeChange_NMC(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
+	void ViewOption();
+
 private:
 	UPROPERTY()
 	class ADefaultHUD* DefaultHUD;
@@ -48,5 +51,11 @@ private:
 	float GameStartTime;
 	float GamePlayTime;
 	float GameOverTime;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<class UUserWidget> SelectOptionWidget;
+
+	UUserWidget* OptionWidget;
 
 };

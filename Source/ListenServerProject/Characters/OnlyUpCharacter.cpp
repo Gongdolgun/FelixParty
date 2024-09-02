@@ -7,6 +7,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/MoveComponent.h"
 #include "Components/StateComponent.h"
+#include "Controllers/OnlyUpController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -226,4 +227,6 @@ void AOnlyUpCharacter::SetSpawnIndex(int32 InIndex)
 		SpawnIndex = InIndex;
 	}
 }
+
+
 
