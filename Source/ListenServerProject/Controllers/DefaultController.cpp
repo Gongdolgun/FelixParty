@@ -29,8 +29,25 @@ void ADefaultController::BeginPlay()
 	GamePlayTime = DefaultGameState->GamePlayTime;
 	GameOverTime = DefaultGameState->GameOverTime;
 
+	// Input Mode
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
+
+	// Option
+	if (SelectOptionWidget)
+	{
+		OptionWidget = CreateWidget<UUserWidget>(GetWorld(), SelectOptionWidget);
+		if (OptionWidget)
+		{
+			OptionWidget->AddToViewport();
+			OptionWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+
+		else
+		{
+			CLog::Print("Wdiget Where");
+		}
+	}
 }
 
 void ADefaultController::Tick(float DeltaSeconds)
@@ -148,7 +165,6 @@ void ADefaultController::LeaveSessionInProgress_Implementation()
 	UGameplayStatics::OpenLevel(this, "MainMenu");
 }
 
-
 FString ADefaultController::EnumToString(EGameStateType InGameStateType)
 {
 	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EGameStateType"), true);
@@ -160,3 +176,25 @@ FString ADefaultController::EnumToString(EGameStateType InGameStateType)
 	return EnumPtr->GetNameByValue((int64)InGameStateType).ToString();
 }
 
+void ADefaultController::ViewOption()
+{
+	if (OptionWidget == nullptr) return;
+
+	if (OptionWidget->GetVisibility() == ESlateVisibility::Visible)
+	{
+		OptionWidget->SetVisibility(ESlateVisibility::Collapsed);
+
+		SetShowMouseCursor(false);
+		SetInputMode(FInputModeGameOnly());
+	}
+
+	else
+	{
+		OptionWidget->SetVisibility(ESlateVisibility::Visible);
+
+		SetShowMouseCursor(true);
+		SetInputMode(FInputModeGameAndUI());
+	}
+
+	
+}

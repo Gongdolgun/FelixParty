@@ -118,5 +118,4 @@ private:
 	int32 SpawnIndex = 1;
 
 
-
 };
