@@ -46,6 +46,7 @@ private:
 	float SwingSpeed = 400.0f; // Èçµé¸² ¼Óµµ
 
 	FVector OriginalLocation;
+	FRotator OriginalRotation;
 
 	FTimerHandle SwingTimerHandle;
 	FTimerHandle DropTimerHandle;

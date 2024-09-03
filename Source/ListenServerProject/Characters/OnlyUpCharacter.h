@@ -110,8 +110,12 @@ public:
 	void PlayerMaterialEventOnSpawn();
 	void PlayerMaterialEventOnSpawn_Implementation();
 
+public:
+	void SetSpawnIndex(int32 InIndex);
+	FORCEINLINE void AddSpawnIndex() { SpawnIndex++; }
+
 private:
-	int32 SpawnIndex = 2;
+	int32 SpawnIndex = 1;
 
 
 

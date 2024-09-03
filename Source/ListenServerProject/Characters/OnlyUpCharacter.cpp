@@ -100,6 +100,8 @@ void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ThisClass, ZOffset_Landing);
 	DOREPLIFETIME(ThisClass, Montage_Length);
 
+	//DOREPLIFETIME(ThisClass, ParkourComponent);
+
 }
 
 void AOnlyUpCharacter::Action()
@@ -215,5 +217,13 @@ void AOnlyUpCharacter::Run()
 void AOnlyUpCharacter::PlayerMaterialEventOnSpawn_Implementation()
 {
 
+}
+
+void AOnlyUpCharacter::SetSpawnIndex(int32 InIndex)
+{
+	if (InIndex > SpawnIndex)
+	{
+		SpawnIndex = InIndex;
+	}
 }
 

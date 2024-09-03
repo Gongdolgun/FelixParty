@@ -122,7 +122,9 @@ void ADefaultController::WidgetTypeChange_NMC_Implementation(EGameStateType InPr
 	if (DefaultHUD == nullptr) return;
 
 	SetShowMouseCursor(false);
-	SetInputMode(FInputModeGameOnly());
+
+	if(InNewGameType == EGameStateType::GamePlay)
+		SetInputMode(FInputModeGameOnly());
 
 	DefaultHUD->ChangeWidgetClass(InPrevGameType, InNewGameType);
 }
