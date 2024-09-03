@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "SpawnActor/TargetDecal.h"
+#include "Widgets/TargetAim.h"
 #include "BombCharacter.generated.h"
 
 enum class EActionState
@@ -34,8 +35,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-	ACameraActor* CameraActor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* TargetAimCamera;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -64,6 +65,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Wall")
 	TSubclassOf<class ADecalActor> DecalClass;
 
+	UPROPERTY(EditAnywhere, Category = "Restraint")
+	TSubclassOf<class UTargetAim> TargetAimClass;
+
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_SubAction;
 
@@ -81,7 +85,7 @@ public:
 
 	ATargetDecal* TargetDecal;
 
-	//ACameraActor* TopDownCameraActor;
+	UTargetAim* TargetAimWidget;
 
 public:
 	void Action() override;
@@ -103,7 +107,10 @@ public:
 	void MultiPlayWall();
 
 	UFUNCTION(Server, Reliable)
-	void ServerSpawnWall();
+	void ServerSpawnWall(const FVector& Location, const FRotator& Rotation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiSpawnWall(const FVector& Location, const FRotator& Rotation);
 
 	UFUNCTION(Server, Reliable)
 	void ServerPlayRestraint();

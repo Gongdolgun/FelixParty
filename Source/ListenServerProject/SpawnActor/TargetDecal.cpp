@@ -42,7 +42,6 @@ void ATargetDecal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
 }
 
 void ATargetDecal::UpdateDecalLocation(FVector NewLocation, FRotator NewRotation)
