@@ -62,8 +62,8 @@ void ADefaultCharacter::BeginPlay()
 	if (DefaultGameState != nullptr)
 		DefaultGameState->OnGameStateTypeChanged.AddDynamic(this, &ADefaultCharacter::PlayMaterialEventOnGameStart);
 
-	
-	UpdatePlayer_Server();
+	if(IsMaterialChange)
+		UpdatePlayer_Server();
 }
 
 void ADefaultCharacter::Tick(float DeltaTime)
@@ -89,6 +89,14 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::ViewOption);
 	}
+}
+
+void ADefaultCharacter::OnCollision()
+{
+}
+
+void ADefaultCharacter::OffCollision()
+{
 }
 
 void ADefaultCharacter::Hit(AActor* InActor, const FHitData& InHitData)

@@ -20,8 +20,10 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void OnCollision();
+	virtual void OffCollision();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -63,6 +65,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInterface* OverlayMaterial;
+
+	UPROPERTY(EditAnywhere)
+	bool IsMaterialChange = true;
 
 public:
 	UFUNCTION(BlueprintCallable)
