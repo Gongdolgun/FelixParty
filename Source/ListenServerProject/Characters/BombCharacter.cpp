@@ -31,6 +31,8 @@ ABombCharacter::ABombCharacter()
 
 	Bomb = nullptr;
 
+	bIsDecal = false;
+
 	LastWallSpawnTime = -WallCoolTime;
 	LastRestraintSpawnTime = -RestraintCoolTime;
 
@@ -50,6 +52,15 @@ void ABombCharacter::BeginPlay()
 	}
 
 	HandSphere->OnComponentBeginOverlap.AddDynamic(this, &ABombCharacter::OnSphereBeginOverlap);
+
+	// Scene에서 카메라 액터 찾기
+	TArray<AActor*> CameraActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), CameraActors);
+	if (CameraActors.Num() > 0)
+	{
+		CameraActor = Cast<ACameraActor>(CameraActors[0]);
+
+	}
 
 	if (DecalClass)
 	{
@@ -85,19 +96,76 @@ void ABombCharacter::Tick(float DeltaTime)
 		}
 	}
 
-	if (bIsDecal && TargetDecal)
+	//if (bIsDecal && TargetDecal && CameraActor)
+	//{
+	//	FHitResult HitResult;
+	//	FVector CameraLocation = CameraActor->GetActorLocation();
+	//	FVector CameraDirection = CameraActor->GetActorForwardVector();
+	//	FVector EndLocation = CameraLocation + (CameraDirection * 10000.0f);
+
+	//	FCollisionQueryParams Params;
+	//	Params.AddIgnoredActor(this);
+
+	//	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, EndLocation, ECC_Visibility, Params);
+
+	//	FColor LineColor = bHit ? FColor::Red : FColor::Green;
+	//	UKismetSystemLibrary::DrawDebugLine(GetWorld(), CameraLocation, EndLocation, LineColor, 0.0f, 5.0f);
+
+	//	//if (bHit)
+	//	//{
+	//	//	FVector ImpactNormal = HitResult.ImpactNormal;
+	//	//	FRotator DecalRotation = HitResult.ImpactNormal.Rotation();
+
+	//	//	// 데칼의 위치와 회전 업데이트
+	//	//	TargetDecal->SetActorLocation(HitResult.Location);
+	//	//	TargetDecal->SetActorRotation(DecalRotation);
+
+	//	//	if (!bIsDecal)
+	//	//	{
+	//	//		TargetDecal->SetActorHiddenInGame(false);
+	//	//		bIsDecal = true;
+	//	//	}
+	//	//}
+	//	//else
+	//	//{
+	//	//	if (bIsDecal)
+	//	//	{
+	//	//		TargetDecal->SetActorHiddenInGame(true);
+	//	//		bIsDecal = false;
+	//	//	}
+	//	//}
+
+	//	if (bHit)
+	//	{
+	//		// 라인트레이스가 성공한 경우 데칼 위치 및 회전 업데이트
+	//		FVector ImpactNormal = HitResult.ImpactNormal;
+	//		FRotator DecalRotation = ImpactNormal.Rotation();
+	//		TargetDecal->SetActorLocation(HitResult.Location);
+	//		TargetDecal->SetActorRotation(DecalRotation);
+	//	}
+	//}
+
+	if (TargetDecal && !TargetDecal->IsHidden())
 	{
-		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-		if (PlayerController)
+		if (CameraActor)
 		{
-			FHitResult TraceHitResult;
-			PlayerController->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
+			APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+			if (PlayerController)
+			{
+				FVector MouseLocation, MouseDirection;
 
-			FVector ImpactNormal = TraceHitResult.ImpactNormal;
-			FRotator DecalRotation = ImpactNormal.Rotation(); // ImpactNormal을 회전으로 변환
+				if (PlayerController->DeprojectMousePositionToWorld(MouseLocation, MouseDirection))
+				{
+					FHitResult HitResult;
+					FCollisionQueryParams CollisionParams;
+					CollisionParams.AddIgnoredActor(this);
 
-			TargetDecal->SetActorLocation(TraceHitResult.Location); // 데칼 위치 업데이트
-			TargetDecal->SetActorRotation(DecalRotation); // 데칼 회전 업데이트
+					if (GetWorld()->LineTraceSingleByChannel(HitResult, MouseLocation, MouseLocation + (MouseDirection * 10000.0f), ECC_Visibility, CollisionParams))
+					{
+						TargetDecal->UpdateDecalLocation(HitResult.Location, HitResult.ImpactNormal.Rotation() + FRotator(-90.0f, 0.0f, 0.0f));
+					}
+				}
+			}
 		}
 	}
 }
@@ -130,7 +198,7 @@ void ABombCharacter::Action()
 
 void ABombCharacter::HandleAction()
 {
-	if (CurrentActionState == EActionState::Dead) 
+	/*if (CurrentActionState == EActionState::Dead) 
 		return;
 
 	if (IsInAction())
@@ -138,19 +206,26 @@ void ABombCharacter::HandleAction()
 		return; 
 	}
 
-	if (!bIsDecal)
+	if (bIsDecal)
 	{
-		bIsDecal = true;
-
+		PlaceWall();
+		TargetDecal->SetActorHiddenInGame(true);
+		bIsDecal = false;
+	}
+	else
+	{
 		if (TargetDecal)
 		{
 			TargetDecal->SetActorHiddenInGame(false);
+			bIsDecal = true;
 		}
-	}
+	}*/
 
-	else
+	if (TargetDecal)
 	{
-		PlaceWall();
+		TargetDecal->SetActorHiddenInGame(false); // 키 입력 시 보이게 설정
+		FVector TargetLocation = TargetDecal->GetActorLocation();
+		SetActorLocation(TargetLocation); // 캐릭터를 TargetDecal 위치로 이동
 	}
 }
 
@@ -399,26 +474,19 @@ void ABombCharacter::OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor)
 	}
 }
 
-void ABombCharacter::ShowDecal(FVector TargetLocation)
-{
-	if (TargetDecal)
-	{
-		TargetDecal->SetActorLocation(TargetLocation); // Decal 위치 업데이트
-
-		FRotator DecalRotation = FRotator(-90.0f, 0.0f, 0.0f);
-		TargetDecal->SetActorRotation(DecalRotation);
-
-		TargetDecal->SetActorHiddenInGame(false); // Decal 표시
-		bIsDecal = true; // Decal이 표시되고 있음을 기록
-		CLog::Log(TargetLocation);
-	}
-}
-
 void ABombCharacter::PlaceWall()
 {
-	ServerSpawnWall(); // Wall 스폰 요청
-	TargetDecal->SetActorHiddenInGame(true); // Wall 생성 후 Decal 숨김
-	bIsDecal = false; // Decal 표시 상태 리셋
+	if (TargetDecal && WallClass)
+	{
+		// 데칼의 위치와 회전 정보를 사용하여 벽 생성
+		FVector SpawnLocation = TargetDecal->GetActorLocation();
+		FRotator SpawnRotation = TargetDecal->GetActorRotation();
+
+		// 벽 생성
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		GetWorld()->SpawnActor<AActor>(WallClass, SpawnLocation, SpawnRotation, SpawnParams);
+	}
 }
 
 void ABombCharacter::SetActionState(EActionState NewState)

@@ -18,4 +18,11 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
+	class UDecalComponent* MouseDecal;
+
+public:
+	void UpdateDecalLocation(FVector NewLocation, FRotator NewRotation);
+
 };

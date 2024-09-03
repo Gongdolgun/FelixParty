@@ -33,9 +33,9 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-//public:
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-//	ACameraActor* CameraActor;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	ACameraActor* CameraActor;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -127,8 +127,6 @@ public:
 
 	UFUNCTION()
 	void OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor);
-
-	void ShowDecal(FVector TargetLocation);
 
 	void PlaceWall();
 
