@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Characters/DefaultCharacter.h"
+#include "Widgets/StartTimer.h"
 #include "StopWatchCharacter.generated.h"
 
 UCLASS()
@@ -21,19 +22,33 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
-	void Action() override;
-
-	void StartTimer();
-	void StopTimer();
-
-	UFUNCTION(Server, Reliable)
-	void ServerStopTimer();
-
-	UFUNCTION(Client, Reliable)
-	void MultiStopTimer(float Time);
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UStartTimer> StartTimerWidgetClass;
 
 public:
+	void Action() override;
+
+	void StopButton();
+
+	UFUNCTION(Server, Reliable)
+	void ServerStopButton();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiStopButton();
+
+	void UpdateTimer(float UpdateTime);
+
+	void StartWidgetViewport();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiStartWidgetViewport();
+
+public:
+	UStartTimer* StartTimerWidget;
+
+	FTimerHandle StartTimerWidgetHandle;
+
+	float ElapsedTime;
+
 	float StopTime;
 };
-
-

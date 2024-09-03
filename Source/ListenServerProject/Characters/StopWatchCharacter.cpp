@@ -7,6 +7,7 @@
 AStopWatchCharacter::AStopWatchCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
 	bReplicates = true;
 
 }
@@ -15,7 +16,20 @@ void AStopWatchCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (IsLocallyControlled())
+	{
+		if (StartTimerWidgetClass)
+		{
+			StartTimerWidget = CreateWidget<UStartTimer>(GetWorld(), StartTimerWidgetClass);
+			if (StartTimerWidget)
+			{
+				StartTimerWidget->AddToViewport();
+				StartTimerWidget->SetVisibility(ESlateVisibility::Hidden);
 
+				GetWorld()->GetTimerManager().SetTimer(StartTimerWidgetHandle, this, &AStopWatchCharacter::StartWidgetViewport, 3.0f, false);
+			}
+		}
+	}
 }
 
 void AStopWatchCharacter::Tick(float DeltaTime)
@@ -39,6 +53,19 @@ void AStopWatchCharacter::Action()
 {
 	Super::Action();
 
+	if (HasAuthority())
+	{
+		MultiStopButton();
+	}
+
+	else
+	{
+		ServerStopButton();
+	}
+}
+
+void AStopWatchCharacter::StopButton()
+{
 	// 게임 모드를 가져와서 타이머 중지
 	AStopWatchGameMode* GameMode = Cast<AStopWatchGameMode>(GetWorld()->GetAuthGameMode());
 	if (GameMode)
@@ -50,22 +77,45 @@ void AStopWatchCharacter::Action()
 	}
 }
 
-void AStopWatchCharacter::StartTimer()
+void AStopWatchCharacter::ServerStopButton_Implementation()
 {
-
+	MultiStopButton();
 }
 
-void AStopWatchCharacter::StopTimer()
+void AStopWatchCharacter::MultiStopButton_Implementation()
 {
-
+	StopButton();
 }
 
-void AStopWatchCharacter::ServerStopTimer_Implementation()
+void AStopWatchCharacter::UpdateTimer(float UpdateTime)
 {
-
+	if (StartTimerWidget)
+	{
+		StartTimerWidget->UpdateTimer(UpdateTime);
+		CLog::Log(UpdateTime);
+	}
 }
 
-void AStopWatchCharacter::MultiStopTimer_Implementation(float Time)
+void AStopWatchCharacter::StartWidgetViewport()
 {
+	if (StartTimerWidget)
+	{
+		StartTimerWidget->SetVisibility(ESlateVisibility::Visible);
+	}
 
+	// 서버에서 모든 클라이언트로 호출
+	if (HasAuthority())
+	{
+		MultiStartWidgetViewport();
+	}
 }
+
+void AStopWatchCharacter::MultiStartWidgetViewport_Implementation()
+{
+	if (StartTimerWidget)
+	{
+		StartTimerWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+

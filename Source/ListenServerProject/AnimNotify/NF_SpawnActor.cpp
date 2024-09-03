@@ -24,6 +24,8 @@ void UNF_SpawnActor::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase*
 			{
 				character->ServerSpawnWall();
 			}
+
+			character->CurrentActionState = EActionState::Idle;
 		}
 	}
 }

@@ -14,8 +14,6 @@ void UStartTimer::UpdateRandomTime(float RandomTime)
 	{
 		RandomTimeText->SetText(FText::FromString(FString::Printf(TEXT("Random Time : %.2f"), RandomTime)));
 
-	/*	FString DisplayText = FString::Printf(TEXT("·£´ý ½Ã°£: %.2f"), RandomTime);
-		RandomTimeText->SetText(FText::FromString(DisplayText));*/
 	}
 }
 
