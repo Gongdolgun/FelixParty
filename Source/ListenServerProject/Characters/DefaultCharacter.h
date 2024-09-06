@@ -24,6 +24,7 @@ public:
 
 	virtual void OnCollision();
 	virtual void OffCollision();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -75,6 +76,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void End_Action();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MaxHP = 100;
+
+	UPROPERTY(BlueprintReadWrite, Replicated)
+	float HP;
 
 public:
 	UFUNCTION(Server, Reliable)

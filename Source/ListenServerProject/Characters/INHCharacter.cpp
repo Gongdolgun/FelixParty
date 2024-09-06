@@ -3,6 +3,8 @@
 #include "Global.h"
 #include "Components/SphereComponent.h"
 #include "Controllers/DefaultController.h"
+#include "Controllers/INHController.h"
+#include "GameModes/INHGameMode.h"
 #include "GameState/DefaultGameState.h"
 #include "GameState/INHGameState.h"
 #include "Net/UnrealNetwork.h"
@@ -66,6 +68,9 @@ void AINHCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 		FVector ImpulseDirection = Attacker->GetActorForwardVector() * 10000.f;
 		Dead_NMC(ImpulseDirection);
 	}
+
+	FTimerHandle timer;
+	GetWorld()->GetTimerManager().SetTimer(timer, this, &ThisClass::SetGhostMode, 3.f, false);
 }
 
 void AINHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -169,4 +174,12 @@ void AINHCharacter::Dead_NMC_Implementation(FVector InImpulseDirection)
 	GetMesh()->AddImpulse(InImpulseDirection, NAME_None, true);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AINHCharacter::SetGhostMode()
+{
+	AINHGameMode* GameMode = Cast<AINHGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GameMode)
+		GameMode->SetGhostMode(GetController());
 }

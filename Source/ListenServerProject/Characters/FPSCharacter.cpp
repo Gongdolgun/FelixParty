@@ -103,7 +103,6 @@ void AFPSCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ThisClass, HP);
 	DOREPLIFETIME(ThisClass, canRun);
 	DOREPLIFETIME(ThisClass, CurrentSpeed);
 }

@@ -65,4 +65,6 @@ public:
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Dead_NMC(FVector InImpulseDirection);
+
+	void SetGhostMode();
 };
