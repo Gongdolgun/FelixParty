@@ -142,6 +142,12 @@ void ADefaultGameState::AddPlayerData(const FString& PlayerName, int32 Score, FC
 	PlayerDatas.Add(FPlayerInGameData(PlayerName, Score, PlayerColor));
 }
 
+void ADefaultGameState::SomeoneDeadEvent(FString InAttackerName, FString InHittedCharacterName)
+{
+	if (OnSomeoneDead.IsBound())
+		OnSomeoneDead.Broadcast(InAttackerName, InHittedCharacterName);
+}
+
 FPlayerInGameData ADefaultGameState::GetPlayerData(FString PlayerName)
 {
 	for (FPlayerInGameData& PlayerData : PlayerDatas)

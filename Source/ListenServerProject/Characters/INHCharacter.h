@@ -28,6 +28,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	class USphereComponent* Sphere;
 
+	UPROPERTY(EditAnywhere)
+	class UStateComponent* StateComponent;
+
 public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Run;
@@ -37,6 +40,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "PunchMontage")
 	UAnimMontage* PunchMontage;
+
+	UPROPERTY(EditAnywhere, Category = "CameraShake")
+	TSubclassOf<UCameraShakeBase> CameraShakeBase;
 
 private:
 	UPROPERTY(Replicated)
@@ -61,6 +67,10 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void PlayAnimMontage_NMC(UAnimMontage* InAnimMontage);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void DeadMaterialEvent();
+	void DeadMaterialEvent_Implementation();
 
 private:
 	UFUNCTION(NetMulticast, Reliable)

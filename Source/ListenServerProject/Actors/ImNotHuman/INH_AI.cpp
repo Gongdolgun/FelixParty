@@ -31,6 +31,9 @@ void AINH_AI::Hit(AActor* InActor, const FHitData& InHitData)
 
 		FVector ImpulseDirection = Attacker->GetActorForwardVector() * 10000.f;
 		Dead_NMC(ImpulseDirection);
+
+		FTimerHandle timer;
+		GetWorld()->GetTimerManager().SetTimer(timer, this, &ThisClass::DeadMaterialEvent, 3.f, false);
 	}
 }
 
@@ -44,6 +47,10 @@ void AINH_AI::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AINH_AI::DeadMaterialEvent_Implementation()
+{
 }
 
 void AINH_AI::Dead_NMC_Implementation(FVector InImpulseDirection)

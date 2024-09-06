@@ -14,7 +14,7 @@ void AINHGameMode::SetGhostMode(AController* InController)
             if (Character)
             {
                 FTransform SpawnTransform = Character->Camera->GetComponentTransform();
-                Character->Destroy();
+                Character->DeadMaterialEvent();
 
                 FActorSpawnParameters params;
                 params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

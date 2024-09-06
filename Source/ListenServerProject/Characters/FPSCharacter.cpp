@@ -55,9 +55,14 @@ void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 			{
 				ADefaultGameState* DefaultGameState = Cast<ADefaultGameState>(FPSGameMode->GetGameState<ADefaultGameState>());
 				ADefaultController* AttackerController = Cast<ADefaultController>(Attacker->GetController());
-				if(DefaultGameState != nullptr && AttackerController != nullptr)
+				ADefaultController* MyController = Cast<ADefaultController>(GetController());
+
+				if(DefaultGameState != nullptr && AttackerController != nullptr && MyController != nullptr)
 				{
 					FString AttackerName = AttackerController->GetPlayerState<APlayerState>()->GetPlayerName();
+					FString MyName = MyController->GetPlayerState<APlayerState>()->GetPlayerName();
+
+					DefaultGameState->SomeoneDeadEvent(AttackerName, MyName);
 					DefaultGameState->UpdatePlayerScore(AttackerName, 20);
 				}
 			}

@@ -25,6 +25,12 @@ private:
 	void Dead_NMC(FVector InImpulseDirection);
 
 public:
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void DeadMaterialEvent();
+	void DeadMaterialEvent_Implementation();
+
+public:
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* StunMontage;
+
 };

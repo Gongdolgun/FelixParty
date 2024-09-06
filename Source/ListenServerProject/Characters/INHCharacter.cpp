@@ -2,16 +2,22 @@
 #include "EnhancedInputSubsystems.h"
 #include "Global.h"
 #include "Components/SphereComponent.h"
+#include "Components/StateComponent.h"
 #include "Controllers/DefaultController.h"
 #include "Controllers/INHController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameModes/INHGameMode.h"
 #include "GameState/DefaultGameState.h"
 #include "GameState/INHGameState.h"
 #include "Net/UnrealNetwork.h"
+#include "Widgets/INHMain.h"
 
 AINHCharacter::AINHCharacter()
 {
 	Helpers::CreateComponent(this, &Sphere, "Sphere", GetCapsuleComponent());
+
+	Helpers::CreateActorComponent(this, &StateComponent, "StateComponent");
+
 	Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -56,6 +62,7 @@ void AINHCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 	if(Attacker != nullptr)
 	{
 		ADefaultController* AttackerController = Cast<ADefaultController>(Attacker->GetController());
+		AINHController* MyController = Cast<AINHController>(GetController());
 		AINHGameState* GameState = Cast<AINHGameState>(GetWorld()->GetAuthGameMode()->GetGameState<AINHGameState>());
 
 		if (AttackerController != nullptr && GameState != nullptr)
@@ -65,12 +72,20 @@ void AINHCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 			GameState->SomeoneDeadEvent(AttackerName, MyName);
 		}
 
+		if (CameraShakeBase != nullptr && MyController != nullptr)
+		{
+			MyController->PlayHitAnimation();
+			MyController->ClientStartCameraShake(CameraShakeBase, 1.f);
+		}
+
 		FVector ImpulseDirection = Attacker->GetActorForwardVector() * 10000.f;
 		Dead_NMC(ImpulseDirection);
 	}
 
-	FTimerHandle timer;
-	GetWorld()->GetTimerManager().SetTimer(timer, this, &ThisClass::SetGhostMode, 3.f, false);
+	SetGhostMode();
+
+	/*FTimerHandle timer;
+	GetWorld()->GetTimerManager().SetTimer(timer, this, &ThisClass::SetGhostMode, 3.f, false);*/
 }
 
 void AINHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -101,6 +116,10 @@ void AINHCharacter::OffCollision()
 void AINHCharacter::Action()
 {
 	Super::Action();
+
+	if (StateComponent == nullptr || GetCharacterMovement()->IsFalling() || !StateComponent->IsIdleMode()) return;
+
+	StateComponent->SetActionMode();
 
 	if (HasAuthority())
 		PlayAnimMontage_NMC(PunchMontage);
@@ -146,9 +165,7 @@ void AINHCharacter::PlayAnimMontage_Server_Implementation(UAnimMontage* InAnimMo
 void AINHCharacter::PlayAnimMontage_NMC_Implementation(UAnimMontage* InAnimMontage)
 {
 	if(InAnimMontage != nullptr)
-	{
 		PlayAnimMontage(InAnimMontage);
-	}
 }
 
 void AINHCharacter::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -161,6 +178,10 @@ void AINHCharacter::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		if (HittedCharacter != nullptr)
 			HittedCharacter->Hit(this, FHitData());
 	}
+}
+
+void AINHCharacter::DeadMaterialEvent_Implementation()
+{
 }
 
 void AINHCharacter::Dead_NMC_Implementation(FVector InImpulseDirection)

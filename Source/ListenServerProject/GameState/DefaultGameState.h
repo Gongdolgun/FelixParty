@@ -7,6 +7,7 @@
 #include "DefaultGameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGameStateTypeChanged, EGameStateType, InPrevGameType, EGameStateType, InNewGameType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSomeoneDead, FString, InAttackerName, FString, InHittedCharacterName);
 
 UCLASS()
 class LISTENSERVERPROJECT_API ADefaultGameState : public AGameStateBase
@@ -30,6 +31,9 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable)
 	FGameStateTypeChanged OnGameStateTypeChanged;
+
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable)
+	FSomeoneDead OnSomeoneDead;
 
 public:
 	// Time
@@ -72,4 +76,5 @@ public:
 	void UpdatePlayerScore(const FString& PlayerName, int32 Score);
 
 	void AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor);
+	virtual void SomeoneDeadEvent(FString InAttackerName, FString InHittedCharacterName);
 };

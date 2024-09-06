@@ -11,5 +11,12 @@ class LISTENSERVERPROJECT_API AINHController : public ADefaultController
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
+public:
+	UFUNCTION(Client, Reliable)
+	void PlayHitAnimation();
+
+public:
+	UPROPERTY(BlueprintReadWrite)
+	class UINHMain* INHMain;
 };

@@ -48,8 +48,5 @@ private:
 private:
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	class UAnimMontage* AttackMontage;
-
-	UPROPERTY(VisibleAnywhere, Replicated)
-	float HP = 100.0f;
 	
 };
