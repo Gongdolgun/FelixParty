@@ -121,6 +121,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnRestraint();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiSpawnRestraint(const FVector& Location, const FRotator& Rotation, const FVector& Velocity);
+
 	// ¼­¹ö¿¡¼­ ÆøÅºÀ» »ý¼º
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnBomb(TSubclassOf<class ABomb> BombSpawn);

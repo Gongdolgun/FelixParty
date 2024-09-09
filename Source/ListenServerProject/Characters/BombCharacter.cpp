@@ -102,11 +102,12 @@ void ABombCharacter::Tick(float DeltaTime)
 
 	if (TargetDecal && !TargetDecal->IsHidden())
 	{
-		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		if (PlayerController)
 		{
 			FVector MouseLocation, MouseDirection;
 
+			// 마우스 위치를 월드 공간으로 변환
 			if (PlayerController->DeprojectMousePositionToWorld(MouseLocation, MouseDirection))
 			{
 				FHitResult HitResult;
@@ -308,16 +309,24 @@ void ABombCharacter::ServerSpawnRestraint_Implementation()
 		FActorSpawnParameters params;
 		params.Owner = this;
 
-		FVector location = this->GetActorLocation() + this->GetActorForwardVector() * 300;
-		FRotator rotation = this->GetActorRotation();
-		FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
+		FVector location = GetActorLocation() + GetControlRotation().Vector() * 300; // 카메라의 위치에서 나가는 방향
+		FRotator rotation = GetControlRotation();
 
 		if (RestraintClass)
 		{
-			this->GetWorld()->SpawnActor<AActor>(RestraintClass, transform, params);
+			ARestraint* restraint = this->GetWorld()->SpawnActor<ARestraint>(RestraintClass, location, rotation, params);
 
-			LastRestraintSpawnTime = currentTime;
+			if (restraint)
+			{
+				restraint->PlayerCharacter = this; 
 
+				FVector launchDirection = GetControlRotation().Vector();
+				launchDirection.Normalize();
+
+				MultiSpawnRestraint(location, rotation, launchDirection * restraint->Projectile->InitialSpeed);
+
+				LastRestraintSpawnTime = currentTime;
+			}
 		}
 
 		// 스폰 후 플래그 리셋
@@ -325,6 +334,20 @@ void ABombCharacter::ServerSpawnRestraint_Implementation()
 			{
 				bIsSpawningRestraint = false;
 			}, 1.0f, false); // 1초 후에 리셋 (필요에 따라 조정)
+	}
+}
+
+void ABombCharacter::MultiSpawnRestraint_Implementation(const FVector& Location, const FRotator& Rotation, const FVector& Velocity)
+{
+	FActorSpawnParameters params;
+	params.Owner = this;
+
+	ARestraint* restraint = this->GetWorld()->SpawnActor<ARestraint>(RestraintClass, Location, Rotation, params);
+
+	if (restraint)
+	{
+		restraint->PlayerCharacter = this; 
+		restraint->Projectile->Velocity = Velocity; 
 	}
 }
 
