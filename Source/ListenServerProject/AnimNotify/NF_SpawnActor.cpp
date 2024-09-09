@@ -22,7 +22,13 @@ void UNF_SpawnActor::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase*
 
 			else
 			{
-				character->ServerSpawnWall();
+				if (character->TargetDecal)
+				{
+					FVector Location = character->TargetDecal->GetActorLocation();
+					FRotator Rotation = FVector(character->GetActorForwardVector()).Rotation();
+
+					character->ServerSpawnWall(Location, Rotation);
+				}
 			}
 
 			character->CurrentActionState = EActionState::Idle;

@@ -1,5 +1,6 @@
 #include "SpawnActor/Restraint.h"
 #include "Global.h"
+#include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Characters/BombCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -16,6 +17,8 @@ ARestraint::ARestraint()
 
 	Projectile->ProjectileGravityScale = 0;
 	Projectile->Activate();
+	Projectile->bRotationFollowsVelocity = true;
+	Projectile->bShouldBounce = false;
 
 	Capsule->SetSimulatePhysics(false);
 	Capsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -29,10 +32,10 @@ void ARestraint::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerCharacter = Cast<ABombCharacter>(GetOwner());
-	Projectile->Velocity = PlayerCharacter->GetActorForwardVector() * Projectile->InitialSpeed;
 
 	Capsule->OnComponentHit.AddDynamic(this, &ARestraint::OnHit);
 
+	SetLifeSpan(5);
 }
 
 void ARestraint::Tick(float DeltaTime)
@@ -43,7 +46,7 @@ void ARestraint::Tick(float DeltaTime)
 
 void ARestraint::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor && OtherActor != this)
+	/*if (OtherActor && OtherActor != this)
 	{
 		ABombCharacter* BombCharacter = Cast<ABombCharacter>(OtherActor);
 
@@ -67,12 +70,47 @@ void ARestraint::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 		}
 
 		Destroy();
+	}*/
+
+	if (OtherActor == this)
+	{
+		Destroy();
+
+		return;
 	}
+
+	if (!OtherActor->IsA<ABombCharacter>())
+	{
+		Destroy();
+
+		return;
+	}
+
+	ABombCharacter* BombCharacter = Cast<ABombCharacter>(OtherActor);
+	if (BombCharacter)
+	{
+		if (BombCharacter->Bomb && BombCharacter->bBomb)
+		{
+			Destroy();
+			return;
+		}
+
+		DisableMovement(BombCharacter);
+
+		if (Particle)
+		{
+			FVector spawnLocation = BombCharacter->GetActorLocation() + FVector(0, 0, -50.0f);
+			FRotator spawnRotation = BombCharacter->GetActorRotation();
+
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, spawnLocation, spawnRotation);
+		}
+	}
+
+	Destroy();
 }
 
 void ARestraint::DisableMovement(ABombCharacter* TargetCharacter)
 {
-	// 충돌한 객체가 PlayerCharacter인지 확인
 	ABombCharacter* HitCharacter = Cast<ABombCharacter>(TargetCharacter);
 	if (HitCharacter)
 	{

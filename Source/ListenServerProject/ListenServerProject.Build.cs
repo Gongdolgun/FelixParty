@@ -6,6 +6,7 @@ public class ListenServerProject : ModuleRules
 {
 	public ListenServerProject(ReadOnlyTargetRules Target) : base(Target)
 	{
+        PrivateDependencyModuleNames.AddRange(new string[] { "AITestSuite" });
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicIncludePaths.Add(ModuleDirectory);

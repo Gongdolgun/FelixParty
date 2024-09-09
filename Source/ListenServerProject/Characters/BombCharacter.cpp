@@ -17,11 +17,14 @@
 #include "SpawnActor/Restraint.h"
 #include "SpawnActor/Wall.h"
 #include "SpawnActor/TargetDecal.h"
+#include "Widgets/TargetAim.h"
 
 ABombCharacter::ABombCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
+
+	Helpers::CreateComponent<UCameraComponent>(this, &TargetAimCamera, "TargetAimCamera", RootComponent);
 
 	HandSphere = CreateDefaultSubobject<USphereComponent>(TEXT("HandSphere"));
 	HandSphere->InitSphereRadius(20.0f);
@@ -44,7 +47,6 @@ void ABombCharacter::BeginPlay()
 
 	PlayerCharacter = Cast<ABombCharacter>(GetOwner());
 
-	// Hand_R_Sphere에 SphereComponent 장착
 	if (USkeletalMeshComponent* MeshComp = GetMesh())
 	{
 		FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
@@ -52,15 +54,6 @@ void ABombCharacter::BeginPlay()
 	}
 
 	HandSphere->OnComponentBeginOverlap.AddDynamic(this, &ABombCharacter::OnSphereBeginOverlap);
-
-	// Scene에서 카메라 액터 찾기
-	TArray<AActor*> CameraActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), CameraActors);
-	if (CameraActors.Num() > 0)
-	{
-		CameraActor = Cast<ACameraActor>(CameraActors[0]);
-
-	}
 
 	if (DecalClass)
 	{
@@ -71,6 +64,17 @@ void ABombCharacter::BeginPlay()
 			{
 				TargetDecal->SetActorHiddenInGame(true);
 			}
+		}
+	}
+
+	if (TargetAimClass)
+	{
+		TargetAimWidget = CreateWidget<UTargetAim>(GetWorld(), TargetAimClass);
+
+		if (TargetAimWidget)
+		{
+			TargetAimWidget->AddToViewport();
+			TargetAimWidget->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
@@ -96,74 +100,25 @@ void ABombCharacter::Tick(float DeltaTime)
 		}
 	}
 
-	//if (bIsDecal && TargetDecal && CameraActor)
-	//{
-	//	FHitResult HitResult;
-	//	FVector CameraLocation = CameraActor->GetActorLocation();
-	//	FVector CameraDirection = CameraActor->GetActorForwardVector();
-	//	FVector EndLocation = CameraLocation + (CameraDirection * 10000.0f);
-
-	//	FCollisionQueryParams Params;
-	//	Params.AddIgnoredActor(this);
-
-	//	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, EndLocation, ECC_Visibility, Params);
-
-	//	FColor LineColor = bHit ? FColor::Red : FColor::Green;
-	//	UKismetSystemLibrary::DrawDebugLine(GetWorld(), CameraLocation, EndLocation, LineColor, 0.0f, 5.0f);
-
-	//	//if (bHit)
-	//	//{
-	//	//	FVector ImpactNormal = HitResult.ImpactNormal;
-	//	//	FRotator DecalRotation = HitResult.ImpactNormal.Rotation();
-
-	//	//	// 데칼의 위치와 회전 업데이트
-	//	//	TargetDecal->SetActorLocation(HitResult.Location);
-	//	//	TargetDecal->SetActorRotation(DecalRotation);
-
-	//	//	if (!bIsDecal)
-	//	//	{
-	//	//		TargetDecal->SetActorHiddenInGame(false);
-	//	//		bIsDecal = true;
-	//	//	}
-	//	//}
-	//	//else
-	//	//{
-	//	//	if (bIsDecal)
-	//	//	{
-	//	//		TargetDecal->SetActorHiddenInGame(true);
-	//	//		bIsDecal = false;
-	//	//	}
-	//	//}
-
-	//	if (bHit)
-	//	{
-	//		// 라인트레이스가 성공한 경우 데칼 위치 및 회전 업데이트
-	//		FVector ImpactNormal = HitResult.ImpactNormal;
-	//		FRotator DecalRotation = ImpactNormal.Rotation();
-	//		TargetDecal->SetActorLocation(HitResult.Location);
-	//		TargetDecal->SetActorRotation(DecalRotation);
-	//	}
-	//}
-
 	if (TargetDecal && !TargetDecal->IsHidden())
 	{
-		if (CameraActor)
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		if (PlayerController)
 		{
-			APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-			if (PlayerController)
+			FVector MouseLocation, MouseDirection;
+
+			// 마우스 위치를 월드 공간으로 변환
+			if (PlayerController->DeprojectMousePositionToWorld(MouseLocation, MouseDirection))
 			{
-				FVector MouseLocation, MouseDirection;
+				FHitResult HitResult;
+				FCollisionQueryParams CollisionParams;
+				CollisionParams.AddIgnoredActor(this);
 
-				if (PlayerController->DeprojectMousePositionToWorld(MouseLocation, MouseDirection))
+				bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, MouseLocation, MouseLocation + (MouseDirection * 10000.0f), ECC_Visibility, CollisionParams);
+
+				if (bHit)
 				{
-					FHitResult HitResult;
-					FCollisionQueryParams CollisionParams;
-					CollisionParams.AddIgnoredActor(this);
-
-					if (GetWorld()->LineTraceSingleByChannel(HitResult, MouseLocation, MouseLocation + (MouseDirection * 10000.0f), ECC_Visibility, CollisionParams))
-					{
-						TargetDecal->UpdateDecalLocation(HitResult.Location, HitResult.ImpactNormal.Rotation() + FRotator(-90.0f, 0.0f, 0.0f));
-					}
+					TargetDecal->UpdateDecalLocation(HitResult.Location, HitResult.ImpactNormal.Rotation() + FRotator(-90.0f, 0.0f, 0.0f));
 				}
 			}
 		}
@@ -198,34 +153,47 @@ void ABombCharacter::Action()
 
 void ABombCharacter::HandleAction()
 {
-	/*if (CurrentActionState == EActionState::Dead) 
+	if (CurrentActionState == EActionState::Dead) 
 		return;
 
 	if (IsInAction())
 	{
 		return; 
-	}
+	} 
 
-	if (bIsDecal)
+	if (TargetDecal)
 	{
-		PlaceWall();
-		TargetDecal->SetActorHiddenInGame(true);
-		bIsDecal = false;
-	}
-	else
-	{
-		if (TargetDecal)
+		if (!bIsDecal && !bBomb && !Bomb)
 		{
 			TargetDecal->SetActorHiddenInGame(false);
 			bIsDecal = true;
 		}
-	}*/
 
-	if (TargetDecal)
+		else
+		{
+			FVector Location = TargetDecal->GetActorLocation();
+			FRotator Rotation = FVector(this->GetActorForwardVector()).Rotation();
+
+			ServerSpawnWall(Location, Rotation);
+			TargetDecal->SetActorHiddenInGame(true);
+			bIsDecal = false;
+		}
+	}
+
+	if (TargetAimWidget)
 	{
-		TargetDecal->SetActorHiddenInGame(false); // 키 입력 시 보이게 설정
-		FVector TargetLocation = TargetDecal->GetActorLocation();
-		SetActorLocation(TargetLocation); // 캐릭터를 TargetDecal 위치로 이동
+		if (bBomb && Bomb)
+		{
+			if (TargetAimWidget->GetVisibility() == ESlateVisibility::Hidden)
+			{
+				TargetAimWidget->SetVisibility(ESlateVisibility::Visible);
+			}
+			else
+			{
+				ServerSpawnRestraint();
+				TargetAimWidget->SetVisibility(ESlateVisibility::Hidden);
+			}
+		}
 	}
 }
 
@@ -271,7 +239,18 @@ void ABombCharacter::MultiPlayWall_Implementation()
 	}
 }
 
-void ABombCharacter::ServerSpawnWall_Implementation()
+void ABombCharacter::MultiSpawnWall_Implementation(const FVector& Location, const FRotator& Rotation)
+{
+	if (WallClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		FTransform Transform = UKismetMathLibrary::MakeTransform(Location, Rotation, FVector(1, 1, 1));
+		GetWorld()->SpawnActor<AActor>(WallClass, Transform, SpawnParams);
+	}
+}
+
+void ABombCharacter::ServerSpawnWall_Implementation(const FVector& Location, const FRotator& Rotation)
 {
 	if (CurrentActionState == EActionState::Dead || !TargetDecal)
 		return;
@@ -288,19 +267,10 @@ void ABombCharacter::ServerSpawnWall_Implementation()
 		return;;
 	}
 
-	FActorSpawnParameters params;
-	params.Owner = this;
+	// MultiSpawnWall 함수 호출하여 클라이언트들과 서버에 Wall 스폰
+	MultiSpawnWall(Location, Rotation);
 
-	FVector location = TargetDecal->GetActorLocation(); // 데칼의 위치를 스폰 위치로 사용
-	FRotator rotation = FVector(this->GetActorForwardVector()).Rotation(); // 캐릭터의 전방향을 사용
-	FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
-
-	if (WallClass)
-	{
-		this->GetWorld()->SpawnActor<AActor>(WallClass, transform, params);
-
-		LastWallSpawnTime = currentTime;
-	}
+	LastWallSpawnTime = currentTime;
 }
 
 void ABombCharacter::ServerPlayRestraint_Implementation()
@@ -339,16 +309,24 @@ void ABombCharacter::ServerSpawnRestraint_Implementation()
 		FActorSpawnParameters params;
 		params.Owner = this;
 
-		FVector location = this->GetActorLocation() + this->GetActorForwardVector() * 300;
-		FRotator rotation = this->GetActorRotation();
-		FTransform transform = UKismetMathLibrary::MakeTransform(location, rotation, FVector(1, 1, 1));
+		FVector location = GetActorLocation() + GetControlRotation().Vector() * 300; // 카메라의 위치에서 나가는 방향
+		FRotator rotation = GetControlRotation();
 
 		if (RestraintClass)
 		{
-			this->GetWorld()->SpawnActor<AActor>(RestraintClass, transform, params);
+			ARestraint* restraint = this->GetWorld()->SpawnActor<ARestraint>(RestraintClass, location, rotation, params);
 
-			LastRestraintSpawnTime = currentTime;
+			if (restraint)
+			{
+				restraint->PlayerCharacter = this; 
 
+				FVector launchDirection = GetControlRotation().Vector();
+				launchDirection.Normalize();
+
+				MultiSpawnRestraint(location, rotation, launchDirection * restraint->Projectile->InitialSpeed);
+
+				LastRestraintSpawnTime = currentTime;
+			}
 		}
 
 		// 스폰 후 플래그 리셋
@@ -356,6 +334,20 @@ void ABombCharacter::ServerSpawnRestraint_Implementation()
 			{
 				bIsSpawningRestraint = false;
 			}, 1.0f, false); // 1초 후에 리셋 (필요에 따라 조정)
+	}
+}
+
+void ABombCharacter::MultiSpawnRestraint_Implementation(const FVector& Location, const FRotator& Rotation, const FVector& Velocity)
+{
+	FActorSpawnParameters params;
+	params.Owner = this;
+
+	ARestraint* restraint = this->GetWorld()->SpawnActor<ARestraint>(RestraintClass, Location, Rotation, params);
+
+	if (restraint)
+	{
+		restraint->PlayerCharacter = this; 
+		restraint->Projectile->Velocity = Velocity; 
 	}
 }
 
@@ -557,7 +549,7 @@ void ABombCharacter::Dead()
 	{
 		bIsDead = true;
 		CurrentActionState = EActionState::Dead;
-		MultiDead();    // 멀티플레이어에서 호출
+		MultiDead();
 	}
 }
 

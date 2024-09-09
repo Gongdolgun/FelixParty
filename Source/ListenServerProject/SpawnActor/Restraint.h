@@ -32,6 +32,9 @@ public:
 	UPROPERTY(VisibleDefaultsOnly)
 	class UProjectileMovementComponent* Projectile;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Projectile")
+	FVector LaunchDirection;
+
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
