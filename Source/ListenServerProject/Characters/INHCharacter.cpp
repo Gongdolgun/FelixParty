@@ -1,6 +1,7 @@
 #include "Characters/INHCharacter.h"
 #include "EnhancedInputSubsystems.h"
 #include "Global.h"
+#include "Components/MoveComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StateComponent.h"
 #include "Controllers/DefaultController.h"

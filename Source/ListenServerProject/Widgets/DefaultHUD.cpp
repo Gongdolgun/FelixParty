@@ -25,6 +25,7 @@ void ADefaultHUD::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+
 }
 
 void ADefaultHUD::AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacterOverlay)
