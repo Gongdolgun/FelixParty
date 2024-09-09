@@ -31,7 +31,6 @@ protected:
 	virtual void Action() override;
 
 	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
-	void Dead();
 
 public:
 	UFUNCTION(Server, Reliable)
@@ -39,17 +38,28 @@ public:
 
 private:
 	UFUNCTION(NetMulticast, Reliable)
-	void PlayAttackMontage_NMC();
+	void PlayActionMontage_NMC(EStateType InStateType);
 
 	UFUNCTION(Server, Reliable)
-	void PlayAttackMontage_Server();
+	void PlayActionMontage_Server(EStateType InStateType);
 
+private:
+	UFUNCTION(NetMulticast, Reliable)
+	void Dead_NMC(FVector InImpulseDirection);
+
+	UFUNCTION(Server, Reliable)
+	void RespawnCharacter_Server();
+
+	UPROPERTY(EditAnywhere, Category = "Respawn")
+	TSubclassOf<APushCharacter> RespawnCharacter;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	class UAnimMontage* AttackMontage;
 
-	UPROPERTY(VisibleAnywhere, Replicated)
-	float HP = 100.0f;
-	
+	UPROPERTY(EditAnywhere, Category = "Montage")
+	class UAnimMontage* HittedMontage;
+
+	UPROPERTY(EditAnywhere, Category ="Respawn")
+	TSubclassOf<AActor> Respawner;
 };
