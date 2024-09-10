@@ -11,6 +11,7 @@
 #include "Controllers/DefaultController.h"
 #include "GameModes/DefaultGameMode.h"
 #include "GameState/DefaultGameState.h"
+#include "Net/UnrealNetwork.h"
 
 ADefaultCharacter::ADefaultCharacter()
 {
@@ -50,6 +51,8 @@ void ADefaultCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	HP = MaxHP;
+
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -62,8 +65,8 @@ void ADefaultCharacter::BeginPlay()
 	if (DefaultGameState != nullptr)
 		DefaultGameState->OnGameStateTypeChanged.AddDynamic(this, &ADefaultCharacter::PlayMaterialEventOnGameStart);
 
-	
-	UpdatePlayer_Server();
+	if(IsMaterialChange)
+		UpdatePlayer_Server();
 }
 
 void ADefaultCharacter::Tick(float DeltaTime)
@@ -89,6 +92,21 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::ViewOption);
 	}
+}
+
+void ADefaultCharacter::OnCollision()
+{
+}
+
+void ADefaultCharacter::OffCollision()
+{
+}
+
+void ADefaultCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, HP);
 }
 
 void ADefaultCharacter::Hit(AActor* InActor, const FHitData& InHitData)
@@ -161,18 +179,6 @@ void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 			GetMesh()->SetOverlayMaterial(MaterialInstance);
 		}
 	}
-
-	// Overlay Material º¯°æ
-	/*if(OverlayMaterial!= nullptr)
-	{
-		UMaterialInstanceDynamic* OverlayMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
-
-		if (OverlayMaterial)
-		{
-			OverlayMaterial->SetVectorParameterValue(FName("Color"), FLinearColor(InColor));
-			GetMesh()->SetOverlayMaterial(OverlayMaterial);
-		}
-	}*/
 }
 
 

@@ -8,5 +8,11 @@ UCLASS()
 class LISTENSERVERPROJECT_API AINHGameMode : public ADefaultGameMode
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPROPERTY(EditAnywhere, Category = "GhostClass")
+	TSubclassOf<APawn> Ghost;
+
+public:
+	void SetGhostMode(AController* InController);
 };

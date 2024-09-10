@@ -27,12 +27,6 @@ public:
 	UInputAction* IA_Run;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MaxHP = 100;
-
-	UPROPERTY(BlueprintReadWrite, Replicated)
-	float HP;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Respawn_time = 3.f;
 
