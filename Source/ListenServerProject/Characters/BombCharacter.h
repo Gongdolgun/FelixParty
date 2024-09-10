@@ -15,7 +15,6 @@ enum class EActionState
 	Dead
 };
 
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentBeginOverlap, class ACharacter*, InAttacker, AActor*, InAttackCuaser, class ACharacter*, InOther);
 
 UCLASS()
@@ -35,6 +34,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+	UPROPERTY(VisibleDefaultsOnly)
+	class UZoomComponent* Zoom;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TargetAimCamera;
 
@@ -70,6 +72,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_SubAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_Zoom;
 
 	UPROPERTY(EditAnywhere, Category = "Wall")
 	float Rate;
@@ -144,6 +149,8 @@ public:
 
 	bool IsInAction() const;
 
+	void SetZooming(const FInputActionValue& Value);
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
@@ -167,6 +174,8 @@ public:
 	bool bIsSpawningRestraint = false;
 
 	bool bIsDecal = false;
+
+	bool bUsingTargetAimCamera = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* NewCountdownSound;

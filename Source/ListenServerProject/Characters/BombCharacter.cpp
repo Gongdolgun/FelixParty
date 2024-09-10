@@ -1,6 +1,7 @@
 #include "Characters/BombCharacter.h"
 #include "Utilites/Helpers.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ZoomComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/ShapeComponent.h"
@@ -24,6 +25,7 @@ ABombCharacter::ABombCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
+	Helpers::CreateActorComponent<UZoomComponent>(this, &Zoom, "Zoom");
 	Helpers::CreateComponent<UCameraComponent>(this, &TargetAimCamera, "TargetAimCamera", RootComponent);
 
 	HandSphere = CreateDefaultSubobject<USphereComponent>(TEXT("HandSphere"));
@@ -133,6 +135,7 @@ void ABombCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	{
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ABombCharacter::Action);
 		EnhancedInputComponent->BindAction(IA_SubAction, ETriggerEvent::Started, this, &ABombCharacter::HandleAction);
+		EnhancedInputComponent->BindAction(IA_Zoom, ETriggerEvent::Started, this, &ABombCharacter::SetZooming);
 	}
 }
 
@@ -489,6 +492,15 @@ void ABombCharacter::SetActionState(EActionState NewState)
 bool ABombCharacter::IsInAction() const
 {
 	return CurrentActionState == EActionState::InAction;
+}
+
+void ABombCharacter::SetZooming(const FInputActionValue& Value)
+{
+	float InValue = Value.Get<float>(); // 입력 액션에서 float 값을 가져옴
+
+	InValue = -InValue;
+
+	Zoom->SetZoomValue(InValue);
 }
 
 void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
