@@ -71,6 +71,7 @@ void AINHCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 			FString AttackerName = AttackerController->GetPlayerState<APlayerState>()->GetPlayerName();
 			FString MyName = GetController()->GetPlayerState<APlayerState>()->GetPlayerName();
 			GameState->SomeoneDeadEvent(AttackerName, MyName);
+			GameState->UpdatePlayerScore(AttackerName, 10);
 		}
 
 		if (CameraShakeBase != nullptr && MyController != nullptr)
