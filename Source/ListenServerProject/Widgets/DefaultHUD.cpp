@@ -10,15 +10,14 @@ void ADefaultHUD::DrawHUD()
 {
 	Super::DrawHUD();
 
-
 }
 
 void ADefaultHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(CharacterOverlayClasses.Num() > 0)
-		AddCharacterOverlay(CharacterOverlayClasses[0]);
+	if (HUDClasses.Contains(EHudTypes::Ready))
+		AddCharacterOverlay(HUDClasses[EHudTypes::Ready]);
 }
 
 void ADefaultHUD::Tick(float DeltaSeconds)
@@ -50,18 +49,18 @@ void ADefaultHUD::ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateTyp
 	switch (InNewGameType)
 	{
 	case EGameStateType::GameStart:
-		if(CharacterOverlayClasses.Num() >= 2)
-			AddCharacterOverlay(CharacterOverlayClasses[1]);
+		if(HUDClasses.Contains(EHudTypes::Countdown))
+			AddCharacterOverlay(HUDClasses[EHudTypes::Countdown]);
 		break;
 
 	case EGameStateType::GamePlay:
-		if (CharacterOverlayClasses.Num() >= 3)
-			AddCharacterOverlay(CharacterOverlayClasses[2]);
+		if (HUDClasses.Contains(EHudTypes::GamePlay))
+			AddCharacterOverlay(HUDClasses[EHudTypes::GamePlay]);
 		break;
 
 	case EGameStateType::GameOver:
-		if (CharacterOverlayClasses.Num() >= 4)
-			AddCharacterOverlay(CharacterOverlayClasses[3]);
+		if (HUDClasses.Contains(EHudTypes::RankBoard))
+			AddCharacterOverlay(HUDClasses[EHudTypes::RankBoard]);
 		break;
 	}
 }

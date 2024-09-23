@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FPlayerData> PlayerDatas;
 
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FString> Maps;
+
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SavePlayerInfo(const FString& PlayerID, FPlayerData PlayerData);

@@ -56,3 +56,9 @@ enum class EPlayerColors : uint8
 {
 	Red = 0, Black, White
 };
+
+UENUM(BlueprintType)
+enum class EHudTypes : uint8
+{
+	None = 0, Ready, Countdown, GamePlay, RankBoard,
+};
