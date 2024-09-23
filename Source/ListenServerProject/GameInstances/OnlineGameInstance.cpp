@@ -3,10 +3,6 @@
 #include "Global.h"
 #include "Net/UnrealNetwork.h"
 
-UOnlineGameInstance::UOnlineGameInstance()
-{
-}
-
 void UOnlineGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
