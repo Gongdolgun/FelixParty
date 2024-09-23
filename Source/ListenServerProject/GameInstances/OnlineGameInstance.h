@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AdvancedFriendsGameInstance.h"
 #include "Engine/GameInstance.h"
 #include "Misc/Structures.h"
 #include "AdvancedSessions/Classes/AdvancedFriendsGameInstance.h"
