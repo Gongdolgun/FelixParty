@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Misc/Structures.h"
 #include "FireBall.generated.h"
 
 UCLASS()
@@ -20,6 +21,7 @@ public:
 
 protected:
 	virtual void OnDestroy();
+	virtual void Destroyed() override;
 
 public:
 	UPROPERTY(VisibleAnywhere)
@@ -43,5 +45,8 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "Explosion Particle")
 	class UParticleSystem* Explosion;
+
+	UPROPERTY(EditAnywhere, Category ="HitData")
+	FHitData HitData;
 
 };

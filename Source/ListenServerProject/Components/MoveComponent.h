@@ -31,9 +31,17 @@ public:
 	void EnableControlRotation();
 	void DisableControlRotation();
 
+	UFUNCTION(BlueprintCallable)
+	void SetApplyValue(float InValueX, float InValueY, bool InvertX, bool InvertY);
 
 private:
 	class ACharacter* Owner;
+
+	UPROPERTY(EditAnywhere)
+	float SensitivityValueX = 1.0f;
+
+	UPROPERTY(EditAnywhere)
+	float SensitivityValueY = 1.0f;
 
 public:
 	bool CanMove = true;

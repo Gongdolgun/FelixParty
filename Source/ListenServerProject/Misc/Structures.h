@@ -59,6 +59,14 @@ public:
     //Sound: 피격 시 나오는 사운드
     UPROPERTY(EditAnywhere, Category = "Sound")
     class USoundWave* Sound = nullptr;
+
+    //Launch: 피격 시 밀리는 크기
+    UPROPERTY(EditAnywhere, Category = "Launch")
+    FVector Launch = FVector(0.0f, 0.0f, 0.0f);
+
+    //Montage: 몽타주는 몽타주입니다.
+    UPROPERTY(EditAnywhere, Category = "Launch")
+    UAnimMontage* Montage = nullptr;
 };
 
 USTRUCT(BlueprintType)

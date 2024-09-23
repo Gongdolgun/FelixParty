@@ -37,16 +37,12 @@ void ADefaultController::BeginPlay()
 	if (SelectOptionWidget)
 	{
 		OptionWidget = CreateWidget<UUserWidget>(GetWorld(), SelectOptionWidget);
-		if (OptionWidget)
-		{
-			OptionWidget->AddToViewport();
-			OptionWidget->SetVisibility(ESlateVisibility::Collapsed);
-		}
 
-		else
-		{
-			CLog::Print("Wdiget Where");
-		}
+	}
+
+	else
+	{
+		CLog::Print("Where??");
 	}
 }
 
@@ -178,23 +174,15 @@ FString ADefaultController::EnumToString(EGameStateType InGameStateType)
 
 void ADefaultController::ViewOption()
 {
-	if (OptionWidget == nullptr) return;
-
-	if (OptionWidget->GetVisibility() == ESlateVisibility::Visible)
+	if (OptionWidget && DefaultGameState->GetGameStateType() == EGameStateType::GamePlay)
 	{
-		OptionWidget->SetVisibility(ESlateVisibility::Collapsed);
-
-		SetShowMouseCursor(false);
-		SetInputMode(FInputModeGameOnly());
-	}
-
-	else
-	{
-		OptionWidget->SetVisibility(ESlateVisibility::Visible);
+		OptionWidget->AddToViewport();
 
 		SetShowMouseCursor(true);
-		SetInputMode(FInputModeGameAndUI());
+
+		OptionWidget->SetFocus();
+		SetInputMode(FInputModeUIOnly());
+
 	}
 
-	
 }

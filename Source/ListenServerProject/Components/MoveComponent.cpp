@@ -15,6 +15,7 @@ void UMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Owner = Cast<ACharacter>(GetOwner());
+
 }
 
 void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -44,6 +45,9 @@ void UMoveComponent::Move(const FInputActionValue& Value)
 void UMoveComponent::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	LookAxisVector.X *= (SensitivityValueX);
+	LookAxisVector.Y *= (SensitivityValueY);
 
 	if (Owner != nullptr && CanMove)
 	{
@@ -100,4 +104,22 @@ void UMoveComponent::DisableControlRotation()
 {
 	Owner->bUseControllerRotationYaw = false;
 	Owner->GetCharacterMovement()->bOrientRotationToMovement = true;
+}
+
+void UMoveComponent::SetApplyValue(float InValueX, float InValueY, bool InvertX, bool InvertY)
+{
+	// X 값 변경
+	if (!InvertX)
+		SensitivityValueX = InValueX;
+
+	else
+		SensitivityValueX = -InValueX;
+
+	// Y값 변경
+	if (!InvertY)
+		SensitivityValueY = InValueY;
+
+	else
+		SensitivityValueY = -InValueY;
+
 }
