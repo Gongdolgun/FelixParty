@@ -4,7 +4,6 @@
 #include "AdvancedFriendsGameInstance.h"
 #include "Engine/GameInstance.h"
 #include "Misc/Structures.h"
-#include "AdvancedSessions/Classes/AdvancedFriendsGameInstance.h"
 #include "OnlineGameInstance.generated.h"
 
 UCLASS()
