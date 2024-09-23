@@ -42,19 +42,33 @@ void AFireBall::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AAc
 	IIDamage* HittedCharacter = Cast<IIDamage>(OtherActor);
 	if (HittedCharacter == nullptr || character == nullptr) return;
 
-	FHitData hitData;
-	hitData.Damage = 40.0f;
+	HitData.Damage = 40.0f;
+	HitData.Launch = GetActorForwardVector() * 1500.0f;
 
-	HittedCharacter->Hit(this, hitData);
+	HittedCharacter->Hit(this, HitData);
 
-	OnDestroy();
+	Destroyed();
 }
 
 void AFireBall::OnDestroy()
 {
+	
+}
+
+void AFireBall::Destroyed()
+{
+	Super::Destroyed();
+
+	if (this == nullptr) return;
+
 	if (Explosion)
 	{
-		UParticleSystemComponent* particleComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Explosion, GetActorLocation());
+		FTransform transform;
+		transform.SetLocation(GetActorLocation());
+		transform.SetRotation(FQuat(GetActorRotation()));
+		transform.SetScale3D(FVector(2.0f, 2.0f, 2.0f));
+
+		UParticleSystemComponent* particleComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Explosion, transform);
 		particleComponent->SetIsReplicated(true);
 	}
 

@@ -29,6 +29,7 @@ private:
 
 protected:
 	virtual void Action() override;
+	virtual void Jump() override;
 
 	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
 
@@ -38,17 +39,17 @@ public:
 
 private:
 	UFUNCTION(NetMulticast, Reliable)
-	void PlayActionMontage_NMC(EStateType InStateType);
+	void PlayActionMontage_NMC(UAnimMontage* InMontage);
 
 	UFUNCTION(Server, Reliable)
-	void PlayActionMontage_Server(EStateType InStateType);
+	void PlayActionMontage_Server(UAnimMontage* InMontage);
 
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Dead_NMC(FVector InImpulseDirection);
 
 	UFUNCTION(Server, Reliable)
-	void RespawnCharacter_Server();
+	void OnRespawnCharacter_Server();
 
 	UPROPERTY(EditAnywhere, Category = "Respawn")
 	TSubclassOf<APushCharacter> RespawnCharacter;
@@ -62,4 +63,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category ="Respawn")
 	TSubclassOf<AActor> Respawner;
+
+	FTimerHandle SpawnTimerHandle;
 };
