@@ -3,15 +3,15 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Misc/Structures.h"
+#include "AdvancedSessions/Classes/AdvancedFriendsGameInstance.h"
 #include "OnlineGameInstance.generated.h"
 
 UCLASS()
-class LISTENSERVERPROJECT_API UOnlineGameInstance : public UGameInstance
+class LISTENSERVERPROJECT_API UOnlineGameInstance : public UAdvancedFriendsGameInstance
 {
 	GENERATED_BODY()
 
 public:
-	UOnlineGameInstance();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
@@ -20,6 +20,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> Maps;
+
 
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
