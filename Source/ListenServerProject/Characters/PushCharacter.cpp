@@ -4,6 +4,7 @@
 #include "Components/MoveComponent.h"
 #include "Components/StateComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameModes/PushGameMode.h"
 #include "Net/UnrealNetwork.h"
 
 APushCharacter::APushCharacter()
@@ -98,28 +99,42 @@ void APushCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 
 	else
 	{
-		FVector ImpulseDirection = InActor->GetActorForwardVector() * 10000.f;
-		Dead_NMC(ImpulseDirection);
+		//FVector ImpulseDirection = InActor->GetActorForwardVector() * 1000.f;
+		Dead_NMC();
 
 		// 랜덤 위치 캐릭터 스폰
-		if (HasAuthority())
-		{
-			GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &APushCharacter::OnRespawnCharacter_Server, 2.0f, false);
-		}
+		//if (HasAuthority())
+		//{
+		//	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &APushCharacter::OnRespawnCharacter_Server, 2.0f, false);
+		//}
+
+		RespawnCharacter();
 	}
 	
 }
 
+void APushCharacter::RespawnCharacter()
+{
+	APushGameMode* PushGameMode = Cast<APushGameMode>(GetWorld()->GetAuthGameMode());
+	if (PushGameMode)
+	{
+		PushGameMode->RespawnPlayer(GetController());
 
-void APushCharacter::Dead_NMC_Implementation(FVector InImpulseDirection)
+		CLog::Print("RespawnPlayer 1");
+	}
+
+	Destroy();
+}
+
+
+void APushCharacter::Dead_NMC_Implementation()
 {
 	MoveComponent->CanMove = false;
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionProfileName("Ragdoll");
 
-	InImpulseDirection.Z = 500.f;
-
-	GetMesh()->AddImpulse(InImpulseDirection, NAME_None, true);
+	//InImpulseDirection.Z = 500.f;
+	//GetMesh()->AddImpulse(InImpulseDirection, NAME_None, true);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
@@ -146,24 +161,25 @@ void APushCharacter::PlayActionMontage_Server_Implementation(UAnimMontage* InMon
 		PlayActionMontage_NMC(InMontage);
 }
 
-void APushCharacter::OnRespawnCharacter_Server_Implementation()
-{
-	APushRespawner* spawner = Cast<APushRespawner>(UGameplayStatics::GetActorOfClass(GetWorld(), Respawner));
-	if (spawner == nullptr) return;
-
-	FVector spawnLocation = spawner->GetSpawnCollisionRandomPoint();
-	FRotator spawnRotation = FRotator::ZeroRotator;
-	FActorSpawnParameters params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	APushCharacter* respawnCharacter = GetWorld()->SpawnActor<APushCharacter>(RespawnCharacter, spawnLocation, spawnRotation, params);
-	if (respawnCharacter)
-	{
-		AController* controller = this->GetController();
-		if (controller)
-		{
-			controller->Possess(respawnCharacter);
-			GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
-		}
-	}
-}
+//void APushCharacter::OnRespawnCharacter_Server_Implementation()
+//{
+//	APushRespawner* spawner = Cast<APushRespawner>(UGameplayStatics::GetActorOfClass(GetWorld(), Respawner));
+//	if (spawner == nullptr) return;
+//
+//	FVector spawnLocation = spawner->GetSpawnCollisionRandomPoint();
+//	FRotator spawnRotation = FRotator::ZeroRotator;
+//	FActorSpawnParameters params;
+//	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+//
+//	APushCharacter* respawnCharacter = GetWorld()->SpawnActor<APushCharacter>(RespawnCharacter, spawnLocation, spawnRotation, params);
+//	if (respawnCharacter)
+//	{
+//		AController* controller = this->GetController();
+//		if (controller)
+//		{
+//			controller->Possess(respawnCharacter);
+//
+//			GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
+//		}
+//	}
+//}

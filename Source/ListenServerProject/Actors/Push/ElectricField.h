@@ -3,22 +3,26 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Misc/Structures.h"
-#include "DotDamageTest.generated.h"
+#include "ElectricField.generated.h"
 
 UCLASS()
-class LISTENSERVERPROJECT_API ADotDamageTest : public AActor
+class LISTENSERVERPROJECT_API AElectricField : public AActor
 {
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Collision")
-	class UBoxComponent* BoxCollision;
+	UPROPERTY(EditAnywhere, Replicated)
+	class UCapsuleComponent* RingCapsule;
+
+	UPROPERTY(EditAnywhere, Replicated)
+	class UStaticMeshComponent* RingMesh;
 
 public:	
-	ADotDamageTest();
+	AElectricField();
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
@@ -38,6 +42,8 @@ private:
 
 	FTimerHandle DotTimerHandle;
 	FHitData HitData;
+
+	TArray<class ADefaultCharacter*> OverlappedCharacters;
 };
 
 
