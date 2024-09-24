@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
+#include "Components/ProgressBar.h"
 #include "PlayerSkillTime.generated.h"
 
 UCLASS()
@@ -12,8 +13,12 @@ class LISTENSERVERPROJECT_API UPlayerSkillTime : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	// 스킬 쿨다운을 업데이트하는 함수 (Blueprint로 구현)
 	UFUNCTION(BlueprintImplementableEvent, Category = "Cooldown")
-	void UpdateCooldown(float CooldownTime, float RemainingTime);
+	void UpdateWallCooldown(float CooldownPercent);  // Wall 스킬 쿨다운 업데이트
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Cooldown")
+	void UpdateRestraintCooldown(float CooldownPercent);  // Restraint 스킬 쿨다운 업데이트
 
 public:
 	UPROPERTY(meta = (BindWidget))
@@ -25,10 +30,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UImage* RestraintCooldownIcon; 
 
-	UPROPERTY(meta = (BindWidget))
-	UImage* WallBackGroundIcon;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UProgressBar* WallCooldownBar; 
 
-	UPROPERTY(meta = (BindWidget))
-	UImage* RestraintBackGroundIcon;
-
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UProgressBar* RestraintCooldownBar; 
 };

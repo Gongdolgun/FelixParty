@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "SpawnActor/TargetDecal.h"
+#include "Widgets/PlayerSkillTime.h"
 #include "Widgets/TargetAim.h"
 #include "BombCharacter.generated.h"
 
@@ -70,6 +71,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Restraint")
 	TSubclassOf<class UTargetAim> TargetAimClass;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UPlayerSkillTime> PlayerSkillTimeWidgetClass;
+
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_SubAction;
 
@@ -91,6 +95,8 @@ public:
 	ATargetDecal* TargetDecal;
 
 	UTargetAim* TargetAimWidget;
+
+	UPlayerSkillTime* PlayerSkillTimeWidget;
 
 public:
 	void Action() override;
@@ -229,6 +235,14 @@ public:
 	float LastWallSpawnTime;
 
 	float LastRestraintSpawnTime;
+
+	float WallCooldownRemaining;
+	float RestraintCooldownRemaining;
+
+	void StartWallCooldown();
+
+	void StartRestraintCooldown();
+
 };
 
 

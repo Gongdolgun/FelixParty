@@ -125,6 +125,32 @@ void ABombCharacter::Tick(float DeltaTime)
 			}
 		}
 	}
+
+	// Wall Cooldown 계산
+	if (WallCooldownRemaining > 0.0f)
+	{
+		WallCooldownRemaining -= DeltaTime;
+		float WallCooldownPercent = FMath::Clamp(WallCooldownRemaining / WallCoolTime, 0.0f, 1.0f);
+
+		// 쿨다운 상태 업데이트
+		if (PlayerSkillTimeWidget)
+		{
+			PlayerSkillTimeWidget->UpdateWallCooldown(WallCooldownPercent);
+		}
+	}
+
+	// Restraint Cooldown 계산
+	if (RestraintCooldownRemaining > 0.0f)
+	{
+		RestraintCooldownRemaining -= DeltaTime;
+		float RestraintCooldownPercent = FMath::Clamp(RestraintCooldownRemaining / RestraintCoolTime, 0.0f, 1.0f);
+
+		// 쿨다운 상태 업데이트
+		if (PlayerSkillTimeWidget)
+		{
+			PlayerSkillTimeWidget->UpdateRestraintCooldown(RestraintCooldownPercent);
+		}
+	}
 }
 
 void ABombCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -231,7 +257,19 @@ void ABombCharacter::ServerPlayWall_Implementation()
 	if (CurrentActionState == EActionState::Dead) 
 		return;
 
+	float currentTime = GetWorld()->GetTimeSeconds();
+
+	// Wall 쿨다운이 끝나지 않았다면 스킬을 사용할 수 없음
+	if (currentTime - LastWallSpawnTime < WallCoolTime)
+	{
+		return;  // 쿨다운 중이므로 리턴
+	}
+
 	MultiPlayWall();
+
+	// Wall 쿨다운 시간 초기화
+	WallCooldownRemaining = WallCoolTime;
+	LastWallSpawnTime = currentTime;
 }
 
 void ABombCharacter::MultiPlayWall_Implementation()
@@ -273,6 +311,7 @@ void ABombCharacter::ServerSpawnWall_Implementation(const FVector& Location, con
 	// MultiSpawnWall 함수 호출하여 클라이언트들과 서버에 Wall 스폰
 	MultiSpawnWall(Location, Rotation);
 
+	WallCooldownRemaining = WallCoolTime;
 	LastWallSpawnTime = currentTime;
 }
 
@@ -281,7 +320,18 @@ void ABombCharacter::ServerPlayRestraint_Implementation()
 	if (CurrentActionState == EActionState::Dead)
 		return;
 
+	float currentTime = GetWorld()->GetTimeSeconds();
+
+	// Restraint 쿨다운이 끝나지 않았다면 스킬을 사용할 수 없음
+	if (currentTime - LastRestraintSpawnTime < RestraintCoolTime)
+	{
+		return;  // 쿨다운 중이므로 리턴
+	}
+
 	MultiPlayRestraint();
+
+	RestraintCooldownRemaining = RestraintCoolTime;
+	LastRestraintSpawnTime = currentTime;
 }
 
 void ABombCharacter::MultiPlayRestraint_Implementation()
@@ -328,6 +378,7 @@ void ABombCharacter::ServerSpawnRestraint_Implementation()
 
 				MultiSpawnRestraint(location, rotation, launchDirection * restraint->Projectile->InitialSpeed);
 
+				RestraintCooldownRemaining = RestraintCoolTime;
 				LastRestraintSpawnTime = currentTime;
 			}
 		}
