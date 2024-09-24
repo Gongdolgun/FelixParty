@@ -6,7 +6,7 @@
 UENUM(BlueprintType)
 enum class EGameStateType : uint8
 {
-	Ready = 0, GameStart, GamePlay, GameOver, Max
+	Ready = 0, GameStart, GamePlay, GameOver, RankBoard, Max
 };
 
 UENUM(BlueprintType)
@@ -60,5 +60,5 @@ enum class EPlayerColors : uint8
 UENUM(BlueprintType)
 enum class EHudTypes : uint8
 {
-	None = 0, Ready, Countdown, GamePlay, RankBoard,
+	None = 0, Ready, Countdown, GamePlay, GameOver, RankBoard,
 };

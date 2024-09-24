@@ -15,6 +15,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void Jump() override;
 
 	virtual void OnCollision() override;
 	virtual void OffCollision() override;

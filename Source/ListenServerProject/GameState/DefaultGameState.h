@@ -44,7 +44,10 @@ public:
 	float GamePlayTime = 30.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Game State")
-	float GameOverTime = 5.0f;
+	float GameOverTime = 3.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Game State")
+	float RankBoardTime = 5.0f;
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	TArray<FPlayerInGameData> PlayerDatas;

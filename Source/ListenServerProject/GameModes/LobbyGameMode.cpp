@@ -16,16 +16,10 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 	ALobbyController* Controller = Cast<ALobbyController>(NewPlayer);
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
 
-	CLog::Print(Controller->GetPlayerState<APlayerState>()->GetUniqueId()->ToString());
-
 	// 인게임에서 사용할 플레이어 데이터 초기화 (Game Instance)
 	if(Controller && GameInstance)
 	{
 		FString PlayerID = Controller->GetPlayerState<APlayerState>()->GetPlayerName();
-
-		/*TSharedPtr<const FUniqueNetId> UniqueNetId = Controller->GetPlayerState<APlayerState>()->GetUniqueId().GetUniqueNetId();
-		FBPUniqueNetId PlayerUniqueID;
-		PlayerUniqueID.SetUniqueNetId(UniqueNetId);*/
 
 		GameInstance->PlayerDatas.Add(PlayerID, DefaultPlayerData);
 		if(GameInstance->PlayerDatas.Contains(PlayerID))
