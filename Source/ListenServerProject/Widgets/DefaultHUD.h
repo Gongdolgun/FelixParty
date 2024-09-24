@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "GameState/DefaultGameState.h"
+#include "Misc/Enums.h"
 #include "DefaultHUD.generated.h"
 
 UCLASS()
@@ -13,8 +14,8 @@ class LISTENSERVERPROJECT_API ADefaultHUD : public AHUD
 public:
 	virtual void DrawHUD() override;
 
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
-	TArray<TSubclassOf<class UUserWidget>> CharacterOverlayClasses;
+	UPROPERTY(EditAnywhere, Category = "Hud Types")
+	TMap<EHudTypes, TSubclassOf<class UUserWidget>> HUDClasses;
 
 	UUserWidget* CharacterOverlay;
 

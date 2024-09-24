@@ -1,11 +1,8 @@
 #include "GameInstances/OnlineGameInstance.h"
 #include "GameFramework/PlayerState.h"
 #include "Global.h"
+#include "AdvancedFriendsGameInstance.h"
 #include "Net/UnrealNetwork.h"
-
-UOnlineGameInstance::UOnlineGameInstance()
-{
-}
 
 void UOnlineGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
