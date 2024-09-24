@@ -8,5 +8,27 @@ UCLASS()
 class LISTENSERVERPROJECT_API APushGameMode : public ADefaultGameMode
 {
 	GENERATED_BODY()
+
+public:
+	APushGameMode();
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+
+public:
+	void SpawnElectricField();
+	void RespawnPlayer(AController* InController);
+
+public:
+	UPROPERTY(EditAnywhere, Category = "Ring")
+	TSubclassOf<class AElectricField> ElectricFieldClass;
+
+	
+private:
+	AElectricField* ElectricField;
 	
 };
+
+
+

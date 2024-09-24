@@ -46,13 +46,15 @@ private:
 
 private:
 	UFUNCTION(NetMulticast, Reliable)
-	void Dead_NMC(FVector InImpulseDirection);
+	void Dead_NMC();
 
-	UFUNCTION(Server, Reliable)
-	void OnRespawnCharacter_Server();
+	//UFUNCTION(Server, Reliable)
+	//void OnRespawnCharacter_Server();
 
-	UPROPERTY(EditAnywhere, Category = "Respawn")
-	TSubclassOf<APushCharacter> RespawnCharacter;
+	void RespawnCharacter();
+
+	//UPROPERTY(EditAnywhere, Category = "Respawn")
+	//TSubclassOf<APushCharacter> RespawnCharacter;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Montage")

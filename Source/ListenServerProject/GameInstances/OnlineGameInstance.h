@@ -21,6 +21,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> Maps;
 
+
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SavePlayerInfo(const FString& PlayerID, FPlayerData PlayerData);
