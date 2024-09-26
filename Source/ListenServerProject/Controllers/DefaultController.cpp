@@ -174,7 +174,7 @@ FString ADefaultController::EnumToString(EGameStateType InGameStateType)
 
 void ADefaultController::ViewOption()
 {
-	if (OptionWidget && DefaultGameState->GetGameStateType() == EGameStateType::GamePlay)
+	if (OptionWidget)
 	{
 		OptionWidget->AddToViewport();
 

@@ -44,6 +44,12 @@ private:
 	UFUNCTION(Server, Reliable)
 	void PlayActionMontage_Server(UAnimMontage* InMontage);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void SetAttacker_NMC(APushCharacter* InCharacter);
+
+	UFUNCTION(Server, Reliable)
+	void SetAttacker_Server(APushCharacter* InCharacter);
+
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Dead_NMC();
@@ -67,4 +73,14 @@ private:
 	TSubclassOf<AActor> Respawner;
 
 	FTimerHandle SpawnTimerHandle;
+
+	class APushGameMode* PushGameMode;
+	class APushGameState* PushGameState;
+
+private:
+	UPROPERTY(Replicated)
+	APushCharacter* Attacker;
+
+	FString attackerName;
+	FString playerName;
 };

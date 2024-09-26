@@ -4,15 +4,20 @@
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Global.h"
+#include "GameState/PushGameState.h"
 
 APushGameMode::APushGameMode()
 {
+    PrimaryActorTick.bCanEverTick = true;
+
 
 }
 
 void APushGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+    PushGameState = GetGameState<APushGameState>();
 
 	SpawnElectricField();
 }
@@ -21,6 +26,7 @@ void APushGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+   
 }
 
 void APushGameMode::SpawnElectricField()
@@ -33,15 +39,12 @@ void APushGameMode::SpawnElectricField()
 	transform.SetScale3D(FVector(50.0f, 50.0f, 50.0f));
 
 	if (ElectricFieldClass)
-	{
 		ElectricField = GetWorld()->SpawnActor<AElectricField>(ElectricFieldClass, transform, params);
-
-	}
 }
 
 void APushGameMode::RespawnPlayer(AController* InController)
 {
-    if (InController != nullptr)
+    if (InController != nullptr)// && PushGameState->GetGameStateType() == EGameStateType::GamePlay)
     {
         UWorld* World = GetWorld();
         if (World)
@@ -56,7 +59,6 @@ void APushGameMode::RespawnPlayer(AController* InController)
                 FActorSpawnParameters params;
                 params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
                 APushCharacter* NewCharacter = World->SpawnActor<APushCharacter>(DefaultPawnClass, PlayerStarts[RandomIndex]->GetActorTransform(), params);
-
 
                 if (NewCharacter)
                 {
