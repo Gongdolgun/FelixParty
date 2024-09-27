@@ -186,7 +186,9 @@ void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 void ADefaultCharacter::ViewOption()
 {
 	ADefaultController* controller = Cast<ADefaultController>(GetController());
-	if (controller == nullptr) return;
+	if (controller)
+	{
+		controller->ViewOption();
+	}
 
-	controller->ViewOption();
 }

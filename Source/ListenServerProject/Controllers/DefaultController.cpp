@@ -185,8 +185,11 @@ void ADefaultController::ViewOption()
 	{
 		OptionWidget->AddToViewport();
 
-		SetShowMouseCursor(true);
-
+		if (bShowMouseCursor == false)
+		{
+			SetShowMouseCursor(true);
+		}
+		
 		OptionWidget->SetFocus();
 		SetInputMode(FInputModeUIOnly());
 

@@ -21,6 +21,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> Maps;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FSaveSettings Instance_Settings;
 
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
