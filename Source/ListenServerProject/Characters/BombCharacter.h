@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "SpawnActor/TargetDecal.h"
+#include "Widgets/PlayerSkillTime.h"
 #include "Widgets/TargetAim.h"
 #include "BombCharacter.generated.h"
 
@@ -14,7 +15,6 @@ enum class EActionState
 	InAction,
 	Dead
 };
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentBeginOverlap, class ACharacter*, InAttacker, AActor*, InAttackCuaser, class ACharacter*, InOther);
 
@@ -35,6 +35,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+	UPROPERTY(VisibleDefaultsOnly)
+	class UZoomComponent* Zoom;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TargetAimCamera;
 
@@ -68,8 +71,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Restraint")
 	TSubclassOf<class UTargetAim> TargetAimClass;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UPlayerSkillTime> PlayerSkillTimeWidgetClass;
+
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_SubAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_Zoom;
 
 	UPROPERTY(EditAnywhere, Category = "Wall")
 	float Rate;
@@ -86,6 +95,8 @@ public:
 	ATargetDecal* TargetDecal;
 
 	UTargetAim* TargetAimWidget;
+
+	UPlayerSkillTime* PlayerSkillTimeWidget;
 
 public:
 	void Action() override;
@@ -124,6 +135,12 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiSpawnRestraint(const FVector& Location, const FRotator& Rotation, const FVector& Velocity);
 
+	UFUNCTION(BlueprintCallable, Category = "Cooldown")
+	void StartWallCooldown();
+
+	UFUNCTION(BlueprintCallable, Category = "Cooldown")
+	void StartRestraintCooldown();
+
 	// ¼­¹ö¿¡¼­ ÆøÅºÀ» »ý¼º
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnBomb(TSubclassOf<class ABomb> BombSpawn);
@@ -143,6 +160,8 @@ public:
 	void SetActionState(EActionState NewState);
 
 	bool IsInAction() const;
+
+	void SetZooming(const FInputActionValue& Value);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -168,6 +187,8 @@ public:
 
 	bool bIsDecal = false;
 
+	bool bUsingTargetAimCamera = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* NewCountdownSound;
 
@@ -188,6 +209,9 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiDestroyCharacter();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void CreateWidget_NMC(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
 	FTimerHandle CollisionTimerHandle;
 
@@ -220,6 +244,10 @@ public:
 	float LastWallSpawnTime;
 
 	float LastRestraintSpawnTime;
+
+	float WallCooldownRemaining;
+	float RestraintCooldownRemaining;
+
 };
 
 
