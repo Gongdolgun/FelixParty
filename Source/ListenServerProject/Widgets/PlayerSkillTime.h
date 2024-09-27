@@ -13,12 +13,11 @@ class LISTENSERVERPROJECT_API UPlayerSkillTime : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	// 스킬 쿨다운을 업데이트하는 함수 (Blueprint로 구현)
 	UFUNCTION(BlueprintImplementableEvent, Category = "Cooldown")
-	void UpdateWallCooldown(float CooldownPercent);  // Wall 스킬 쿨다운 업데이트
+	void UpdateWallCooldown(float CooldownPercent);  
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Cooldown")
-	void UpdateRestraintCooldown(float CooldownPercent);  // Restraint 스킬 쿨다운 업데이트
+	void UpdateRestraintCooldown(float CooldownPercent);
 
 public:
 	UPROPERTY(meta = (BindWidget))

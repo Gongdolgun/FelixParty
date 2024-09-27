@@ -14,6 +14,7 @@
 #include "Components/DecalComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GameState/DefaultGameState.h"
 #include "Net/UnrealNetwork.h"
 #include "SpawnActor/Restraint.h"
 #include "SpawnActor/Wall.h"
@@ -47,6 +48,11 @@ void ABombCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ADefaultGameState* DefaultGamestate = Cast<ADefaultGameState>(GetWorld()->GetGameState());
+	if (DefaultGamestate != nullptr)
+	{
+		DefaultGamestate->OnGameStateTypeChanged.AddDynamic(this, &ABombCharacter::CreateWidget_NMC);
+	}
 	PlayerCharacter = Cast<ABombCharacter>(GetOwner());
 
 	if (USkeletalMeshComponent* MeshComp = GetMesh())
@@ -126,26 +132,24 @@ void ABombCharacter::Tick(float DeltaTime)
 		}
 	}
 
-	// Wall Cooldown 계산
 	if (WallCooldownRemaining > 0.0f)
 	{
 		WallCooldownRemaining -= DeltaTime;
 		float WallCooldownPercent = FMath::Clamp(WallCooldownRemaining / WallCoolTime, 0.0f, 1.0f);
 
-		// 쿨다운 상태 업데이트
+		CLog::Log(WallCooldownRemaining);
 		if (PlayerSkillTimeWidget)
 		{
 			PlayerSkillTimeWidget->UpdateWallCooldown(WallCooldownPercent);
 		}
 	}
 
-	// Restraint Cooldown 계산
 	if (RestraintCooldownRemaining > 0.0f)
 	{
 		RestraintCooldownRemaining -= DeltaTime;
 		float RestraintCooldownPercent = FMath::Clamp(RestraintCooldownRemaining / RestraintCoolTime, 0.0f, 1.0f);
 
-		// 쿨다운 상태 업데이트
+		CLog::Log(RestraintCooldownRemaining);
 		if (PlayerSkillTimeWidget)
 		{
 			PlayerSkillTimeWidget->UpdateRestraintCooldown(RestraintCooldownPercent);
@@ -268,8 +272,8 @@ void ABombCharacter::ServerPlayWall_Implementation()
 	MultiPlayWall();
 
 	// Wall 쿨다운 시간 초기화
-	WallCooldownRemaining = WallCoolTime;
 	LastWallSpawnTime = currentTime;
+	StartWallCooldown();
 }
 
 void ABombCharacter::MultiPlayWall_Implementation()
@@ -289,6 +293,7 @@ void ABombCharacter::MultiSpawnWall_Implementation(const FVector& Location, cons
 		FTransform Transform = UKismetMathLibrary::MakeTransform(Location, Rotation, FVector(1, 1, 1));
 		GetWorld()->SpawnActor<AActor>(WallClass, Transform, SpawnParams);
 	}
+
 }
 
 void ABombCharacter::ServerSpawnWall_Implementation(const FVector& Location, const FRotator& Rotation)
@@ -311,8 +316,9 @@ void ABombCharacter::ServerSpawnWall_Implementation(const FVector& Location, con
 	// MultiSpawnWall 함수 호출하여 클라이언트들과 서버에 Wall 스폰
 	MultiSpawnWall(Location, Rotation);
 
-	WallCooldownRemaining = WallCoolTime;
+	//WallCooldownRemaining = WallCoolTime;
 	LastWallSpawnTime = currentTime;
+	//StartWallCooldown();
 }
 
 void ABombCharacter::ServerPlayRestraint_Implementation()
@@ -330,8 +336,8 @@ void ABombCharacter::ServerPlayRestraint_Implementation()
 
 	MultiPlayRestraint();
 
-	RestraintCooldownRemaining = RestraintCoolTime;
 	LastRestraintSpawnTime = currentTime;
+	StartRestraintCooldown();
 }
 
 void ABombCharacter::MultiPlayRestraint_Implementation()
@@ -378,8 +384,9 @@ void ABombCharacter::ServerSpawnRestraint_Implementation()
 
 				MultiSpawnRestraint(location, rotation, launchDirection * restraint->Projectile->InitialSpeed);
 
-				RestraintCooldownRemaining = RestraintCoolTime;
+				//RestraintCooldownRemaining = RestraintCoolTime;
 				LastRestraintSpawnTime = currentTime;
+				//StartRestraintCooldown();
 			}
 		}
 
@@ -443,6 +450,26 @@ void ABombCharacter::MultiSpawnBomb_Implementation(ABomb* SpawnBomb)
 		bBomb = true; // 폭탄 소유 상태로 변경(클라)
 
 		GetCharacterMovement()->MaxWalkSpeed = GetCurrentMovementSpeed();
+	}
+}
+
+void ABombCharacter::StartWallCooldown()
+{
+	WallCooldownRemaining = WallCoolTime;
+
+	if (PlayerSkillTimeWidget)
+	{
+		PlayerSkillTimeWidget->UpdateWallCooldown(1.0f);
+	}
+}
+
+void ABombCharacter::StartRestraintCooldown()
+{
+	RestraintCooldownRemaining = RestraintCoolTime;
+
+	if (PlayerSkillTimeWidget)
+	{
+		PlayerSkillTimeWidget->UpdateRestraintCooldown(1.0f);
 	}
 }
 
@@ -613,6 +640,19 @@ void ABombCharacter::Dead()
 		bIsDead = true;
 		CurrentActionState = EActionState::Dead;
 		MultiDead();
+	}
+}
+
+void ABombCharacter::CreateWidget_NMC_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)
+{
+	if (PlayerSkillTimeWidgetClass && InNewGameType == EGameStateType::GamePlay)
+	{
+		PlayerSkillTimeWidget = CreateWidget<UPlayerSkillTime>(GetWorld(), PlayerSkillTimeWidgetClass);
+
+		if (PlayerSkillTimeWidget)
+		{
+			PlayerSkillTimeWidget->AddToViewport();
+		}
 	}
 }
 

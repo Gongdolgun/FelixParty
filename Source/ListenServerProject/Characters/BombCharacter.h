@@ -135,6 +135,12 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiSpawnRestraint(const FVector& Location, const FRotator& Rotation, const FVector& Velocity);
 
+	UFUNCTION(BlueprintCallable, Category = "Cooldown")
+	void StartWallCooldown();
+
+	UFUNCTION(BlueprintCallable, Category = "Cooldown")
+	void StartRestraintCooldown();
+
 	// ¼­¹ö¿¡¼­ ÆøÅºÀ» »ý¼º
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnBomb(TSubclassOf<class ABomb> BombSpawn);
@@ -204,6 +210,9 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiDestroyCharacter();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void CreateWidget_NMC(EGameStateType InPrevGameType, EGameStateType InNewGameType);
+
 	FTimerHandle CollisionTimerHandle;
 
 	FTimerHandle BombTimerHandle;
@@ -238,10 +247,6 @@ public:
 
 	float WallCooldownRemaining;
 	float RestraintCooldownRemaining;
-
-	void StartWallCooldown();
-
-	void StartRestraintCooldown();
 
 };
 
