@@ -47,8 +47,6 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 			Player->UpdatePlayerList(PlayerBaseInfos);
 		}
 	}
-
-	
 }
 
 void ALobbyGameMode::UpdatePlayerLists()

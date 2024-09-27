@@ -206,6 +206,7 @@ void APushCharacter::PlayActionMontage_Server_Implementation(UAnimMontage* InMon
 {
 	if (InMontage)
 		PlayActionMontage_NMC(InMontage);
+
 }
 
 //void APushCharacter::OnRespawnCharacter_Server_Implementation()
