@@ -1,6 +1,7 @@
 #include "Characters/BombCharacter.h"
 #include "Utilites/Helpers.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ZoomComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/ShapeComponent.h"
@@ -13,6 +14,7 @@
 #include "Components/DecalComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GameState/DefaultGameState.h"
 #include "Net/UnrealNetwork.h"
 #include "SpawnActor/Restraint.h"
 #include "SpawnActor/Wall.h"
@@ -24,6 +26,7 @@ ABombCharacter::ABombCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
+	Helpers::CreateActorComponent<UZoomComponent>(this, &Zoom, "Zoom");
 	Helpers::CreateComponent<UCameraComponent>(this, &TargetAimCamera, "TargetAimCamera", RootComponent);
 
 	HandSphere = CreateDefaultSubobject<USphereComponent>(TEXT("HandSphere"));
@@ -45,6 +48,11 @@ void ABombCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ADefaultGameState* DefaultGamestate = Cast<ADefaultGameState>(GetWorld()->GetGameState());
+	if (DefaultGamestate != nullptr)
+	{
+		DefaultGamestate->OnGameStateTypeChanged.AddDynamic(this, &ABombCharacter::CreateWidget_NMC);
+	}
 	PlayerCharacter = Cast<ABombCharacter>(GetOwner());
 
 	if (USkeletalMeshComponent* MeshComp = GetMesh())
@@ -123,6 +131,30 @@ void ABombCharacter::Tick(float DeltaTime)
 			}
 		}
 	}
+
+	if (WallCooldownRemaining > 0.0f)
+	{
+		WallCooldownRemaining -= DeltaTime;
+		float WallCooldownPercent = FMath::Clamp(WallCooldownRemaining / WallCoolTime, 0.0f, 1.0f);
+
+		CLog::Log(WallCooldownRemaining);
+		if (PlayerSkillTimeWidget)
+		{
+			PlayerSkillTimeWidget->UpdateWallCooldown(WallCooldownPercent);
+		}
+	}
+
+	if (RestraintCooldownRemaining > 0.0f)
+	{
+		RestraintCooldownRemaining -= DeltaTime;
+		float RestraintCooldownPercent = FMath::Clamp(RestraintCooldownRemaining / RestraintCoolTime, 0.0f, 1.0f);
+
+		CLog::Log(RestraintCooldownRemaining);
+		if (PlayerSkillTimeWidget)
+		{
+			PlayerSkillTimeWidget->UpdateRestraintCooldown(RestraintCooldownPercent);
+		}
+	}
 }
 
 void ABombCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -133,6 +165,7 @@ void ABombCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	{
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ABombCharacter::Action);
 		EnhancedInputComponent->BindAction(IA_SubAction, ETriggerEvent::Started, this, &ABombCharacter::HandleAction);
+		EnhancedInputComponent->BindAction(IA_Zoom, ETriggerEvent::Started, this, &ABombCharacter::SetZooming);
 	}
 }
 
@@ -228,7 +261,19 @@ void ABombCharacter::ServerPlayWall_Implementation()
 	if (CurrentActionState == EActionState::Dead) 
 		return;
 
+	float currentTime = GetWorld()->GetTimeSeconds();
+
+	// Wall 쿨다운이 끝나지 않았다면 스킬을 사용할 수 없음
+	if (currentTime - LastWallSpawnTime < WallCoolTime)
+	{
+		return;  // 쿨다운 중이므로 리턴
+	}
+
 	MultiPlayWall();
+
+	// Wall 쿨다운 시간 초기화
+	LastWallSpawnTime = currentTime;
+	StartWallCooldown();
 }
 
 void ABombCharacter::MultiPlayWall_Implementation()
@@ -248,6 +293,7 @@ void ABombCharacter::MultiSpawnWall_Implementation(const FVector& Location, cons
 		FTransform Transform = UKismetMathLibrary::MakeTransform(Location, Rotation, FVector(1, 1, 1));
 		GetWorld()->SpawnActor<AActor>(WallClass, Transform, SpawnParams);
 	}
+
 }
 
 void ABombCharacter::ServerSpawnWall_Implementation(const FVector& Location, const FRotator& Rotation)
@@ -270,7 +316,9 @@ void ABombCharacter::ServerSpawnWall_Implementation(const FVector& Location, con
 	// MultiSpawnWall 함수 호출하여 클라이언트들과 서버에 Wall 스폰
 	MultiSpawnWall(Location, Rotation);
 
+	//WallCooldownRemaining = WallCoolTime;
 	LastWallSpawnTime = currentTime;
+	//StartWallCooldown();
 }
 
 void ABombCharacter::ServerPlayRestraint_Implementation()
@@ -278,7 +326,18 @@ void ABombCharacter::ServerPlayRestraint_Implementation()
 	if (CurrentActionState == EActionState::Dead)
 		return;
 
+	float currentTime = GetWorld()->GetTimeSeconds();
+
+	// Restraint 쿨다운이 끝나지 않았다면 스킬을 사용할 수 없음
+	if (currentTime - LastRestraintSpawnTime < RestraintCoolTime)
+	{
+		return;  // 쿨다운 중이므로 리턴
+	}
+
 	MultiPlayRestraint();
+
+	LastRestraintSpawnTime = currentTime;
+	StartRestraintCooldown();
 }
 
 void ABombCharacter::MultiPlayRestraint_Implementation()
@@ -325,7 +384,9 @@ void ABombCharacter::ServerSpawnRestraint_Implementation()
 
 				MultiSpawnRestraint(location, rotation, launchDirection * restraint->Projectile->InitialSpeed);
 
+				//RestraintCooldownRemaining = RestraintCoolTime;
 				LastRestraintSpawnTime = currentTime;
+				//StartRestraintCooldown();
 			}
 		}
 
@@ -389,6 +450,26 @@ void ABombCharacter::MultiSpawnBomb_Implementation(ABomb* SpawnBomb)
 		bBomb = true; // 폭탄 소유 상태로 변경(클라)
 
 		GetCharacterMovement()->MaxWalkSpeed = GetCurrentMovementSpeed();
+	}
+}
+
+void ABombCharacter::StartWallCooldown()
+{
+	WallCooldownRemaining = WallCoolTime;
+
+	if (PlayerSkillTimeWidget)
+	{
+		PlayerSkillTimeWidget->UpdateWallCooldown(1.0f);
+	}
+}
+
+void ABombCharacter::StartRestraintCooldown()
+{
+	RestraintCooldownRemaining = RestraintCoolTime;
+
+	if (PlayerSkillTimeWidget)
+	{
+		PlayerSkillTimeWidget->UpdateRestraintCooldown(1.0f);
 	}
 }
 
@@ -491,6 +572,15 @@ bool ABombCharacter::IsInAction() const
 	return CurrentActionState == EActionState::InAction;
 }
 
+void ABombCharacter::SetZooming(const FInputActionValue& Value)
+{
+	float InValue = Value.Get<float>(); // 입력 액션에서 float 값을 가져옴
+
+	InValue = -InValue;
+
+	Zoom->SetZoomValue(InValue);
+}
+
 void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -550,6 +640,19 @@ void ABombCharacter::Dead()
 		bIsDead = true;
 		CurrentActionState = EActionState::Dead;
 		MultiDead();
+	}
+}
+
+void ABombCharacter::CreateWidget_NMC_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)
+{
+	if (PlayerSkillTimeWidgetClass && InNewGameType == EGameStateType::GamePlay)
+	{
+		PlayerSkillTimeWidget = CreateWidget<UPlayerSkillTime>(GetWorld(), PlayerSkillTimeWidgetClass);
+
+		if (PlayerSkillTimeWidget)
+		{
+			PlayerSkillTimeWidget->AddToViewport();
+		}
 	}
 }
 
