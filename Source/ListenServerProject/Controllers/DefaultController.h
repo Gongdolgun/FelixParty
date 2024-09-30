@@ -52,10 +52,4 @@ private:
 	float GamePlayTime;
 	float GameOverTime;
 
-private:
-	UPROPERTY(EditAnywhere, Category = "Widget")
-	TSubclassOf<class UUserWidget> SelectOptionWidget;
-
-	UUserWidget* OptionWidget;
-
 };

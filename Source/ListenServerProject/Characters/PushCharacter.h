@@ -32,6 +32,7 @@ protected:
 	virtual void Jump() override;
 
 	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
+	virtual void ViewOption() override;
 
 public:
 	UFUNCTION(Server, Reliable)
@@ -52,15 +53,9 @@ private:
 
 private:
 	UFUNCTION(NetMulticast, Reliable)
-	void Dead_NMC();
-
-	//UFUNCTION(Server, Reliable)
-	//void OnRespawnCharacter_Server();
+	void Dead_NMC(FVector InImpulse);
 
 	void RespawnCharacter();
-
-	//UPROPERTY(EditAnywhere, Category = "Respawn")
-	//TSubclassOf<APushCharacter> RespawnCharacter;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Montage")

@@ -8,6 +8,7 @@
 #include "Components/MoveComponent.h"
 #include "Components/WeaponComponent.h"
 #include "Global.h"
+#include "Blueprint/UserWidget.h"
 #include "Controllers/DefaultController.h"
 #include "GameModes/DefaultGameMode.h"
 #include "GameState/DefaultGameState.h"
@@ -67,6 +68,13 @@ void ADefaultCharacter::BeginPlay()
 
 	if(IsMaterialChange)
 		UpdatePlayer_Server();
+
+	// Option
+	if (SelectOptionWidget)
+	{
+		OptionWidget = CreateWidget<UUserWidget>(GetWorld(), SelectOptionWidget);
+		
+	}
 }
 
 void ADefaultCharacter::Tick(float DeltaTime)
@@ -148,6 +156,7 @@ void ADefaultCharacter::ChangeMaterial(FColor InColor)
 		ChangeMaterial_Server(InColor);
 }
 
+
 void ADefaultCharacter::ChangeMaterial_Server_Implementation(FColor InColor)
 {
 	ChangeMaterial_NMC(InColor);
@@ -182,13 +191,19 @@ void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 	}
 }
 
-
 void ADefaultCharacter::ViewOption()
 {
-	ADefaultController* controller = Cast<ADefaultController>(GetController());
-	if (controller)
+	if (OptionWidget)
 	{
-		controller->ViewOption();
-	}
+		OptionWidget->AddToViewport();
 
+		ADefaultController* controller = Cast<ADefaultController>(GetController());
+		if (controller)
+		{
+			OptionWidget->SetFocus();
+			controller->SetShowMouseCursor(true);
+			controller->SetInputMode(FInputModeUIOnly());
+
+		}
+	}
 }

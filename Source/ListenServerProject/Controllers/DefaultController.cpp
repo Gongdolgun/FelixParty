@@ -33,13 +33,6 @@ void ADefaultController::BeginPlay()
 	// Input Mode
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
-
-	// Option
-	if (SelectOptionWidget)
-	{
-		OptionWidget = CreateWidget<UUserWidget>(GetWorld(), SelectOptionWidget);
-
-	}
 }
 
 void ADefaultController::Tick(float DeltaSeconds)
@@ -177,22 +170,4 @@ FString ADefaultController::EnumToString(EGameStateType InGameStateType)
 	}
 
 	return EnumPtr->GetNameByValue((int64)InGameStateType).ToString();
-}
-
-void ADefaultController::ViewOption()
-{
-	if (OptionWidget)
-	{
-		OptionWidget->AddToViewport();
-
-		if (bShowMouseCursor == false)
-		{
-			SetShowMouseCursor(true);
-		}
-		
-		OptionWidget->SetFocus();
-		SetInputMode(FInputModeUIOnly());
-
-	}
-
 }

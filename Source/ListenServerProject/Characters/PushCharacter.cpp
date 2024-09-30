@@ -132,8 +132,8 @@ void APushCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 	// 플레이어 사망
 	else
 	{
-		//FVector ImpulseDirection = InActor->GetActorForwardVector() * 1000.f;
-		Dead_NMC();
+		FVector ImpulseDirection = InActor->GetActorForwardVector() * 1000.f;
+		Dead_NMC(ImpulseDirection);
 
 		//defaultGameState->SomeoneDeadEvent(attackerName, playerName);
 
@@ -143,10 +143,17 @@ void APushCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 		}
 
 		// 랜덤 위치 캐릭터 스폰
-		//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &APushCharacter::RespawnCharacter, 2.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &APushCharacter::RespawnCharacter, 2.0f, false);
 
-		RespawnCharacter();
+		//RespawnCharacter();
 	}
+
+}
+
+void APushCharacter::ViewOption()
+{
+	Super::ViewOption();
+
 
 }
 
@@ -171,8 +178,7 @@ void APushCharacter::RespawnCharacter()
 	Destroy();
 }
 
-
-void APushCharacter::Dead_NMC_Implementation()
+void APushCharacter::Dead_NMC_Implementation(FVector InImpulse)
 {
 	MoveComponent->CanMove = false;
 	StateComponent->SetDeadMode();
@@ -180,8 +186,8 @@ void APushCharacter::Dead_NMC_Implementation()
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionProfileName("Ragdoll");
 
-	//InImpulseDirection.Z = 500.f;
-	//GetMesh()->AddImpulse(InImpulseDirection, NAME_None, true);
+	InImpulse.Z = 500.f;
+	GetMesh()->AddImpulse(InImpulse, NAME_None, true);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
