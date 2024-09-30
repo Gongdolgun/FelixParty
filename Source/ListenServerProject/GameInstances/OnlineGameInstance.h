@@ -28,4 +28,7 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SavePlayerInfo(const FString& PlayerID, FPlayerData PlayerData);
 
+	UFUNCTION(BlueprintNativeEvent)
+	void DestroySession();
+	void DestroySession_Implementation();
 };

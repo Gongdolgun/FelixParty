@@ -109,17 +109,6 @@ void ALobbyController::SetViewCamera()
 
 void ALobbyController::LeaveToMainMenu_Implementation()
 {
-	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
-	if(OnlineSub != nullptr)
-	{
-		IOnlineSessionPtr Session = OnlineSub->GetSessionInterface();
-
-		if(Session.IsValid())
-		{
-			Session->DestroySession(GameSessionName);
-		}
-	}
-
 	UGameplayStatics::OpenLevel(this, FName("MainMenu"));
 }
 
