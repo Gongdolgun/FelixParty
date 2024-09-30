@@ -102,6 +102,11 @@ public:
 
 	void ChangeMaterial(FColor InColor);
 
+protected:
 	virtual void ViewOption();
 
+private:
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<class UUserWidget> SelectOptionWidget;
+	UUserWidget* OptionWidget;
 };
