@@ -80,10 +80,12 @@ void ALobbyGameMode::UpdatePlayerMaterial()
 	}
 }
 
+// 세션 나가기
 void ALobbyGameMode::LeaveSession(ALobbyController* InController)
 {
 	ConnectedPlayers.Remove(InController);
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+
 	if(GameInstance != nullptr)
 	{
 		FString PlayerID = InController->GetPlayerState<APlayerState>()->GetPlayerName();
