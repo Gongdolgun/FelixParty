@@ -75,6 +75,12 @@ void ADefaultCharacter::BeginPlay()
 		OptionWidget = CreateWidget<UUserWidget>(GetWorld(), SelectOptionWidget);
 		
 	}
+
+	// Emote
+	if (SelectEmoteWidget)
+	{
+		EmoteWidget = CreateWidget<UUserWidget>(GetWorld(), SelectEmoteWidget);
+	}
 }
 
 void ADefaultCharacter::Tick(float DeltaTime)
@@ -99,7 +105,10 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ThisClass::Action);
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Completed, this, &ThisClass::End_Action);
 
-		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::ViewOption);
+		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::OptionMenu);
+
+		EnhancedInputComponent->BindAction(IA_Emote, ETriggerEvent::Started, this, &ThisClass::EmoteMenuOn);
+		EnhancedInputComponent->BindAction(IA_Emote, ETriggerEvent::Completed, this, &ThisClass::EmoteMenuOff);
 	}
 }
 
@@ -157,6 +166,7 @@ void ADefaultCharacter::ChangeMaterial(FColor InColor)
 }
 
 
+
 void ADefaultCharacter::ChangeMaterial_Server_Implementation(FColor InColor)
 {
 	ChangeMaterial_NMC(InColor);
@@ -191,7 +201,7 @@ void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 	}
 }
 
-void ADefaultCharacter::ViewOption()
+void ADefaultCharacter::OptionMenu()
 {
 	if (OptionWidget)
 	{
@@ -202,8 +212,63 @@ void ADefaultCharacter::ViewOption()
 		{
 			OptionWidget->SetFocus();
 			controller->SetShowMouseCursor(true);
-			controller->SetInputMode(FInputModeUIOnly());
+			controller->SetInputMode(FInputModeGameAndUI());
 
 		}
 	}
 }
+
+void ADefaultCharacter::EmoteMenuOn()
+{
+	if (EmoteWidget)
+	{
+		if (!EmoteWidget->IsInViewport())
+		{
+			EmoteWidget->AddToViewport();
+
+			ADefaultController* controller = Cast<ADefaultController>(GetController());
+			if (controller)
+			{
+				EmoteWidget->SetFocus();
+				controller->SetShowMouseCursor(true);
+				controller->SetInputMode(FInputModeGameAndUI());
+			}
+		}
+	}
+}
+
+void ADefaultCharacter::EmoteMenuOff()
+{
+	if (EmoteWidget)
+	{
+		//if (EmoteWidget->IsInViewport())
+		//{
+		//	EmoteWidget->RemoveFromParent();
+		//	
+		//	ADefaultController* controller = Cast<ADefaultController>(GetController());
+		//	if (controller)
+		//	{
+		//		controller->SetShowMouseCursor(false);
+		//		controller->SetInputMode(FInputModeGameOnly());
+		//	
+		//	}
+		//}
+		
+	}
+}
+
+void ADefaultCharacter::PlayEmoteMontage_NMC_Implementation(UAnimMontage* InAnimMontage)
+{
+	PlayAnimMontage(InAnimMontage);
+}
+
+void ADefaultCharacter::PlayEmoteMontage_Server_Implementation(UAnimMontage* InAnimMontage)
+{
+	PlayEmoteMontage_NMC(InAnimMontage);
+}
+
+void ADefaultCharacter::PlayEmoteMontage(UAnimMontage* InAnimMontage)
+{
+	PlayEmoteMontage_Server(InAnimMontage);
+}
+

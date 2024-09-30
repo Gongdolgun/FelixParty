@@ -150,13 +150,6 @@ void APushCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 
 }
 
-void APushCharacter::ViewOption()
-{
-	Super::ViewOption();
-
-
-}
-
 void APushCharacter::SetAttacker_NMC_Implementation(APushCharacter* InCharacter)
 {
 	Attacker = InCharacter;

@@ -32,7 +32,7 @@ protected:
 	virtual void Jump() override;
 
 	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
-	virtual void ViewOption() override;
+
 
 public:
 	UFUNCTION(Server, Reliable)
