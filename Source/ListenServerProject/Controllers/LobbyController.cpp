@@ -107,22 +107,30 @@ void ALobbyController::SetViewCamera()
 	}
 }
 
-void ALobbyController::PlayerSitMontage_NMC_Implementation(UAnimMontage* InSitMontage)
+void ALobbyController::LeaveToMainMenu_Implementation()
 {
-	ALobbyCharacter* character = Cast<ALobbyCharacter>(GetPawn());
-	if (character)
+	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+	if(OnlineSub != nullptr)
 	{
-		character->PlayAnimMontage(InSitMontage);
+		IOnlineSessionPtr Session = OnlineSub->GetSessionInterface();
+
+		if(Session.IsValid())
+		{
+			Session->DestroySession(GameSessionName);
+		}
 	}
+
+	UGameplayStatics::OpenLevel(this, FName("MainMenu"));
 }
 
-void ALobbyController::PlayerSitMontage_Server_Implementation(UAnimMontage* InSitMontage)
+void ALobbyController::LeaveSession_Server_Implementation()
 {
-	PlayerSitMontage_NMC(InSitMontage);
-}
+	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
 
-void ALobbyController::PlayerSitMontage(UAnimMontage* InSitMontage)
-{
-	if (InSitMontage)
-		PlayerSitMontage_Server(InSitMontage);
+	if(LobbyGameMode != nullptr)
+	{
+		LobbyGameMode->LeaveSession(this);
+	}
+
+	LeaveToMainMenu();
 }

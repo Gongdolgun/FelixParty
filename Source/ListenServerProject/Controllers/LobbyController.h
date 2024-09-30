@@ -4,6 +4,7 @@
 #include "Characters/DefaultCharacter.h"
 #include "GameFramework/PlayerController.h"
 #include "Misc/Structures.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "LobbyController.generated.h"
 
 UCLASS()
@@ -33,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetViewCamera();
 
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void LeaveSession_Server();
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> LobbyCamera_Class;
 
@@ -51,15 +55,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Lobby Montage")
 	TArray<UAnimMontage*> Ready_Montages;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Lobby Montage")
-	UAnimMontage* Sit_Montages;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void PlayerSitMontage_NMC(class UAnimMontage* InSitMontage);
-
-	UFUNCTION(Server, Reliable)
-	void PlayerSitMontage_Server(class UAnimMontage* InSitMontage);
-
-	UFUNCTION(BlueprintCallable)
-	void PlayerSitMontage(class UAnimMontage* InSitMontage);
+private:
+	UFUNCTION(Client, Reliable)
+	void LeaveToMainMenu();
 };
