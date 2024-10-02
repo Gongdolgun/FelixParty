@@ -106,9 +106,9 @@ public:
 	void ChangeMaterial(FColor InColor);
 
 protected:
-	virtual void OptionMenu();
-	virtual void EmoteMenuOn();
-	virtual void EmoteMenuOff();
+	void OptionMenu();
+	void EmoteMenuOn();
+	void EmoteMenuOff();
 
 public:
 	UFUNCTION(NetMulticast, Reliable)
