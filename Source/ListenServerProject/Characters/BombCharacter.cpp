@@ -104,7 +104,6 @@ void ABombCharacter::Tick(float DeltaTime)
 			Ignore.Add(this);
 			FHitResult HitResult;
 
-
 			// linetrace for decal
 			if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), StartLocation, EndLocation, ETraceTypeQuery::TraceTypeQuery1, false, Ignore, EDrawDebugTrace::Type::None, HitResult, true))
 			{
