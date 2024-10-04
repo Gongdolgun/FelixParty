@@ -33,6 +33,19 @@ void ADefaultController::BeginPlay()
 	// Input Mode
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
+
+	// Host의 Ready상태는 True 고정
+	if(HasAuthority())
+	{
+		for (auto& PlayerData : DefaultGameState->PlayerDatas)
+		{
+			if (PlayerData.PlayerName == GetPlayerState<APlayerState>()->GetPlayerName())
+			{
+				PlayerData.Ready = true;
+				break;
+			}
+		}
+	}
 }
 
 void ADefaultController::Tick(float DeltaSeconds)

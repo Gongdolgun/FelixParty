@@ -62,3 +62,9 @@ enum class EHudTypes : uint8
 {
 	None = 0, Ready, Countdown, GamePlay, GameOver, RankBoard,
 };
+
+UENUM(BlueprintType)
+enum class ELevelInputType : uint8
+{
+	None = 0, Up, Down, Right, Left, Shift, 
+};
