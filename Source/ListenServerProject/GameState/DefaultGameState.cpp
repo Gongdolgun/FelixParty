@@ -78,18 +78,6 @@ void ADefaultGameState::SetTimer(float InTime)
 		if (GameOverTime >= 0.0f)
 		{
 			GameOverTime -= InTime;
-			if (GameOverTime <= 0.0f)
-			{
-				SetGameState(EGameStateType::RankBoard);
-			}
-		}
-
-		break;
-
-	case EGameStateType::RankBoard:
-		if (RankBoardTime >= 0.0f)
-		{
-			RankBoardTime -= InTime;
 		}
 
 		break;
@@ -113,10 +101,6 @@ void ADefaultGameState::SetGameState(EGameStateType InGameStateType)
 		case EGameStateType::GameOver:
 			CalRank();
 			ChangeGameType(EGameStateType::GameOver);
-			break;
-
-		case EGameStateType::RankBoard:
-			ChangeGameType(EGameStateType::RankBoard);
 			break;
 		}
 		

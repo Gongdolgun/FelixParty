@@ -48,18 +48,6 @@ public:
 
 	TArray<UMaterialInterface*> MyMaterials;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Lobby Montage")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ready Montage")
 	TArray<UAnimMontage*> Ready_Montages;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Lobby Montage")
-	UAnimMontage* Sit_Montages;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void PlayerSitMontage_NMC(class UAnimMontage* InSitMontage);
-
-	UFUNCTION(Server, Reliable)
-	void PlayerSitMontage_Server(class UAnimMontage* InSitMontage);
-
-	UFUNCTION(BlueprintCallable)
-	void PlayerSitMontage(class UAnimMontage* InSitMontage);
 };

@@ -10,29 +10,12 @@ FString UNFS_BombDelivery::GetNotifyName_Implementation() const
 void UNFS_BombDelivery::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration);
-
-	if (MeshComp && MeshComp->GetOwner())
-	{
-		if (ABombCharacter* BombCharacter = Cast<ABombCharacter>(MeshComp->GetOwner()))
-		{
-			BombCharacter->HandSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			BombCharacter->bAttack = true;
-		}
-
-	}
+	
 
 }
 
 void UNFS_BombDelivery::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 	Super::NotifyEnd(MeshComp, Animation);
-
-	if (MeshComp && MeshComp->GetOwner())
-	{
-		if (ABombCharacter* BombCharacter = Cast<ABombCharacter>(MeshComp->GetOwner()))
-		{
-			BombCharacter->HandSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			BombCharacter->bAttack = false;
-		}
-	}
+	
 }

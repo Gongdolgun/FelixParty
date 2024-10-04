@@ -21,5 +21,4 @@ void ALobbyGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, SelectedColors);
-	DOREPLIFETIME(ThisClass, MapIndex);
 }

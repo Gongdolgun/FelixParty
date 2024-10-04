@@ -3,7 +3,6 @@
 #include "Global.h"
 #include "Characters/DefaultCharacter.h"
 #include "Components/TextBlock.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "GameState/DefaultGameState.h"
 #include "Net/UnrealNetwork.h"
@@ -39,6 +38,11 @@ void ADefaultController::BeginPlay()
 	{
 		OptionWidget = CreateWidget<UUserWidget>(GetWorld(), SelectOptionWidget);
 
+	}
+
+	else
+	{
+		CLog::Print("Where??");
 	}
 }
 
@@ -132,19 +136,8 @@ void ADefaultController::WidgetTypeChange_NMC_Implementation(EGameStateType InPr
 
 	SetShowMouseCursor(false);
 
-	if (InNewGameType == EGameStateType::GamePlay)
+	if(InNewGameType == EGameStateType::GamePlay)
 		SetInputMode(FInputModeGameOnly());
-
-	else
-	{
-		/*ADefaultCharacter* ControlledPawn = Cast<ADefaultCharacter>(GetPawn());
-		if(ControlledPawn != nullptr)
-		{
-			ControlledPawn->GetCharacterMovement()->Velocity = FVector::ZeroVector;
-		}*/
-		DisableInput(this);
-		SetInputMode(FInputModeUIOnly());
-	}
 
 	DefaultHUD->ChangeWidgetClass(InPrevGameType, InNewGameType);
 }
@@ -181,15 +174,12 @@ FString ADefaultController::EnumToString(EGameStateType InGameStateType)
 
 void ADefaultController::ViewOption()
 {
-	if (OptionWidget)
+	if (OptionWidget && DefaultGameState->GetGameStateType() == EGameStateType::GamePlay)
 	{
 		OptionWidget->AddToViewport();
 
-		if (bShowMouseCursor == false)
-		{
-			SetShowMouseCursor(true);
-		}
-		
+		SetShowMouseCursor(true);
+
 		OptionWidget->SetFocus();
 		SetInputMode(FInputModeUIOnly());
 

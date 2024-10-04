@@ -106,23 +106,3 @@ void ALobbyController::SetViewCamera()
 		SetViewTargetWithBlend(LobbyCamera, 0.0f);
 	}
 }
-
-void ALobbyController::PlayerSitMontage_NMC_Implementation(UAnimMontage* InSitMontage)
-{
-	ALobbyCharacter* character = Cast<ALobbyCharacter>(GetPawn());
-	if (character)
-	{
-		character->PlayAnimMontage(InSitMontage);
-	}
-}
-
-void ALobbyController::PlayerSitMontage_Server_Implementation(UAnimMontage* InSitMontage)
-{
-	PlayerSitMontage_NMC(InSitMontage);
-}
-
-void ALobbyController::PlayerSitMontage(UAnimMontage* InSitMontage)
-{
-	if (InSitMontage)
-		PlayerSitMontage_Server(InSitMontage);
-}

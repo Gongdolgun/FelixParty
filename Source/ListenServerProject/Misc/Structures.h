@@ -199,34 +199,3 @@ public:
     UPROPERTY(EditAnywhere, Category = "Correct")
     float AddPlayerLocationZ_Jump = -60.0f;
 };
-
-USTRUCT(BlueprintType)
-struct FSaveSettings
-{
-    GENERATED_BODY()
-
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mouse")
-    float MouseSenX = 1.25f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mouse")
-    float MouseSenY = 1.25f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mouse")
-    float TempMouseSenX = 1.25f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mouse")
-    float TempMouseSenY = 1.25f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mouse")
-    bool bInvertX = false;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mouse")
-    bool bInvertY = false;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mouse")
-    bool bTempInvertX = false;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mouse")
-    bool bTempInvertY = false;
-};
