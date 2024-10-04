@@ -14,6 +14,7 @@
 APushCharacter::APushCharacter()
 {
 	Helpers::CreateActorComponent<UStateComponent>(this, &StateComponent, "State");
+	StateComponent->SetIsReplicated(true);
 
 	bReplicates = true;
 	HP = 100.0f;
@@ -38,6 +39,7 @@ void APushCharacter::BeginPlay()
 void APushCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 }
 
 void APushCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -78,7 +80,6 @@ void APushCharacter::Jump()
 	if (StateComponent->IsIdleMode())
 	{
 		Super::Jump();
-
 	}
 }
 
@@ -133,12 +134,13 @@ void APushCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 	else
 	{
 		FVector ImpulseDirection = InActor->GetActorForwardVector() * 1000.f;
-		Dead_NMC(ImpulseDirection);
 
-		//defaultGameState->SomeoneDeadEvent(attackerName, playerName);
+		if (HasAuthority())
+			Dead_NMC(ImpulseDirection);
 
 		if (attackerName.IsEmpty() == false)
 		{
+			PushGameState->SomeoneDeadEvent(attackerName, playerName);
 			PushGameState->UpdatePlayerScore(attackerName, 20);
 		}
 
@@ -207,26 +209,3 @@ void APushCharacter::PlayActionMontage_Server_Implementation(UAnimMontage* InMon
 		PlayActionMontage_NMC(InMontage);
 
 }
-
-//void APushCharacter::OnRespawnCharacter_Server_Implementation()
-//{
-//	APushRespawner* spawner = Cast<APushRespawner>(UGameplayStatics::GetActorOfClass(GetWorld(), Respawner));
-//	if (spawner == nullptr) return;
-//
-//	FVector spawnLocation = spawner->GetSpawnCollisionRandomPoint();
-//	FRotator spawnRotation = FRotator::ZeroRotator;
-//	FActorSpawnParameters params;
-//	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-//
-//	APushCharacter* respawnCharacter = GetWorld()->SpawnActor<APushCharacter>(RespawnCharacter, spawnLocation, spawnRotation, params);
-//	if (respawnCharacter)
-//	{
-//		AController* controller = this->GetController();
-//		if (controller)
-//		{
-//			controller->Possess(respawnCharacter);
-//
-//			GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
-//		}
-//	}
-//}

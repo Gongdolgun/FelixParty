@@ -60,11 +60,7 @@ void ADefaultController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	ADefaultCharacter* DefaultCharacter = Cast<ADefaultCharacter>(InPawn);
-	if (DefaultCharacter)
-	{
-
-	}
+	
 }
 
 void ADefaultController::SetHUDTime()
@@ -130,6 +126,14 @@ void ADefaultController::SetGameStateType()
 	{
 		CharacterOverlay->GameStateType->SetText(FText::FromString(EnumToString(DefaultGameState->GetGameStateType())));
 	}
+}
+
+void ADefaultController::ViewOption(EOptionTypes InOptionType)
+{
+	if (DefaultHUD == nullptr) return;
+
+	DefaultHUD->ShowOptionWidget(InOptionType);
+
 }
 
 void ADefaultController::WidgetTypeChange_NMC_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)

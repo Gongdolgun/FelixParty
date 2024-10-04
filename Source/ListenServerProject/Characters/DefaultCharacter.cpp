@@ -105,10 +105,9 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ThisClass::Action);
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Completed, this, &ThisClass::End_Action);
 
-		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::OptionMenu);
+		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::ShowGamePlayOption);
+		EnhancedInputComponent->BindAction(IA_Emote, ETriggerEvent::Started, this, &ThisClass::ShowEmoteOption);
 
-		EnhancedInputComponent->BindAction(IA_Emote, ETriggerEvent::Started, this, &ThisClass::EmoteMenuOn);
-		EnhancedInputComponent->BindAction(IA_Emote, ETriggerEvent::Completed, this, &ThisClass::EmoteMenuOff);
 	}
 }
 
@@ -201,60 +200,20 @@ void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 	}
 }
 
-void ADefaultCharacter::OptionMenu()
+void ADefaultCharacter::ShowGamePlayOption()
 {
-	if (OptionWidget)
-	{
-		OptionWidget->AddToViewport();
+	ADefaultController* PlayerController = Cast<ADefaultController>(GetController());
+	if (PlayerController == nullptr) return;
 
-		ADefaultController* controller = Cast<ADefaultController>(GetController());
-		if (controller)
-		{
-			OptionWidget->SetFocus();
-			controller->SetShowMouseCursor(true);
-			controller->SetInputMode(FInputModeGameAndUI());
-
-		}
-	}
+	PlayerController->ViewOption(EOptionTypes::GamePlayOption);
 }
 
-void ADefaultCharacter::EmoteMenuOn()
+void ADefaultCharacter:: ShowEmoteOption()
 {
-	if (EmoteWidget)
-	{
-		if (!EmoteWidget->IsInViewport())
-		{
-			EmoteWidget->AddToViewport();
+	ADefaultController* PlayerController = Cast<ADefaultController>(GetController());
+	if (PlayerController == nullptr) return;
 
-			ADefaultController* controller = Cast<ADefaultController>(GetController());
-			if (controller)
-			{
-				EmoteWidget->SetFocus();
-				controller->SetShowMouseCursor(true);
-				controller->SetInputMode(FInputModeGameAndUI());
-			}
-		}
-	}
-}
-
-void ADefaultCharacter::EmoteMenuOff()
-{
-	if (EmoteWidget)
-	{
-		//if (EmoteWidget->IsInViewport())
-		//{
-		//	EmoteWidget->RemoveFromParent();
-		//	
-		//	ADefaultController* controller = Cast<ADefaultController>(GetController());
-		//	if (controller)
-		//	{
-		//		controller->SetShowMouseCursor(false);
-		//		controller->SetInputMode(FInputModeGameOnly());
-		//	
-		//	}
-		//}
-		
-	}
+	PlayerController->ViewOption(EOptionTypes::EmoteOption);
 }
 
 void ADefaultCharacter::PlayEmoteMontage_NMC_Implementation(UAnimMontage* InAnimMontage)

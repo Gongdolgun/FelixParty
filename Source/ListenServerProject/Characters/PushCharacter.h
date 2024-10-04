@@ -10,7 +10,7 @@ class LISTENSERVERPROJECT_API APushCharacter : public ADefaultCharacter
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(BlueprintReadOnly, Replicated, VisibleAnywhere, Category = "Components")
 	class UStateComponent* StateComponent;
 
 public:

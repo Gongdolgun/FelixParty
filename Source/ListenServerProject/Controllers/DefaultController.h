@@ -35,7 +35,7 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void WidgetTypeChange_NMC(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
-	void ViewOption();
+	void ViewOption(EOptionTypes InOptionType);
 
 private:
 	UPROPERTY()

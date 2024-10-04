@@ -106,9 +106,9 @@ public:
 	void ChangeMaterial(FColor InColor);
 
 protected:
-	void OptionMenu();
-	void EmoteMenuOn();
-	void EmoteMenuOff();
+	void ShowGamePlayOption();
+	void ShowEmoteOption();
+
 
 public:
 	UFUNCTION(NetMulticast, Reliable)
@@ -129,3 +129,5 @@ private:
 	TSubclassOf<class UUserWidget> SelectEmoteWidget;
 	UUserWidget* EmoteWidget;
 };
+
+

@@ -64,6 +64,13 @@ enum class EHudTypes : uint8
 };
 
 UENUM(BlueprintType)
+enum class EOptionTypes : uint8
+{
+	None = 0, GamePlayOption, EmoteOption
+};
+
+
+UENUM(BlueprintType)
 enum class ELevelInputType : uint8
 {
 	None = 0, Up, Down, Right, Left, Shift, 
