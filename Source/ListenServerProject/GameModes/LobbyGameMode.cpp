@@ -87,3 +87,30 @@ void ALobbyGameMode::UpdatePlayerMaterial()
 		}
 	}
 }
+
+// 세션 나가기
+void ALobbyGameMode::LeaveSession(ALobbyController* InController)
+{
+	ConnectedPlayers.Remove(InController);
+	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+
+	if(GameInstance != nullptr)
+	{
+		FString PlayerID = InController->GetPlayerState<APlayerState>()->GetPlayerName();
+		if(GameInstance->PlayerDatas.Contains(PlayerID))
+		{
+			GameInstance->PlayerDatas.Remove(PlayerID);
+		}
+
+		for(int i = 0; i < PlayerBaseInfos.Num(); i++)
+		{
+			if (PlayerBaseInfos[i].PlayerName == PlayerID)
+				PlayerBaseInfos.RemoveAt(i);
+		}
+
+		for(auto Player : ConnectedPlayers)
+		{
+			Player->UpdatePlayerList(PlayerBaseInfos);
+		}
+	}
+}
