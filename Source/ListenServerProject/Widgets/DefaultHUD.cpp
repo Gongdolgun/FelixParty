@@ -18,8 +18,6 @@ void ADefaultHUD::BeginPlay()
 
 	if (HUDClasses.Contains(EHudTypes::Ready))
 		AddCharacterOverlay(HUDClasses[EHudTypes::Ready]);
-
-	CreateOptionWidgets();
 }
 
 void ADefaultHUD::Tick(float DeltaSeconds)
@@ -43,49 +41,6 @@ void ADefaultHUD::AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacter
 
 		if(CharacterOverlay != nullptr)
 			CharacterOverlay->AddToViewport();
-	}
-}
-
-void ADefaultHUD::CreateOptionWidgets()
-{
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (PlayerController == nullptr) return;
-
-	for (const auto& OptionPair : OptionClasses)
-	{
-		EOptionTypes OptionType = OptionPair.Key;
-		TSubclassOf<UUserWidget> WidgetClass = OptionPair.Value;
-
-		if (WidgetClass)
-		{
-			UUserWidget* OptionWidget = CreateWidget<UUserWidget>(PlayerController, WidgetClass);
-			if (OptionWidget)
-			{
-				OptionWidgets.Add(OptionType, OptionWidget); 
-			}
-		}
-	}
-}
-
-void ADefaultHUD::ShowOptionWidget(EOptionTypes InOptionType)
-{
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (PlayerController == nullptr) return;
-
-	UUserWidget** FoundWidgetPtr = OptionWidgets.Find(InOptionType);
-
-	if (FoundWidgetPtr)
-	{
-		UUserWidget* FoundWidget = *FoundWidgetPtr;
-
-		if (FoundWidget && !FoundWidget->IsInViewport())
-		{
-			FoundWidget->AddToViewport();
-			FoundWidget->SetFocus();
-
-			PlayerController->SetShowMouseCursor(true);
-			PlayerController->SetInputMode(FInputModeGameAndUI());
-		}
 	}
 }
 

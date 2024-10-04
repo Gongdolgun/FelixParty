@@ -36,7 +36,6 @@ void ADefaultGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ThisClass, GameStartTime);
 	DOREPLIFETIME(ThisClass, GamePlayTime);
 	DOREPLIFETIME(ThisClass, GameOverTime);
-	DOREPLIFETIME(ThisClass, RankBoardTime);
 
 	DOREPLIFETIME(ThisClass, GameStateType);
 

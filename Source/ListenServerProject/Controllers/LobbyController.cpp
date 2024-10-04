@@ -106,20 +106,3 @@ void ALobbyController::SetViewCamera()
 		SetViewTargetWithBlend(LobbyCamera, 0.0f);
 	}
 }
-
-void ALobbyController::LeaveToMainMenu_Implementation()
-{
-	UGameplayStatics::OpenLevel(this, FName("MainMenu"));
-}
-
-void ALobbyController::LeaveSession_Server_Implementation()
-{
-	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
-
-	if(LobbyGameMode != nullptr)
-	{
-		LobbyGameMode->LeaveSession(this);
-	}
-
-	LeaveToMainMenu();
-}

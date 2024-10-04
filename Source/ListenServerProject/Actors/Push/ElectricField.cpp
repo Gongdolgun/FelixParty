@@ -61,14 +61,9 @@ void AElectricField::OnComponentEndOverlap(UPrimitiveComponent* OverlappedCompon
 
 	for (ADefaultCharacter* OverlapCharacter : OverlappedCharacters)
 	{
-		TWeakObjectPtr<ADefaultCharacter> WeakCharacter = OverlapCharacter;
-
-		GetWorld()->GetTimerManager().SetTimer(DotTimerHandle, [this, WeakCharacter]()
+		GetWorld()->GetTimerManager().SetTimer(DotTimerHandle, [this, OverlapCharacter]()
 			{
-				if (WeakCharacter.IsValid())
-				{
-					ApplyDamage(WeakCharacter.Get());
-				}
+				ApplyDamage(OverlapCharacter);
 			}, DotInterval, true);
 	}
 	

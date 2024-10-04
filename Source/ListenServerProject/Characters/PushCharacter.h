@@ -10,7 +10,7 @@ class LISTENSERVERPROJECT_API APushCharacter : public ADefaultCharacter
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, Replicated, VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	class UStateComponent* StateComponent;
 
 public:
@@ -33,7 +33,6 @@ protected:
 
 	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
 
-
 public:
 	UFUNCTION(Server, Reliable)
 	void SpawnObject_Server(UClass* InClass, FTransform InTransform);
@@ -47,9 +46,15 @@ private:
 
 private:
 	UFUNCTION(NetMulticast, Reliable)
-	void Dead_NMC(FVector InImpulse);
+	void Dead_NMC();
+
+	//UFUNCTION(Server, Reliable)
+	//void OnRespawnCharacter_Server();
 
 	void RespawnCharacter();
+
+	//UPROPERTY(EditAnywhere, Category = "Respawn")
+	//TSubclassOf<APushCharacter> RespawnCharacter;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Montage")
