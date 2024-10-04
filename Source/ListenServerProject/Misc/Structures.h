@@ -230,3 +230,35 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mouse")
     bool bTempInvertY = false;
 };
+
+USTRUCT(BlueprintType)
+struct FInputTypeInPreviewUI : public FTableRowBase
+{
+    GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString InputName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D* InputImage;
+};
+
+USTRUCT(BlueprintType)
+struct FGameInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FText GameName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FInputTypeInPreviewUI> InputTypes;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString Game_Description;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    class UMediaSource* MediaSource;
+};
