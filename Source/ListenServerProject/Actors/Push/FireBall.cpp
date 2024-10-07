@@ -42,8 +42,8 @@ void AFireBall::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AAc
 	IIDamage* HittedCharacter = Cast<IIDamage>(OtherActor);
 	if (HittedCharacter == nullptr || character == nullptr) return;
 
-	HitData.Damage = 40.0f;
-	HitData.Launch = GetActorForwardVector() * 1500.0f;
+	HitData.Damage = 5.0f;
+	HitData.Launch = GetActorForwardVector() * 3000.0f;
 
 	HittedCharacter->Hit(this, HitData);
 
@@ -57,9 +57,8 @@ void AFireBall::OnDestroy()
 
 void AFireBall::Destroyed()
 {
-	Super::Destroyed();
-
 	if (this == nullptr) return;
+	Super::Destroyed();
 
 	if (Explosion)
 	{

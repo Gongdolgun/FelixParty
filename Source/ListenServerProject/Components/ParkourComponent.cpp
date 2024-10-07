@@ -55,25 +55,25 @@ void UParkourComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(ThisClass, OwnerCharacter);
-
-    DOREPLIFETIME(ThisClass, bCanParkour);
-    DOREPLIFETIME(ThisClass, Correction_Height_Relative);
-
-    DOREPLIFETIME(ThisClass, last_TraceAdd1);
-    DOREPLIFETIME(ThisClass, last_TraceAdd2);
-
-    DOREPLIFETIME(ThisClass, ParkourPos1);
-    DOREPLIFETIME(ThisClass, ParkourPos2);
-
-    DOREPLIFETIME(ThisClass, ParkourRelative);
-    DOREPLIFETIME(ThisClass, falling_ImpactPoint);
-
-    DOREPLIFETIME(ThisClass, OutParkourStruct);
-
-    DOREPLIFETIME(ThisClass, CharacterLocation);
-    DOREPLIFETIME(ThisClass, CharacterForward);
-    DOREPLIFETIME(ThisClass, AddPlayerLocationZ);
+    //DOREPLIFETIME(ThisClass, OwnerCharacter);
+    //
+    //DOREPLIFETIME(ThisClass, bCanParkour);
+    //DOREPLIFETIME(ThisClass, Correction_Height_Relative);
+    //
+    //DOREPLIFETIME(ThisClass, last_TraceAdd1);
+    //DOREPLIFETIME(ThisClass, last_TraceAdd2);
+    //
+    //DOREPLIFETIME(ThisClass, ParkourPos1);
+    //DOREPLIFETIME(ThisClass, ParkourPos2);
+    //
+    //DOREPLIFETIME(ThisClass, ParkourRelative);
+    //DOREPLIFETIME(ThisClass, falling_ImpactPoint);
+    //
+    //DOREPLIFETIME(ThisClass, OutParkourStruct);
+    //
+    //DOREPLIFETIME(ThisClass, CharacterLocation);
+    //DOREPLIFETIME(ThisClass, CharacterForward);
+    //DOREPLIFETIME(ThisClass, AddPlayerLocationZ);
 }
 
 FVector UParkourComponent::GetParkourPos1()

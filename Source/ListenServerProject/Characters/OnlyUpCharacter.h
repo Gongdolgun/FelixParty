@@ -49,25 +49,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Crouch;
 
-protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Parkour")
-	float ZOffset_Hand = -60.0f;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Parkour")
-	float ZOffset_Landing = 30.0f;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = "Parkour")
-	float Montage_Length = 1.1f;
-
-	// 초기 추적 거리
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
-	float Initial_Trace_Length = 50.0f;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
-	float Trace_Z_Offset = 120.0f;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Parkour")
-	float Falling_Height_Multiplier = 0.5f;
 
 public:
 	// 모드 변경
@@ -86,9 +67,6 @@ public:
 	FORCEINLINE int32 GetSpawnIndex() { return SpawnIndex; }
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	void PlayParkour(FVector InParkourPos1, FVector InParkourPos2, float InZOffsetHand, float InZOffsetLanding, float InMontageLength);
-
 	UFUNCTION(NetMulticast, Reliable)
 	void Walk_NMC();
 
