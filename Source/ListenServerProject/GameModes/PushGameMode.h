@@ -18,17 +18,16 @@ protected:
 
 public:
 	void SpawnElectricField();
+
+
 	void RespawnPlayer(AController* InController);
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Ring")
 	TSubclassOf<class AElectricField> ElectricFieldClass;
 
-	
+
 private:
 	AElectricField* ElectricField;
-	
+	class APushGameState* PushGameState;
 };
-
-
-
