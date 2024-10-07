@@ -93,13 +93,13 @@ void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ThisClass, Initial_Trace_Length);
-	DOREPLIFETIME(ThisClass, Trace_Z_Offset);
-	DOREPLIFETIME(ThisClass, Falling_Height_Multiplier);
-
-	DOREPLIFETIME(ThisClass, ZOffset_Hand);
-	DOREPLIFETIME(ThisClass, ZOffset_Landing);
-	DOREPLIFETIME(ThisClass, Montage_Length);
+	//DOREPLIFETIME(ThisClass, Initial_Trace_Length);
+	//DOREPLIFETIME(ThisClass, Trace_Z_Offset);
+	//DOREPLIFETIME(ThisClass, Falling_Height_Multiplier);
+	//
+	//DOREPLIFETIME(ThisClass, ZOffset_Hand);
+	//DOREPLIFETIME(ThisClass, ZOffset_Landing);
+	//DOREPLIFETIME(ThisClass, Montage_Length);
 
 	//DOREPLIFETIME(ThisClass, ParkourComponent);
 
@@ -125,10 +125,9 @@ void AOnlyUpCharacter::SetModeAndCollision_Server_Implementation(EMovementMode I
 
 void AOnlyUpCharacter::SetModeAndCollision(EMovementMode InMovementMode, bool InCollision)
 {
-	if (IsLocallyControlled())
-	{
-		SetModeAndCollision_Server(InMovementMode, InCollision);
-	}
+	
+	SetModeAndCollision_Server(InMovementMode, InCollision);
+	
 }
 
 void AOnlyUpCharacter::Jump()
@@ -153,36 +152,6 @@ void AOnlyUpCharacter::Landed(const FHitResult& Hit)
 	{
 		MoveComponent->UnCrouch();
 	}
-}
-
-void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2, float InZOffsetHand,
-                                   float InZOffsetLanding, float InMontageLength)
-{
-	SetModeAndCollision(EMovementMode::MOVE_Flying, false);
-	
-	FVector ParkourPos1 = InParkourPos1 + FVector(0.0f, 0.0f, InZOffsetHand);
-	FVector ParkourPos2 = InParkourPos2 + FVector(0.0f, 0.0f, (InZOffsetLanding - InZOffsetHand));
-	
-	FMotionWarpingTarget Target1;
-	FName motion_Name1 = FName("ParkourPoint1");
-	Target1.Name = motion_Name1;
-	Target1.Location = ParkourPos1;
-	Target1.Rotation = GetActorRotation();
-	MotionWarpComponent->AddOrUpdateWarpTarget(Target1);
-	
-	FMotionWarpingTarget Target2;
-	FName motion_Name2 = FName("ParkourPoint2");
-	Target2.Name = motion_Name2;
-	Target2.Location = ParkourPos2;
-	Target2.Rotation = GetActorRotation();
-	MotionWarpComponent->AddOrUpdateWarpTarget(Target2);
-	
-	//PlayParkourMontage();
-	
-	FTimerHandle timerhandler;
-	GetWorld()->GetTimerManager().SetTimer(timerhandler, FTimerDelegate::CreateLambda([this]() {
-		SetModeAndCollision(EMovementMode::MOVE_Falling, true);
-		}), InMontageLength, false);
 }
 
 void AOnlyUpCharacter::Walk_NMC_Implementation()

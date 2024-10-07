@@ -6,6 +6,7 @@
 #include "Controllers/DefaultController.h"
 #include "Controllers/PushController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameModes/PushGameMode.h"
 #include "GameState/DefaultGameState.h"
 #include "GameState/PushGameState.h"
@@ -15,6 +16,8 @@ APushCharacter::APushCharacter()
 {
 	Helpers::CreateActorComponent<UStateComponent>(this, &StateComponent, "State");
 	StateComponent->SetIsReplicated(true);
+
+	SpringArm->bDoCollisionTest = true;
 
 	bReplicates = true;
 	HP = 100.0f;
@@ -200,7 +203,7 @@ void APushCharacter::SpawnObject_Server_Implementation(UClass* InClass, FTransfo
 void APushCharacter::PlayActionMontage_NMC_Implementation(UAnimMontage* InMontage)
 {
 	if (InMontage)
-		PlayAnimMontage(InMontage);
+		PlayAnimMontage(InMontage, 1.35f);
 }
 
 void APushCharacter::PlayActionMontage_Server_Implementation(UAnimMontage* InMontage)

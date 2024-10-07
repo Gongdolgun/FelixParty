@@ -43,7 +43,7 @@ void AElectricField::Tick(float DeltaTime)
 	{
 		float Newtime = PushGameState->GamePlayTime / GamePlayTime;
 
-		SetFieldRadius(FMath::Clamp(Newtime * CapsuleRadius, 10.0f, CapsuleRadius));
+		SetFieldRadius(FMath::Clamp(Newtime * CapsuleRadius, 20.0f, CapsuleRadius));
 	}
 }
 
@@ -96,7 +96,7 @@ void AElectricField::ApplyDamage(ADefaultCharacter* InCharacter)
 
 void AElectricField::SetFieldRadius(float InRadius)
 {
-	RingCapsule->SetWorldScale3D(FVector(InRadius, InRadius, 50.0f));
+	RingCapsule->SetWorldScale3D(FVector(InRadius, InRadius, 80.0f));
 
 
 }
