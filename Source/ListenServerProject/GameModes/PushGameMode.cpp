@@ -36,7 +36,7 @@ void APushGameMode::SpawnElectricField()
 
 	FTransform transform;
 	transform.SetLocation(FVector::ZeroVector);
-	transform.SetScale3D(FVector(50.0f, 50.0f, 50.0f));
+	transform.SetScale3D(FVector(80.0f, 80.0f, 80.0f));
 
 	if (ElectricFieldClass)
 		ElectricField = GetWorld()->SpawnActor<AElectricField>(ElectricFieldClass, transform, params);
@@ -44,7 +44,7 @@ void APushGameMode::SpawnElectricField()
 
 void APushGameMode::RespawnPlayer(AController* InController)
 {
-    if (InController != nullptr)// && PushGameState->GetGameStateType() == EGameStateType::GamePlay)
+    if (InController != nullptr && PushGameState->GetGameStateType() == EGameStateType::GamePlay)
     {
         UWorld* World = GetWorld();
         if (World)
