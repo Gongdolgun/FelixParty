@@ -57,11 +57,11 @@ void ABomb::Tick(float DeltaTime)
 		bIsExplosion = true;
 	}
 
-	/*if (ElapseTime < ExplosionTime)
+	if (ElapseTime < ExplosionTime)
 	{
 		ElapseTime += DeltaTime;
 		UpDateSoundAndColor(DeltaTime);
-	}*/
+	}
 }
 
 void ABomb::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
