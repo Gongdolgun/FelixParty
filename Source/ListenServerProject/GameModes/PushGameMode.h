@@ -30,11 +30,4 @@ public:
 private:
 	AElectricField* ElectricField;
 	class APushGameState* PushGameState;
-<<<<<<< HEAD
 };
-=======
-};
-
-
-
->>>>>>> parent of d6e129d (Merge remote-tracking branch 'origin/JH' into test)
