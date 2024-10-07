@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/INHCharacter.h"
+#include "GameState/DefaultGameState.h"
 
 void AINHGameMode::SetGhostMode(AController* InController)
 {
@@ -21,7 +22,20 @@ void AINHGameMode::SetGhostMode(AController* InController)
                 APawn* NewGhost = World->SpawnActor<APawn>(Ghost, SpawnTransform, params);
 
                 if (NewGhost)
+                {
                     InController->Possess(NewGhost);
+                    DeadPlayerCount += 1;
+
+                    if(DeadPlayerCount == ConnectedPlayers.Num() - 1)
+                    {
+                        ADefaultGameState* DefaultGameState = GetGameState<ADefaultGameState>();
+
+                        if(DefaultGameState != nullptr)
+                        {
+                            DefaultGameState->SetGameState(EGameStateType::GameOver);
+                        }
+                    }
+                }
             }
         }
     }

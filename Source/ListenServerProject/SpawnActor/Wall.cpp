@@ -18,6 +18,8 @@ AWall::AWall()
 void AWall::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetLifeSpan(10);
 	
 }
 

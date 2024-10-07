@@ -23,6 +23,16 @@ protected:
 	virtual void OnDestroy();
 	virtual void Destroyed() override;
 
+private:
+	UPROPERTY(EditAnywhere, Category = "HitData")
+	FHitData HitData;
+
+	UPROPERTY(EditAnywhere, Category = "Particle")
+	class UParticleSystem* Explosion;
+
+	UPROPERTY(EditAnywhere, Category = "Value")
+	float InterpSpeed;
+
 public:
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* Root;
@@ -43,10 +53,9 @@ public:
 	void OnComponentBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Explosion Particle")
-	class UParticleSystem* Explosion;
+	ACharacter* OwnerCharacter;
 
-	UPROPERTY(EditAnywhere, Category ="HitData")
-	FHitData HitData;
+	FVector Object_Velocity;
+	FRotator Object_Rotation;
 
 };
