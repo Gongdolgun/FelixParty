@@ -8,6 +8,7 @@
 #include "Components/MoveComponent.h"
 #include "Components/WeaponComponent.h"
 #include "Global.h"
+#include "Blueprint/UserWidget.h"
 #include "Controllers/DefaultController.h"
 #include "GameModes/DefaultGameMode.h"
 #include "GameState/DefaultGameState.h"
@@ -67,6 +68,19 @@ void ADefaultCharacter::BeginPlay()
 
 	if(IsMaterialChange)
 		UpdatePlayer_Server();
+
+	// Option
+	if (SelectOptionWidget)
+	{
+		OptionWidget = CreateWidget<UUserWidget>(GetWorld(), SelectOptionWidget);
+		
+	}
+
+	// Emote
+	if (SelectEmoteWidget)
+	{
+		EmoteWidget = CreateWidget<UUserWidget>(GetWorld(), SelectEmoteWidget);
+	}
 }
 
 void ADefaultCharacter::Tick(float DeltaTime)
@@ -91,7 +105,9 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ThisClass::Action);
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Completed, this, &ThisClass::End_Action);
 
-		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::ViewOption);
+		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::ShowGamePlayOption);
+		EnhancedInputComponent->BindAction(IA_Emote, ETriggerEvent::Started, this, &ThisClass::ShowEmoteOption);
+
 	}
 }
 
@@ -148,6 +164,8 @@ void ADefaultCharacter::ChangeMaterial(FColor InColor)
 		ChangeMaterial_Server(InColor);
 }
 
+
+
 void ADefaultCharacter::ChangeMaterial_Server_Implementation(FColor InColor)
 {
 	ChangeMaterial_NMC(InColor);
@@ -182,11 +200,34 @@ void ADefaultCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 	}
 }
 
-
-void ADefaultCharacter::ViewOption()
+void ADefaultCharacter::ShowGamePlayOption()
 {
-	ADefaultController* controller = Cast<ADefaultController>(GetController());
-	if (controller == nullptr) return;
+	ADefaultController* PlayerController = Cast<ADefaultController>(GetController());
+	if (PlayerController == nullptr) return;
 
-	controller->ViewOption();
+	PlayerController->ViewOption(EOptionTypes::GamePlayOption);
 }
+
+void ADefaultCharacter:: ShowEmoteOption()
+{
+	ADefaultController* PlayerController = Cast<ADefaultController>(GetController());
+	if (PlayerController == nullptr) return;
+
+	PlayerController->ViewOption(EOptionTypes::EmoteOption);
+}
+
+void ADefaultCharacter::PlayEmoteMontage_NMC_Implementation(UAnimMontage* InAnimMontage)
+{
+	PlayAnimMontage(InAnimMontage);
+}
+
+void ADefaultCharacter::PlayEmoteMontage_Server_Implementation(UAnimMontage* InAnimMontage)
+{
+	PlayEmoteMontage_NMC(InAnimMontage);
+}
+
+void ADefaultCharacter::PlayEmoteMontage(UAnimMontage* InAnimMontage)
+{
+	PlayEmoteMontage_Server(InAnimMontage);
+}
+

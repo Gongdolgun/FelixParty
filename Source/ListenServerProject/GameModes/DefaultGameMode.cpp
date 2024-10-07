@@ -14,8 +14,6 @@ void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 
 	if (!IsDebugging)
 	{
-		CLog::Print("hello");
-
 		// 플레이어들 접속 확인
 		if (ConnectedPlayers.Num() < FCString::Atoi(*ParamValue))
 		{
@@ -36,9 +34,12 @@ void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 
 	else
 	{
-		if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
+		if (ConnectedPlayers.Num() < FCString::Atoi(*ParamValue))
 		{
-			ConnectedPlayers.Add(Controller);
+			if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
+			{
+				ConnectedPlayers.Add(Controller);
+			}
 		}
 	}
 }

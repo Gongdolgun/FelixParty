@@ -20,21 +20,22 @@ protected:
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
 	FORCEINLINE bool GetAction() { return bInAction; }
 	FORCEINLINE bool IsIdleMode() const { return StateType == EStateType::Idle; }
+	FORCEINLINE bool IsDeadMode() const { return StateType == EStateType::Dead; }
 	FORCEINLINE bool IsActionMode() const { return StateType == EStateType::Action; }
 
 public:
 	void BeginAction();
 	void EndAction();
 
-	void SetIdleMode();
-
 	UFUNCTION(BlueprintCallable)
 	void SetActionMode();
 
+	void SetIdleMode();
 	void SetHittedMode();
 	void SetDeadMode();
 
@@ -42,12 +43,17 @@ public:
 	EStateType GetCurrState();
 
 public:
+	UPROPERTY(Replicated, EditAnywhere, Category = "State")
 	EStateType StateType = EStateType::Idle;
+
 	FStateTypeChanged OnStateTypeChanged;
 
 private:
-	void ChangeType(EStateType InType);
+	UFUNCTION(NetMulticast, Reliable)
+	void ChangeType_NMC(EStateType InType);
 
+	UFUNCTION(Server, Reliable)
+	void ChangeType_Server(EStateType InType);
 
 private:
 	class ACharacter* OwnerCharacter;

@@ -10,29 +10,48 @@ class LISTENSERVERPROJECT_API ABombGameMode : public ADefaultGameMode
 {
 	GENERATED_BODY()
 
+public:
+	ABombGameMode();
+
 protected:
 	void BeginPlay() override;
+
+	void OnPostLogin(AController* NewPlayer) override;
 
 private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABomb> BombClass;
 
-	TArray<ADefaultController*> SurvivedControllers;
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> MessageWidgetClass;
 
 public:
-	UPROPERTY(BlueprintReadOnly)
-	ABomb* SpawnedBomb;
+	void RandomSpawn();
 
-private:
-	UFUNCTION()
-	void CreateBombSpawn(EGameStateType InPrevGameType, EGameStateType InNewGameType);
-
-public:
 	void OnPlayerDead(ABombCharacter* DeadPlayer);
 
-	void SpawnBomb();
+	void CheckGameEnd();
 
-	void HitAttachBomb(ABombCharacter* InCharacter);
+	void StartGame();
 
-	void SomeoneDead(ADefaultController* InController);
+	void EnableMovementAndSpawnBomb();
+
+private:
+	TArray<class ADefaultController*> PlayerControllers;
+
+public:
+	AController* BombHolderController;
+
+public:
+	void SetHolderController(ADefaultController* NewController);
+
+public:
+	FTimerHandle BombTimerHandle;
+
+	FTimerHandle SpawnCharacterTimerHandle;
+
+	FTimerHandle GameStartTimerHandle;
+
+	FTimerHandle WidgetTimerHandle;
+
 };

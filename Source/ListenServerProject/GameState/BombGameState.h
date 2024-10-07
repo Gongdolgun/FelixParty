@@ -18,5 +18,8 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
+public:
+	int32 GetPlayerScore(const FString& PlayerName) const;
+
 };

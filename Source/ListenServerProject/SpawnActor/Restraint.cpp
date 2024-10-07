@@ -34,6 +34,8 @@ void ARestraint::BeginPlay()
 	PlayerCharacter = Cast<ABombCharacter>(GetOwner());
 
 	Capsule->OnComponentHit.AddDynamic(this, &ARestraint::OnHit);
+
+	SetLifeSpan(5);
 }
 
 void ARestraint::Tick(float DeltaTime)
@@ -87,7 +89,7 @@ void ARestraint::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	ABombCharacter* BombCharacter = Cast<ABombCharacter>(OtherActor);
 	if (BombCharacter)
 	{
-		if (BombCharacter->bBomb)
+		if (BombCharacter->Bomb && BombCharacter->bBomb)
 		{
 			Destroy();
 			return;

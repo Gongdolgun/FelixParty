@@ -10,7 +10,7 @@ class LISTENSERVERPROJECT_API APushCharacter : public ADefaultCharacter
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(BlueprintReadOnly, Replicated, VisibleAnywhere, Category = "Components")
 	class UStateComponent* StateComponent;
 
 public:
@@ -33,6 +33,7 @@ protected:
 
 	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
 
+
 public:
 	UFUNCTION(Server, Reliable)
 	void SpawnObject_Server(UClass* InClass, FTransform InTransform);
@@ -44,17 +45,17 @@ private:
 	UFUNCTION(Server, Reliable)
 	void PlayActionMontage_Server(UAnimMontage* InMontage);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void SetAttacker_NMC(APushCharacter* InCharacter);
+
+	UFUNCTION(Server, Reliable)
+	void SetAttacker_Server(APushCharacter* InCharacter);
+
 private:
 	UFUNCTION(NetMulticast, Reliable)
-	void Dead_NMC();
-
-	//UFUNCTION(Server, Reliable)
-	//void OnRespawnCharacter_Server();
+	void Dead_NMC(FVector InImpulse);
 
 	void RespawnCharacter();
-
-	//UPROPERTY(EditAnywhere, Category = "Respawn")
-	//TSubclassOf<APushCharacter> RespawnCharacter;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Montage")
@@ -67,4 +68,14 @@ private:
 	TSubclassOf<AActor> Respawner;
 
 	FTimerHandle SpawnTimerHandle;
+
+	class APushGameMode* PushGameMode;
+	class APushGameState* PushGameState;
+
+private:
+	UPROPERTY(Replicated)
+	APushCharacter* Attacker;
+
+	FString attackerName;
+	FString playerName;
 };
