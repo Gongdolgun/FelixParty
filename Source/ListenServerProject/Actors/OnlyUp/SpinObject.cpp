@@ -33,7 +33,6 @@ void ASpinObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, RotationDelta);
-	DOREPLIFETIME(ThisClass, RotationSpeed);
 	DOREPLIFETIME(ThisClass, bCheck);
 }
 
@@ -41,22 +40,33 @@ void ASpinObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (HasAuthority())
+	if (bCheck == true)
 	{
-		RotationDelta = RotationSpeed * DeltaTime;
-		AddRotation_NMC(RotationDelta);
-
+		if (HasAuthority())
+		{
+			AddRotation_NMC(DeltaTime);
+		}
+		else
+		{
+			AddRotation_Server(DeltaTime);
+		}
 	}
-	
-	//if (bCheck == true)
-	//{
-	//
-	//}
 }
 
-void ASpinObject::AddRotation_NMC_Implementation(FRotator InRotationDelta)
+void ASpinObject::AddRotation_NMC_Implementation(float InDeltaTime)
 {
-	AddActorLocalRotation(InRotationDelta);
+	RotationDelta = RotationSpeed * InDeltaTime;
+	AddActorLocalRotation(RotationDelta);
+}
+
+void ASpinObject::AddRotation_Server_Implementation(float InDeltaTime)
+{
+	AddRotation_NMC(InDeltaTime);
+}
+
+void ASpinObject::AddRotation(float InDeltaTime)
+{
+	AddRotation_Server(InDeltaTime);
 }
 
 void ASpinObject::OnGamePlayStart(EGameStateType InPrevGameType, EGameStateType InNewGameType)

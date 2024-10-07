@@ -18,8 +18,6 @@ protected:
 
 public:
 	void SpawnElectricField();
-
-
 	void RespawnPlayer(AController* InController);
 
 public:
@@ -29,7 +27,7 @@ public:
 	
 private:
 	AElectricField* ElectricField;
-	class APushGameState* PushGameState;
+	
 };
 
 

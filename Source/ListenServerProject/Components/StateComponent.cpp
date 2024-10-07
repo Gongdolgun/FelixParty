@@ -1,12 +1,12 @@
 #include "Components/StateComponent.h"
 #include "Global.h"
 #include "GameFramework/Character.h"
-#include "Net/UnrealNetwork.h"
 
 UStateComponent::UStateComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
+	
 }
 
 void UStateComponent::BeginPlay()
@@ -23,49 +23,42 @@ void UStateComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 }
 
-void UStateComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ThisClass, StateType);
-}
-
 void UStateComponent::BeginAction()
 {
 	bInAction = true;
 	SetActionMode();
 
+	
 }
 
 void UStateComponent::EndAction()
 {
 	bInAction = false;
-
 	SetIdleMode();
 }
 
 void UStateComponent::SetIdleMode()
 {
 	if (OwnerCharacter->IsLocallyControlled())
-		ChangeType_Server(EStateType::Idle);
+		ChangeType(EStateType::Idle);
 }
 
 void UStateComponent::SetActionMode()
 {
 	if (OwnerCharacter->IsLocallyControlled())
-		ChangeType_Server(EStateType::Action);
+		ChangeType(EStateType::Action);
 }
 
 void UStateComponent::SetHittedMode()
 {
 	if (OwnerCharacter->IsLocallyControlled())
-		ChangeType_Server(EStateType::Hitted);
+		ChangeType(EStateType::Hitted);
 }
 
 void UStateComponent::SetDeadMode()
 {
 	if (OwnerCharacter->IsLocallyControlled())
-		ChangeType_Server(EStateType::Dead);
+		ChangeType(EStateType::Dead);
 }
 
 EStateType UStateComponent::GetCurrState()
@@ -73,7 +66,7 @@ EStateType UStateComponent::GetCurrState()
 	return StateType;
 }
 
-void UStateComponent::ChangeType_NMC_Implementation(EStateType InType)
+void UStateComponent::ChangeType(EStateType InType)
 {
 	EStateType prevType = StateType;
 	StateType = InType;
@@ -82,7 +75,3 @@ void UStateComponent::ChangeType_NMC_Implementation(EStateType InType)
 		OnStateTypeChanged.Broadcast(prevType, StateType);
 }
 
-void UStateComponent::ChangeType_Server_Implementation(EStateType InType)
-{
-	ChangeType_NMC(InType);
-}

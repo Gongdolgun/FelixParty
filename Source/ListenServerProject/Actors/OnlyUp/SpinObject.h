@@ -36,13 +36,18 @@ public:
 
 public:
 	UFUNCTION(NetMulticast, Reliable)
-	void AddRotation_NMC(FRotator InRotationDelta);
+	void AddRotation_NMC(float DeltaTime);
+
+	UFUNCTION(Server, Reliable)
+	void AddRotation_Server(float DeltaTime);
+
+	void AddRotation(float DeltaTime);
 
 	UFUNCTION()
 	void OnGamePlayStart(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
 private:
-	UPROPERTY(EditAnywhere, Replicated, Category = "Rotation")
+	UPROPERTY(EditAnywhere, Category = "Rotation")
 	FRotator RotationSpeed = FRotator(45.0f, 0.0f, 0.0f);
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Rotation")
@@ -50,6 +55,5 @@ private:
 
 	UPROPERTY(Replicated)
 	bool bCheck = false;
-
 };
 

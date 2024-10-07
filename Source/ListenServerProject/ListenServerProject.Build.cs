@@ -26,6 +26,6 @@ public class ListenServerProject : ModuleRules
         PublicDependencyModuleNames.Add("AdvancedSteamSessions");
 
         PublicDependencyModuleNames.Add("MotionWarping");
-        PublicDependencyModuleNames.Add("MediaAssets");
+
     }
 }

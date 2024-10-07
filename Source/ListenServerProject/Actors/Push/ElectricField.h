@@ -36,8 +36,6 @@ public:
 
 	void ApplyDamage(class ADefaultCharacter* InCharacter);
 
-	void SetFieldRadius(float InRadius);
-
 private:
 	float DotDamage = 5.0f;
 	float DotInterval = 0.5f;
@@ -46,14 +44,6 @@ private:
 	FHitData HitData;
 
 	TArray<class ADefaultCharacter*> OverlappedCharacters;
-
-	class APushGameState* PushGameState;
-
-
-	float GamePlayTime = 0.0f;
-
-	float CapsuleRadius = 0.0f;
-	float FieldRadius = 0.0f;
 };
 
 

@@ -49,6 +49,5 @@ public:
 	UFUNCTION(Server, Reliable)
 	void PlayReadyMontage_Server(class UAnimMontage* InMontage);
 
-	UFUNCTION(BlueprintCallable)
 	void PlayReadyMontage(class UAnimMontage* InMontage);
 };

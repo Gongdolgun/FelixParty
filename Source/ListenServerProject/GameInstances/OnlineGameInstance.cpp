@@ -10,10 +10,6 @@ void UOnlineGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	
 }
 
-void UOnlineGameInstance::DestroySession_Implementation()
-{
-}
-
 void UOnlineGameInstance::SavePlayerInfo_Implementation(const FString& PlayerID, FPlayerData PlayerData)
 {
 	if(PlayerDatas.Contains(PlayerID))

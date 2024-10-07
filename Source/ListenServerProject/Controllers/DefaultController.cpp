@@ -3,7 +3,6 @@
 #include "Global.h"
 #include "Characters/DefaultCharacter.h"
 #include "Components/TextBlock.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "GameState/DefaultGameState.h"
 #include "Net/UnrealNetwork.h"
@@ -34,17 +33,16 @@ void ADefaultController::BeginPlay()
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
 
-	// Host의 Ready상태는 True 고정
-	if(HasAuthority())
+	// Option
+	if (SelectOptionWidget)
 	{
-		for (auto& PlayerData : DefaultGameState->PlayerDatas)
-		{
-			if (PlayerData.PlayerName == GetPlayerState<APlayerState>()->GetPlayerName())
-			{
-				PlayerData.Ready = true;
-				break;
-			}
-		}
+		OptionWidget = CreateWidget<UUserWidget>(GetWorld(), SelectOptionWidget);
+
+	}
+
+	else
+	{
+		CLog::Print("Where??");
 	}
 }
 
@@ -60,7 +58,11 @@ void ADefaultController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	
+	ADefaultCharacter* DefaultCharacter = Cast<ADefaultCharacter>(InPawn);
+	if (DefaultCharacter)
+	{
+
+	}
 }
 
 void ADefaultController::SetHUDTime()
@@ -128,33 +130,14 @@ void ADefaultController::SetGameStateType()
 	}
 }
 
-void ADefaultController::ViewOption(EOptionTypes InOptionType)
-{
-	if (DefaultHUD == nullptr) return;
-
-	DefaultHUD->ShowOptionWidget(InOptionType);
-
-}
-
 void ADefaultController::WidgetTypeChange_NMC_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)
 {
 	if (DefaultHUD == nullptr) return;
 
 	SetShowMouseCursor(false);
 
-	if (InNewGameType == EGameStateType::GamePlay)
+	if(InNewGameType == EGameStateType::GamePlay)
 		SetInputMode(FInputModeGameOnly());
-
-	else
-	{
-		/*ADefaultCharacter* ControlledPawn = Cast<ADefaultCharacter>(GetPawn());
-		if(ControlledPawn != nullptr)
-		{
-			ControlledPawn->GetCharacterMovement()->Velocity = FVector::ZeroVector;
-		}*/
-		DisableInput(this);
-		SetInputMode(FInputModeUIOnly());
-	}
 
 	DefaultHUD->ChangeWidgetClass(InPrevGameType, InNewGameType);
 }
@@ -187,4 +170,19 @@ FString ADefaultController::EnumToString(EGameStateType InGameStateType)
 	}
 
 	return EnumPtr->GetNameByValue((int64)InGameStateType).ToString();
+}
+
+void ADefaultController::ViewOption()
+{
+	if (OptionWidget && DefaultGameState->GetGameStateType() == EGameStateType::GamePlay)
+	{
+		OptionWidget->AddToViewport();
+
+		SetShowMouseCursor(true);
+
+		OptionWidget->SetFocus();
+		SetInputMode(FInputModeUIOnly());
+
+	}
+
 }

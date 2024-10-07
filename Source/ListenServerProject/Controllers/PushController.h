@@ -17,17 +17,16 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 public:
-	void CreateOverlayWidget();
+	void CreateHPBar();
 
 	UFUNCTION()
 	void OnGamePlayStart(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
-public:
+private:
 	UPROPERTY(EditAnywhere, Category = "Widget")
-	TSubclassOf<class UUserWidget> SelectOverlay;
+	TSubclassOf<class UUserWidget> SelectHPBar;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Widget")
-	UUserWidget* OverlayWidget;
+	UUserWidget* HpWidget;
 
 };
 
