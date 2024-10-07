@@ -159,7 +159,7 @@ void ABomb::UpdateShakeEffect(float DeltaTime)
 	float shakeIntensity = FMath::Clamp(1.0f - (remainingTime / ExplosionTime), 0.0f, 1.0f);
 	FVector newLocation = GetActorLocation();
 	newLocation.X += FMath::Sin(GetWorld()->GetTimeSeconds() * 20.0f * shakeIntensity) * 5.0f;
-	newLocation.Y += FMath::Cos(GetWorld()->GetTimeSeconds() * 10.0f * shakeIntensity) * 5.0f;
+	newLocation.Y += FMath::Cos(GetWorld()->GetTimeSeconds() * 30.0f * shakeIntensity) * 5.0f;
 
 	SetActorLocation(newLocation);
 }
