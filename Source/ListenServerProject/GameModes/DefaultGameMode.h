@@ -20,6 +20,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool IsDebugging = false;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ATotalScoreCharacter> TotalScoreCharacterClass;
+
 public:
 	void UpdatePlayer();
+
+public:
+	UFUNCTION()
+	void OnGameStateTypeChanged(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 };

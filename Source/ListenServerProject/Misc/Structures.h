@@ -152,10 +152,11 @@ struct FPlayerInGameData
         , Score(InScore)
     {}
 
-    FPlayerInGameData(const FString& InPlayerName, int32 InScore, FColor InColor)
+    FPlayerInGameData(const FString& InPlayerName, int32 InScore, FColor InColor, int32 InTotalScore)
         : PlayerName(InPlayerName)
         , Score(InScore)
 		, PlayerColor(InColor)
+		, TotalScore(InTotalScore)
     {}
 };
 

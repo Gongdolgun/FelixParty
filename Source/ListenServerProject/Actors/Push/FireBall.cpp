@@ -37,7 +37,7 @@ void AFireBall::Tick(float DeltaTime)
 
 	if (OwnerCharacter)
 	{
-		Object_Velocity = Owner->GetActorForwardVector() * ProjectileComponent->InitialSpeed;
+		Object_Velocity = OwnerCharacter->GetActorForwardVector() * ProjectileComponent->InitialSpeed;
 
 		ProjectileComponent->Velocity = UKismetMathLibrary::VInterpTo(ProjectileComponent->Velocity, Object_Velocity, DeltaTime, InterpSpeed);
 		SetActorRotation(UKismetMathLibrary::RInterpTo(GetActorRotation(), Object_Rotation, DeltaTime, InterpSpeed));

@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Net/UnrealNetwork.h"
 #include "Algo/Sort.h"
+#include "GameInstances/OnlineGameInstance.h"
 
 ADefaultGameState::ADefaultGameState()
 {
@@ -161,8 +162,22 @@ void ADefaultGameState::CalRank()
 		return A.Score > B.Score;
 	});
 
-	/*for (int i = 0; i < PlayerDatas.Num(); i++)
-		PlayerDatas[i].TotalScore += 20 / i + 1;*/
+	// Total Score 세팅
+	UOnlineGameInstance* OnlineGameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+
+	if (OnlineGameInstance != nullptr)
+	{
+		for (int i = 0; i < PlayerDatas.Num(); i++)
+		{
+			if (PlayerDatas[i].Score != 0)
+			{
+				PlayerDatas[i].TotalScore += 20 / (i + 1);
+
+				if(OnlineGameInstance->PlayerDatas.Contains(PlayerDatas[i].PlayerName))
+					OnlineGameInstance->PlayerDatas[PlayerDatas[i].PlayerName].TotalScore = PlayerDatas[i].TotalScore;
+			}
+		}
+	}
 }
 
 void ADefaultGameState::CalTotalRank()
@@ -180,10 +195,10 @@ void ADefaultGameState::UpdatePlayerScore(const FString& PlayerName, int32 Score
 			PlayerData.Score += Score;
 }
 
-void ADefaultGameState::AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor)
+void ADefaultGameState::AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor, int32 InTotalScore)
 {
 	// 새 플레이어 추가
-	PlayerDatas.Add(FPlayerInGameData(PlayerName, Score, PlayerColor));
+	PlayerDatas.Add(FPlayerInGameData(PlayerName, Score, PlayerColor, InTotalScore));
 }
 
 void ADefaultGameState::SomeoneDeadEvent(FString InAttackerName, FString InHittedCharacterName)
