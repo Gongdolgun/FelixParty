@@ -87,7 +87,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
 	float Falling_Height_Multiplier = 0.5f;
 
-
 private:
 	UPROPERTY(EditAnywhere, Category = "Parkour")
 	float Correction_Height_Relative = 15.0f;
@@ -144,9 +143,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Parkour")
 	FParkourStruct LowStruct;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Parkour")
-	FParkourStruct ResultStruct;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Parkour")
 	FParkourStruct OutParkourStruct;

@@ -13,8 +13,9 @@ UParkourComponent::UParkourComponent()
     Arrows.SetNum((int32)EParkourArrowType::Max);
     HitResults.SetNum((int32)EParkourArrowType::Max);
 
-    HighStruct.ZOffsetHand = -180.0f;
-    HighStruct.ZOffsetLanding = 30.0f;
+    // Parkour 타입별로 초기값 세팅
+    HighStruct.ZOffsetHand = -60.0f;
+    HighStruct.ZOffsetLanding = -65.0f;
     HighStruct.MontageLength = 1.1f;
 
     LowStruct.ZOffsetHand = 5.0f;
@@ -24,6 +25,11 @@ UParkourComponent::UParkourComponent()
     JumpStruct.ZOffsetHand = 0.0f;
     JumpStruct.ZOffsetLanding = 30.0f;
     JumpStruct.MontageLength = 0.9f;
+
+    // Parkour 에셋 세팅
+    //Helpers::GetAsset<UAnimMontage>(&High_ParkourMontage, "/Game/GameTypes/OnlyUp/Animations/Montages/RE_ParkourHigh.RE_ParkourHigh");
+    //Helpers::GetAsset<UAnimMontage>(&Low_ParkourMontage, "/Game/GameTypes/OnlyUp/Animations/Montages/RE_ParkourLow.RE_ParkourLow");
+    //Helpers::GetAsset<UAnimMontage>(&Jump_ParkourMontage, "/Game/GameTypes/OnlyUp/Animations/Montages/RE_JumpParkour.RE_JumpParkour");
 }
 
 void UParkourComponent::BeginPlay()
@@ -55,25 +61,8 @@ void UParkourComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    //DOREPLIFETIME(ThisClass, OwnerCharacter);
-    //
-    //DOREPLIFETIME(ThisClass, bCanParkour);
-    //DOREPLIFETIME(ThisClass, Correction_Height_Relative);
-    //
-    //DOREPLIFETIME(ThisClass, last_TraceAdd1);
-    //DOREPLIFETIME(ThisClass, last_TraceAdd2);
-    //
-    //DOREPLIFETIME(ThisClass, ParkourPos1);
-    //DOREPLIFETIME(ThisClass, ParkourPos2);
-    //
-    //DOREPLIFETIME(ThisClass, ParkourRelative);
-    //DOREPLIFETIME(ThisClass, falling_ImpactPoint);
-    //
-    //DOREPLIFETIME(ThisClass, OutParkourStruct);
-    //
-    //DOREPLIFETIME(ThisClass, CharacterLocation);
-    //DOREPLIFETIME(ThisClass, CharacterForward);
-    //DOREPLIFETIME(ThisClass, AddPlayerLocationZ);
+   
+   
 }
 
 FVector UParkourComponent::GetParkourPos1()

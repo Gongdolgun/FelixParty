@@ -16,14 +16,12 @@ AOnlyUpCharacter::AOnlyUpCharacter()
 {
 	Helpers::CreateActorComponent<UParkourComponent>(this, &ParkourComponent, "Parkour");
 	Helpers::CreateActorComponent<UStateComponent>(this, &StateComponent, "State");
-	MotionWarpComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("CMotionWarp"));
 
 	// 액터 자체 리플리케이션
 	//SetReplicates(true);
 
 	ParkourComponent->SetIsReplicated(true);
 	StateComponent->SetIsReplicated(true);
-	MotionWarpComponent->SetIsReplicated(true);
 	MoveComponent->SetIsReplicated(true);
 
 	Helpers::CreateComponent<USceneComponent>(this, &ArrowGroup, "ArrowGroup", GetCapsuleComponent());
@@ -93,15 +91,6 @@ void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(ThisClass, Initial_Trace_Length);
-	//DOREPLIFETIME(ThisClass, Trace_Z_Offset);
-	//DOREPLIFETIME(ThisClass, Falling_Height_Multiplier);
-	//
-	//DOREPLIFETIME(ThisClass, ZOffset_Hand);
-	//DOREPLIFETIME(ThisClass, ZOffset_Landing);
-	//DOREPLIFETIME(ThisClass, Montage_Length);
-
-	//DOREPLIFETIME(ThisClass, ParkourComponent);
 
 }
 
@@ -132,9 +121,8 @@ void AOnlyUpCharacter::SetModeAndCollision(EMovementMode InMovementMode, bool In
 
 void AOnlyUpCharacter::Jump()
 {
-	if (ParkourComponent && ParkourComponent->GetCanParkour() == false)
+	if (StateComponent->IsIdleMode())
 	{
-		//MoveComponent->Jump();
 		Super::Jump();
 	}
 

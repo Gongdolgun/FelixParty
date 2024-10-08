@@ -33,7 +33,7 @@ void UNF_SpawnObject::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase
 
 		FTransform transform;
 		transform.SetLocation(OwnerCharacter->GetActorLocation() +
-			(OwnerCharacter->GetActorForwardVector() * 100.0f));
+			(OwnerCharacter->GetActorForwardVector() * 100.0f) + (OwnerCharacter->GetActorRightVector() * 15.0f));
 		transform.SetRotation(FQuat(WorldDirection.Rotation()));
 
 		OwnerCharacter->SpawnObject_Server(ActorClass, transform);

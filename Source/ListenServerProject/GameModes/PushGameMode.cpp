@@ -49,27 +49,31 @@ void APushGameMode::RespawnPlayer(AController* InController)
         UWorld* World = GetWorld();
         if (World)
         {
-            TArray<AActor*> PlayerStarts;
-            UGameplayStatics::GetAllActorsOfClass(World, APlayerStart::StaticClass(), PlayerStarts);
+            RespawnRadius = ElectricField->CurrFieldRadius - 50.0f;
 
-            if (PlayerStarts.Num() > 0)
+            // 랜덤 위치 세팅
+            FVector RandomLocation = FVector(
+                FMath::RandRange(-RespawnRadius, RespawnRadius),
+                FMath::RandRange(-RespawnRadius, RespawnRadius),
+                65.0f // Z 위치
+            );
+
+            FActorSpawnParameters params;
+            params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+            APushCharacter* RespawnCharacter = World->SpawnActor<APushCharacter>(DefaultPawnClass, FTransform(RandomLocation), params);
+
+            if (RespawnCharacter)
             {
-                int32 RandomIndex = FMath::RandRange(0, PlayerStarts.Num() - 1);
-
-                FActorSpawnParameters params;
-                params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-                APushCharacter* NewCharacter = World->SpawnActor<APushCharacter>(DefaultPawnClass, PlayerStarts[RandomIndex]->GetActorTransform(), params);
-
-                if (NewCharacter)
-                {
-                    InController->Possess(NewCharacter);
-                    UpdatePlayer();
-                    NewCharacter->PlayMaterialEvent();
-                }
+                InController->Possess(RespawnCharacter);
+                UpdatePlayer();
+                RespawnCharacter->PlayMaterialEvent();
+            }
+            else
+            {
+                CLog::Print("Spawn Failed. Why?");
             }
         }
     }
 }
-
-
 

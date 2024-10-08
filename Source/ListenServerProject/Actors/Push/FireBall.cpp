@@ -16,7 +16,7 @@ AFireBall::AFireBall()
 
 	bReplicates = true;
 	Particle->SetIsReplicated(true);
-	ProjectileComponent->InitialSpeed = 1300.0f;
+	ProjectileComponent->InitialSpeed = 2000.0f;
 }
 
 void AFireBall::BeginPlay()
@@ -37,7 +37,7 @@ void AFireBall::Tick(float DeltaTime)
 
 	if (OwnerCharacter)
 	{
-		Object_Velocity = Owner->GetActorForwardVector() * ProjectileComponent->InitialSpeed;
+		Object_Velocity = OwnerCharacter->GetActorForwardVector() * ProjectileComponent->InitialSpeed;
 
 		ProjectileComponent->Velocity = UKismetMathLibrary::VInterpTo(ProjectileComponent->Velocity, Object_Velocity, DeltaTime, InterpSpeed);
 		SetActorRotation(UKismetMathLibrary::RInterpTo(GetActorRotation(), Object_Rotation, DeltaTime, InterpSpeed));

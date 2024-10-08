@@ -49,11 +49,12 @@ private:
 
 	class APushGameState* PushGameState;
 
-
 	float GamePlayTime = 0.0f;
-
 	float CapsuleRadius = 0.0f;
-	float FieldRadius = 0.0f;
+
+public:
+	float CurrFieldRadius = 0.0f;
+
 };
 
 

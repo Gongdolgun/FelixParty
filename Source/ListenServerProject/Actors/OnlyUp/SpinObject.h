@@ -42,8 +42,11 @@ public:
 	void OnGamePlayStart(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Rotation")
+	EActorRotationType RotationType;
+
 	UPROPERTY(EditAnywhere, Replicated, Category = "Rotation")
-	FRotator RotationSpeed = FRotator(45.0f, 0.0f, 0.0f);
+	FRotator RotationSpeed;
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Rotation")
 	FRotator RotationDelta;

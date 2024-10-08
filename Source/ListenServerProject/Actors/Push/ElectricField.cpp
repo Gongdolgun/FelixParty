@@ -68,23 +68,23 @@ void AElectricField::OnComponentEndOverlap(UPrimitiveComponent* OverlappedCompon
     if (PushGameState->GetGameStateType() != EGameStateType::GamePlay) return;
 
     ADefaultCharacter* character = Cast<ADefaultCharacter>(OtherActor);
-    if (character == nullptr) return;
-
-    OverlappedCharacters.AddUnique(character);
-
-    for (ADefaultCharacter* OverlapCharacter : OverlappedCharacters)
+    if (character)
     {
-        TWeakObjectPtr<ADefaultCharacter> WeakCharacter = OverlapCharacter;
+        OverlappedCharacters.AddUnique(character);
 
-        GetWorld()->GetTimerManager().SetTimer(DotTimerHandle, [this, WeakCharacter]()
-            {
-                if (WeakCharacter.IsValid())
+        for (ADefaultCharacter* OverlapCharacter : OverlappedCharacters)
+        {
+            TWeakObjectPtr<ADefaultCharacter> WeakCharacter = OverlapCharacter;
+
+            GetWorld()->GetTimerManager().SetTimer(DotTimerHandle, [this, WeakCharacter]()
                 {
-                    ApplyDamage(WeakCharacter.Get());
-                }
-            }, DotInterval, true);
+                    if (WeakCharacter.IsValid())
+                    {
+                        ApplyDamage(WeakCharacter.Get());
+                    }
+                }, DotInterval, true);
+        }
     }
-
 }
 
 void AElectricField::ApplyDamage(ADefaultCharacter* InCharacter)
@@ -97,6 +97,5 @@ void AElectricField::ApplyDamage(ADefaultCharacter* InCharacter)
 void AElectricField::SetFieldRadius(float InRadius)
 {
     RingCapsule->SetWorldScale3D(FVector(InRadius, InRadius, 80.0f));
-
-
+    CurrFieldRadius = RingCapsule->GetScaledCapsuleRadius();
 }
