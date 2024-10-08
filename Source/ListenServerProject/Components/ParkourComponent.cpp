@@ -13,7 +13,7 @@ UParkourComponent::UParkourComponent()
     Arrows.SetNum((int32)EParkourArrowType::Max);
     HitResults.SetNum((int32)EParkourArrowType::Max);
 
-    HighStruct.ZOffsetHand = -60.0f;
+    HighStruct.ZOffsetHand = -180.0f;
     HighStruct.ZOffsetLanding = 30.0f;
     HighStruct.MontageLength = 1.1f;
 

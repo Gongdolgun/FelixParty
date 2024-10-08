@@ -69,7 +69,7 @@ public:
 	bool bCanParkour = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Parkour")
-	float ZOffset_Hand = -60.0f;
+	float ZOffset_Hand = -180.0f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Parkour")
 	float ZOffset_Landing = 30.0f;
