@@ -34,6 +34,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FVector GetParkourPos2();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void CorrectPlayerLocation_NMC(EParkourType InParkourType);
+
+	UFUNCTION(Server, Reliable)
+	void CorrectPlayerLocation_Server(EParkourType InParkourType);
+
 	UFUNCTION(BlueprintCallable)
 	void CorrectPlayerLocation(EParkourType InParkourType);
 
@@ -42,6 +48,12 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 	void ParkourTrace(FParkourStruct InParkourLocation, float InInitialTraceLength, float InSecondaryTraceZOffset, float InFallingHeightMultiplier);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ParkourCheck_NMC(float InSecondaryTraceZOffset, float InFallingHeightMultiplier, EParkourType InParkourType);
+
+	UFUNCTION(Server, Reliable)
+	void ParkourCheck_Server(float InSecondaryTraceZOffset, float InFallingHeightMultiplier, EParkourType InParkourType);
 
 	void ParkourCheck(float InSecondaryTraceZOffset, float InFallingHeightMultiplier, EParkourType InParkourType);
 
@@ -57,7 +69,7 @@ public:
 	bool bCanParkour = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Parkour")
-	float ZOffset_Hand = -60.0f;
+	float ZOffset_Hand = -180.0f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Parkour")
 	float ZOffset_Landing = 30.0f;
