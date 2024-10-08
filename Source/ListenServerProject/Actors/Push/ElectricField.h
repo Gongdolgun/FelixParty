@@ -17,14 +17,14 @@ private:
 	UPROPERTY(EditAnywhere, Replicated)
 	class UStaticMeshComponent* RingMesh;
 
-public:	
+public:
 	AElectricField();
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 public:

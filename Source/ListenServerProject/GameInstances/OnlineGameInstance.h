@@ -31,4 +31,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void DestroySession();
 	void DestroySession_Implementation();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateTotalScore(const FString& InPlayerName, int32 InScore);
 };

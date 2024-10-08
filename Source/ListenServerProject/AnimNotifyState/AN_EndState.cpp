@@ -4,25 +4,24 @@
 
 FString UAN_EndState::GetNotifyName_Implementation() const
 {
-	return "EndAction";
+    return "EndAction";
 }
 
 void UAN_EndState::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	Super::Notify(MeshComp, Animation);
+    Super::Notify(MeshComp, Animation);
 
-	if (MeshComp == nullptr) return;
-	if (MeshComp->GetOwner() == nullptr) return;
+    if (MeshComp == nullptr) return;
+    if (MeshComp->GetOwner() == nullptr) return;
 
-	OwnerCharacter = Cast<ACharacter>(MeshComp->GetOwner());
-	if (OwnerCharacter)
-	{
-		UStateComponent* state = Helpers::GetComponent<UStateComponent>(OwnerCharacter);
-		if (state == nullptr) return;
+    OwnerCharacter = Cast<ACharacter>(MeshComp->GetOwner());
+    if (OwnerCharacter)
+    {
+        UStateComponent* state = Helpers::GetComponent<UStateComponent>(OwnerCharacter);
+        if (state == nullptr) return;
 
-		if (OwnerCharacter->IsLocallyControlled())
-			state->SetIdleMode();
-	}
-	
+        if (OwnerCharacter->IsLocallyControlled())
+            state->SetIdleMode();
+    }
+
 }
-

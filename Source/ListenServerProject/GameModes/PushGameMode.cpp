@@ -15,31 +15,31 @@ APushGameMode::APushGameMode()
 
 void APushGameMode::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
     PushGameState = GetGameState<APushGameState>();
 
-	SpawnElectricField();
+    SpawnElectricField();
 }
 
 void APushGameMode::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaSeconds);
+    Super::Tick(DeltaSeconds);
 
-   
+
 }
 
 void APushGameMode::SpawnElectricField()
 {
-	FActorSpawnParameters params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    FActorSpawnParameters params;
+    params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	FTransform transform;
-	transform.SetLocation(FVector::ZeroVector);
-	transform.SetScale3D(FVector(80.0f, 80.0f, 80.0f));
+    FTransform transform;
+    transform.SetLocation(FVector::ZeroVector);
+    transform.SetScale3D(FVector(80.0f, 80.0f, 80.0f));
 
-	if (ElectricFieldClass)
-		ElectricField = GetWorld()->SpawnActor<AElectricField>(ElectricFieldClass, transform, params);
+    if (ElectricFieldClass)
+        ElectricField = GetWorld()->SpawnActor<AElectricField>(ElectricFieldClass, transform, params);
 }
 
 void APushGameMode::RespawnPlayer(AController* InController)
@@ -70,6 +70,6 @@ void APushGameMode::RespawnPlayer(AController* InController)
         }
     }
 }
- 
+
 
 

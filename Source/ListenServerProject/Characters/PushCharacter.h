@@ -64,7 +64,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	class UAnimMontage* HittedMontage;
 
-	UPROPERTY(EditAnywhere, Category ="Respawn")
+	UPROPERTY(EditAnywhere, Category = "Respawn")
 	TSubclassOf<AActor> Respawner;
 
 	FTimerHandle SpawnTimerHandle;

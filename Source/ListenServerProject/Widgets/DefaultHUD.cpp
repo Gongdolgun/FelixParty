@@ -108,9 +108,14 @@ void ADefaultHUD::ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateTyp
 			AddCharacterOverlay(HUDClasses[EHudTypes::GameOver]);
 		break;
 
-	case EGameStateType::RankBoard:
-		if (HUDClasses.Contains(EHudTypes::RankBoard))
-			AddCharacterOverlay(HUDClasses[EHudTypes::RankBoard]);
+	case EGameStateType::InGameRankBoard:
+		if (HUDClasses.Contains(EHudTypes::InGameRankBoard))
+			AddCharacterOverlay(HUDClasses[EHudTypes::InGameRankBoard]);
+		break;
+
+	case EGameStateType::TotalRankBoard:
+		if (HUDClasses.Contains(EHudTypes::TotalRankBoard))
+			AddCharacterOverlay(HUDClasses[EHudTypes::TotalRankBoard]);
 		break;
 	}
 }

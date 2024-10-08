@@ -137,6 +137,9 @@ struct FPlayerInGameData
     int32 Score;
 
     UPROPERTY(BlueprintReadOnly)
+    int32 TotalScore;
+
+    UPROPERTY(BlueprintReadOnly)
     bool Ready = false;
 
     FPlayerInGameData()
