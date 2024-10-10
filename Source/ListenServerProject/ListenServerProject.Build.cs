@@ -4,8 +4,8 @@ using UnrealBuildTool;
 
 public class ListenServerProject : ModuleRules
 {
-	public ListenServerProject(ReadOnlyTargetRules Target) : base(Target)
-	{
+    public ListenServerProject(ReadOnlyTargetRules Target) : base(Target)
+    {
         PrivateDependencyModuleNames.AddRange(new string[] { "AITestSuite" });
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -26,6 +26,6 @@ public class ListenServerProject : ModuleRules
         PublicDependencyModuleNames.Add("AdvancedSteamSessions");
 
         PublicDependencyModuleNames.Add("MotionWarping");
-
+        PublicDependencyModuleNames.Add("MediaAssets");
     }
 }

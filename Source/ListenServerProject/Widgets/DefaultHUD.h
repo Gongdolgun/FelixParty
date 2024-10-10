@@ -19,12 +19,21 @@ public:
 
 	UUserWidget* CharacterOverlay;
 
+	UPROPERTY(EditAnywhere, Category = "Hud Types")
+	TMap<EOptionTypes, TSubclassOf<class UUserWidget>> OptionClasses;
+
+	UPROPERTY()
+	TMap<EOptionTypes, UUserWidget*> OptionWidgets;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
 public:
 	void AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacterOverlay);
+
+	void CreateOptionWidgets();
+	void ShowOptionWidget(EOptionTypes InOptionType);
 
 public:
 	UFUNCTION()
