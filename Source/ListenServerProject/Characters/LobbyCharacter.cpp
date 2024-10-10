@@ -4,6 +4,7 @@
 #include "Components/MoveComponent.h"
 #include "Controllers/LobbyController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerStart.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameModes/LobbyGameMode.h"
 #include "GameState/LobbyGameState.h"

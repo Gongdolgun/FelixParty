@@ -4,6 +4,7 @@
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameInstances/OnlineGameInstance.h"
 
 UMoveComponent::UMoveComponent()
 {
@@ -16,6 +17,8 @@ void UMoveComponent::BeginPlay()
 	Super::BeginPlay();
 	Owner = Cast<ACharacter>(GetOwner());
 
+	if (Owner)
+		GameInstance = Cast<UOnlineGameInstance>(UGameplayStatics::GetGameInstance(Owner->GetWorld()));
 }
 
 void UMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -46,13 +49,16 @@ void UMoveComponent::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	LookAxisVector.X *= (SensitivityValueX);
-	LookAxisVector.Y *= (SensitivityValueY);
+	LookAxisVector.X *= (GameInstance->Instance_Settings.MouseSenX);
+	LookAxisVector.Y *= (GameInstance->Instance_Settings.MouseSenY);
 
 	if (Owner != nullptr && CanMove)
 	{
-		Owner->AddControllerYawInput(LookAxisVector.X);
-		Owner->AddControllerPitchInput(LookAxisVector.Y);
+		float YawInput = LookAxisVector.X * (GameInstance->Instance_Settings.bInvertX ? -1.0f : 1.0f);
+		float PitchInput = LookAxisVector.Y * (GameInstance->Instance_Settings.bInvertY ? -1.0f : 1.0f);
+
+		Owner->AddControllerYawInput(YawInput);
+		Owner->AddControllerPitchInput(PitchInput);
 	}
 }
 
@@ -106,20 +112,3 @@ void UMoveComponent::DisableControlRotation()
 	Owner->GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
-void UMoveComponent::SetApplyValue(float InValueX, float InValueY, bool InvertX, bool InvertY)
-{
-	// X 값 변경
-	if (!InvertX)
-		SensitivityValueX = InValueX;
-
-	else
-		SensitivityValueX = -InValueX;
-
-	// Y값 변경
-	if (!InvertY)
-		SensitivityValueY = InValueY;
-
-	else
-		SensitivityValueY = -InValueY;
-
-}

@@ -36,6 +36,8 @@ void ADefaultGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ThisClass, GameStartTime);
 	DOREPLIFETIME(ThisClass, GamePlayTime);
 	DOREPLIFETIME(ThisClass, GameOverTime);
+	DOREPLIFETIME(ThisClass, InGameRankBoardTime);
+	DOREPLIFETIME(ThisClass, TotalRankBoardTime);
 
 	DOREPLIFETIME(ThisClass, GameStateType);
 
@@ -78,6 +80,30 @@ void ADefaultGameState::SetTimer(float InTime)
 		if (GameOverTime >= 0.0f)
 		{
 			GameOverTime -= InTime;
+			if (GameOverTime <= 0.0f)
+			{
+				SetGameState(EGameStateType::InGameRankBoard);
+			}
+		}
+
+		break;
+
+	case EGameStateType::InGameRankBoard:
+		if (InGameRankBoardTime >= 0.0f)
+		{
+			InGameRankBoardTime -= InTime;
+			if (InGameRankBoardTime <= 0.0f)
+			{
+				SetGameState(EGameStateType::TotalRankBoard);
+			}
+		}
+
+		break;
+
+	case EGameStateType::TotalRankBoard:
+		if (TotalRankBoardTime >= 0.0f)
+		{
+			TotalRankBoardTime -= InTime;
 		}
 
 		break;
@@ -102,8 +128,15 @@ void ADefaultGameState::SetGameState(EGameStateType InGameStateType)
 			CalRank();
 			ChangeGameType(EGameStateType::GameOver);
 			break;
+
+		case EGameStateType::InGameRankBoard:
+			ChangeGameType(EGameStateType::InGameRankBoard);
+			break;
+
+		case EGameStateType::TotalRankBoard:
+			ChangeGameType(EGameStateType::TotalRankBoard);
+			break;
 		}
-		
 	}
 }
 
@@ -126,6 +159,17 @@ void ADefaultGameState::CalRank()
 	Algo::Sort(PlayerDatas, [](const FPlayerInGameData& A, const FPlayerInGameData& B)
 	{
 		return A.Score > B.Score;
+	});
+
+	/*for (int i = 0; i < PlayerDatas.Num(); i++)
+		PlayerDatas[i].TotalScore += 20 / i + 1;*/
+}
+
+void ADefaultGameState::CalTotalRank()
+{
+	Algo::Sort(PlayerDatas, [](const FPlayerInGameData& A, const FPlayerInGameData& B)
+	{
+		return A.TotalScore > B.TotalScore;
 	});
 }
 
@@ -155,4 +199,11 @@ FPlayerInGameData ADefaultGameState::GetPlayerData(FString PlayerName)
 			return PlayerData;
 
 	return FPlayerInGameData();
+}
+
+void ADefaultGameState::UpdateTotalScore(const FString& InPlayerName, int32 InScore)
+{
+	for (FPlayerInGameData& PlayerData : PlayerDatas)
+		if (PlayerData.PlayerName == InPlayerName)
+			PlayerData.TotalScore += InScore;
 }

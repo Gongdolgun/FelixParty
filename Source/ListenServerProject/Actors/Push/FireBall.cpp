@@ -16,15 +16,17 @@ AFireBall::AFireBall()
 
 	bReplicates = true;
 	Particle->SetIsReplicated(true);
-	ProjectileComponent->InitialSpeed = 1000.0f;
-
+	ProjectileComponent->InitialSpeed = 2000.0f;
 }
 
 void AFireBall::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetLifeSpan(5.0f);
+	SetLifeSpan(4.0f);
+
+	OwnerCharacter = Cast<ACharacter>(GetOwner());
+	if (OwnerCharacter == nullptr) return;
 
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnComponentBeginOverlap);
 }
@@ -33,6 +35,13 @@ void AFireBall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (OwnerCharacter)
+	{
+		Object_Velocity = OwnerCharacter->GetActorForwardVector() * ProjectileComponent->InitialSpeed;
+
+		ProjectileComponent->Velocity = UKismetMathLibrary::VInterpTo(ProjectileComponent->Velocity, Object_Velocity, DeltaTime, InterpSpeed);
+		SetActorRotation(UKismetMathLibrary::RInterpTo(GetActorRotation(), Object_Rotation, DeltaTime, InterpSpeed));
+	}
 }
 
 void AFireBall::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -75,4 +84,3 @@ void AFireBall::Destroyed()
 	Particle->SetActive(false);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
-

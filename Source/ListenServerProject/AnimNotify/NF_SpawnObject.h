@@ -18,10 +18,4 @@ private:
 	UPROPERTY(EditAnywhere)
 	class UClass* ActorClass;
 
-	UPROPERTY(EditAnywhere)
-	float LeftDistance = -30.0f;
-
-
-
-
 };

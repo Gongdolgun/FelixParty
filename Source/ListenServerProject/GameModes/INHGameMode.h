@@ -15,4 +15,7 @@ public:
 
 public:
 	void SetGhostMode(AController* InController);
+
+private:
+	int DeadPlayerCount = 0;
 };
