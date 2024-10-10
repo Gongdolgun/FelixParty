@@ -16,10 +16,16 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 	ALobbyController* Controller = Cast<ALobbyController>(NewPlayer);
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
 
+	CLog::Print(Controller->GetPlayerState<APlayerState>()->GetUniqueId()->ToString());
+
 	// 인게임에서 사용할 플레이어 데이터 초기화 (Game Instance)
 	if(Controller && GameInstance)
 	{
 		FString PlayerID = Controller->GetPlayerState<APlayerState>()->GetPlayerName();
+
+		/*TSharedPtr<const FUniqueNetId> UniqueNetId = Controller->GetPlayerState<APlayerState>()->GetUniqueId().GetUniqueNetId();
+		FBPUniqueNetId PlayerUniqueID;
+		PlayerUniqueID.SetUniqueNetId(UniqueNetId);*/
 
 		GameInstance->PlayerDatas.Add(PlayerID, DefaultPlayerData);
 		if(GameInstance->PlayerDatas.Contains(PlayerID))
@@ -47,6 +53,8 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 			Player->UpdatePlayerList(PlayerBaseInfos);
 		}
 	}
+
+	
 }
 
 void ALobbyGameMode::UpdatePlayerLists()
@@ -76,33 +84,6 @@ void ALobbyGameMode::UpdatePlayerMaterial()
 					LobbyCharacter->ChangeMaterial(GameInstance->PlayerDatas[PlayerID].PlayerColor);
 				}
 			}
-		}
-	}
-}
-
-// 세션 나가기
-void ALobbyGameMode::LeaveSession(ALobbyController* InController)
-{
-	ConnectedPlayers.Remove(InController);
-	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
-
-	if(GameInstance != nullptr)
-	{
-		FString PlayerID = InController->GetPlayerState<APlayerState>()->GetPlayerName();
-		if(GameInstance->PlayerDatas.Contains(PlayerID))
-		{
-			GameInstance->PlayerDatas.Remove(PlayerID);
-		}
-
-		for(int i = 0; i < PlayerBaseInfos.Num(); i++)
-		{
-			if (PlayerBaseInfos[i].PlayerName == PlayerID)
-				PlayerBaseInfos.RemoveAt(i);
-		}
-
-		for(auto Player : ConnectedPlayers)
-		{
-			Player->UpdatePlayerList(PlayerBaseInfos);
 		}
 	}
 }

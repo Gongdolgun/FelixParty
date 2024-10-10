@@ -30,5 +30,4 @@ public:
 
 public:
 	void UpdatePlayerMaterial();
-	void LeaveSession(ALobbyController* InController);
 };

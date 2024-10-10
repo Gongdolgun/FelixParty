@@ -10,18 +10,6 @@ void UOnlineGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	
 }
 
-void UOnlineGameInstance::DestroySession_Implementation()
-{
-}
-
-void UOnlineGameInstance::UpdateTotalScore(const FString& InPlayerName, int32 InScore)
-{
-	if(PlayerDatas.Contains(InPlayerName))
-	{
-		PlayerDatas[InPlayerName].TotalScore += InScore;
-	}
-}
-
 void UOnlineGameInstance::SavePlayerInfo_Implementation(const FString& PlayerID, FPlayerData PlayerData)
 {
 	if(PlayerDatas.Contains(PlayerID))

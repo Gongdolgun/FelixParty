@@ -1,6 +1,5 @@
 #include "GameModes/OnlyUpGameMode.h"
 #include "Global.h"
-#include "GameState/OnlyUpGameState.h"
 #include "Net/UnrealNetwork.h"
 #include "Widgets/DefaultHUD.h"
 
@@ -21,5 +20,3 @@ void AOnlyUpGameMode::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 }
-
-

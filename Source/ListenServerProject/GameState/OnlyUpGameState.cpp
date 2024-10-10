@@ -12,6 +12,7 @@ void AOnlyUpGameState::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 }
 
 void AOnlyUpGameState::Tick(float DeltaSeconds)
@@ -45,3 +46,10 @@ int32 AOnlyUpGameState::PlayerRank(APlayerController* InController)
 
 	return 0;
 }
+
+
+
+
+
+
+

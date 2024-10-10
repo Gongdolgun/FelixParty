@@ -21,17 +21,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> Maps;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FSaveSettings Instance_Settings;
 
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SavePlayerInfo(const FString& PlayerID, FPlayerData PlayerData);
 
-	UFUNCTION(BlueprintNativeEvent)
-	void DestroySession();
-	void DestroySession_Implementation();
-
-	UFUNCTION(BlueprintCallable)
-	void UpdateTotalScore(const FString& InPlayerName, int32 InScore);
 };

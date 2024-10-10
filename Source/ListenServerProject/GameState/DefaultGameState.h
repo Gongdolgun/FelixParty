@@ -44,13 +44,7 @@ public:
 	float GamePlayTime = 30.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Game State")
-	float GameOverTime = 3.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Game State")
-	float InGameRankBoardTime = 5.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Game State")
-	float TotalRankBoardTime = 5.0f;
+	float GameOverTime = 5.0f;
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	TArray<FPlayerInGameData> PlayerDatas;
@@ -77,15 +71,9 @@ private:
 	void ChangeGameType(EGameStateType InGameType);
 	void CalRank();
 
-	UFUNCTION(BlueprintCallable)
-	void CalTotalRank();
-
 public:
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerScore(const FString& PlayerName, int32 Score);
-
-	UFUNCTION(BlueprintCallable)
-	void UpdateTotalScore(const FString& InPlayerName, int32 InScore);
 
 	void AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor);
 	virtual void SomeoneDeadEvent(FString InAttackerName, FString InHittedCharacterName);

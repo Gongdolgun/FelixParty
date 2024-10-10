@@ -21,7 +21,4 @@ protected:
 public:
 	UPROPERTY(BlueprintReadWrite, Replicated)
 	TArray<FString> SelectedColors;
-
-	UPROPERTY(BlueprintReadWrite, Replicated)
-	int32 MapIndex;
 };

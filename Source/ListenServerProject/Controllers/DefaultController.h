@@ -35,7 +35,7 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void WidgetTypeChange_NMC(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
-	void ViewOption(EOptionTypes InOptionType);
+	void ViewOption();
 
 private:
 	UPROPERTY()
@@ -51,5 +51,11 @@ private:
 	float GameStartTime;
 	float GamePlayTime;
 	float GameOverTime;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<class UUserWidget> SelectOptionWidget;
+
+	UUserWidget* OptionWidget;
 
 };

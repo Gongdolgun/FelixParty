@@ -17,6 +17,9 @@ public:
 	class UStateComponent* StateComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<class UMotionWarpingComponent> MotionWarpComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class USceneComponent* ArrowGroup;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")

@@ -18,8 +18,6 @@ protected:
 
 public:
 	void SpawnElectricField();
-
-
 	void RespawnPlayer(AController* InController);
 
 public:
@@ -29,9 +27,7 @@ public:
 	
 private:
 	AElectricField* ElectricField;
-	class APushGameState* PushGameState;
-
-	float RespawnRadius = 0.0f;
+	
 };
 
 

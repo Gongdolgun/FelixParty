@@ -26,21 +26,6 @@ void ASpinObject::BeginPlay()
 	{
 		gameState->OnGameStateTypeChanged.AddDynamic(this, &ASpinObject::OnGamePlayStart);
 	}
-
-	switch (RotationType)
-	{
-	case EActorRotationType::Pitch:
-		RotationSpeed = FRotator(45.0f, 0.0f, 0.0f);
-		break;
-
-	case EActorRotationType::Yaw:
-		RotationSpeed = FRotator(0.0f, 45.0f, 0.0f);
-		break;
-
-	case EActorRotationType::Roll:
-		RotationSpeed = FRotator(0.0f, 0.0f, 45.0f);
-		break;
-	}
 }
 
 void ASpinObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -48,7 +33,6 @@ void ASpinObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, RotationDelta);
-	DOREPLIFETIME(ThisClass, RotationSpeed);
 	DOREPLIFETIME(ThisClass, bCheck);
 }
 
@@ -56,18 +40,33 @@ void ASpinObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (HasAuthority())
+	if (bCheck == true)
 	{
-		RotationDelta = RotationSpeed * DeltaTime;
-		AddRotation_NMC(RotationDelta);
-
+		if (HasAuthority())
+		{
+			AddRotation_NMC(DeltaTime);
+		}
+		else
+		{
+			AddRotation_Server(DeltaTime);
+		}
 	}
 }
 
-void ASpinObject::AddRotation_NMC_Implementation(FRotator InRotationDelta)
+void ASpinObject::AddRotation_NMC_Implementation(float InDeltaTime)
 {
-	FRotator tempRotation = FRotator(InRotationDelta);
-	AddActorLocalRotation(tempRotation);
+	RotationDelta = RotationSpeed * InDeltaTime;
+	AddActorLocalRotation(RotationDelta);
+}
+
+void ASpinObject::AddRotation_Server_Implementation(float InDeltaTime)
+{
+	AddRotation_NMC(InDeltaTime);
+}
+
+void ASpinObject::AddRotation(float InDeltaTime)
+{
+	AddRotation_Server(InDeltaTime);
 }
 
 void ASpinObject::OnGamePlayStart(EGameStateType InPrevGameType, EGameStateType InNewGameType)
