@@ -14,15 +14,10 @@ void UAN_EndState::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* A
 	if (MeshComp == nullptr) return;
 	if (MeshComp->GetOwner() == nullptr) return;
 
-	OwnerCharacter = Cast<ACharacter>(MeshComp->GetOwner());
-	if (OwnerCharacter)
-	{
-		UStateComponent* state = Helpers::GetComponent<UStateComponent>(OwnerCharacter);
-		if (state == nullptr) return;
+	UStateComponent* state = Helpers::GetComponent<UStateComponent>(MeshComp->GetOwner());
 
-		if (OwnerCharacter->IsLocallyControlled())
-			state->SetIdleMode();
-	}
-	
+	if (state == nullptr) return;
+
+	state->SetIdleMode();
 }
 

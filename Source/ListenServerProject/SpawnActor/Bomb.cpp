@@ -35,7 +35,8 @@ void ABomb::BeginPlay()
 		DynamicMaterial = StaticMesh->CreateAndSetMaterialInstanceDynamic(0);
 		if (DynamicMaterial)
 		{
-			OnRep_UpdateColor();  // 초기 색상 설정
+			OnRep_UpdateColor(); // 초기 색상 설정
+			OnRep_CountdownSound();
 		}
 	}
 }
@@ -86,9 +87,6 @@ void ABomb::OnRep_UpdateColor()
 	if (DynamicMaterial)
 	{
 		DynamicMaterial->SetVectorParameterValue(FName("BaseColor"), BombColor);
-
-		//UpdateShakeEffect(GetWorld()->GetDeltaSeconds());
-
 	}
 }
 
@@ -147,10 +145,9 @@ void ABomb::UpDateSoundAndColor(float DeltaTime)
 	float progress = ElapseTime / ExplosionTime;
 	BombColor = FVector(FLinearColor::LerpUsingHSV(FLinearColor::Black, FLinearColor::Red, progress));
 
-	if (HasAuthority())
-	{
-		OnRep_UpdateColor();  // 서버에서 직접 색상 업데이트 호출
-	}
+	OnRep_UpdateColor();
+
+	UpdateShakeEffect(DeltaTime);
 }
 
 void ABomb::UpdateShakeEffect(float DeltaTime)

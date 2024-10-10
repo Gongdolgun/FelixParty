@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameState/BombGameState.h"
 #include "GameState/DefaultGameState.h"
+#include "Widgets/BombGameStartMessage.h"
 
 void ABombGameMode::BeginPlay()
 {
