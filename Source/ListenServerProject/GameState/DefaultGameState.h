@@ -87,6 +87,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateTotalScore(const FString& InPlayerName, int32 InScore);
 
-	void AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor);
+	void AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor, int32 InTotalScore);
 	virtual void SomeoneDeadEvent(FString InAttackerName, FString InHittedCharacterName);
 };

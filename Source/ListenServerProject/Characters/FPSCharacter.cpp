@@ -1,5 +1,8 @@
 #include "Characters/FPSCharacter.h"
+#include "Camera/CameraComponent.h"
 #include "AnimInstance_DefaultCharacter.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "Global.h"
 #include "Components/MoveComponent.h"
 #include "Controllers/DefaultController.h"
@@ -23,13 +26,13 @@ void AFPSCharacter::BeginPlay()
 void AFPSCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
+
 	if (canRun)
 		CurrentSpeed = FMath::Lerp(CurrentSpeed, 800.f, 2 * DeltaSeconds);
 
 	else
 		CurrentSpeed = 500.f;
-		//CurrentSpeed = FMath::Lerp(CurrentSpeed, 500.f, 2 * DeltaSeconds);
+	//CurrentSpeed = FMath::Lerp(CurrentSpeed, 500.f, 2 * DeltaSeconds);
 
 	GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
 }
@@ -42,7 +45,7 @@ void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 	{
 		HP = UKismetMathLibrary::Clamp(HP - InHitData.Damage, 0, MaxHP);
 
-		if(HP == 0)
+		if (HP == 0)
 		{
 			// Ragdoll 처리, 장착중인 무기 Destroy
 			Dead_NMC();
@@ -51,13 +54,13 @@ void AFPSCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 			ADefaultCharacter* Attacker = Cast<ADefaultCharacter>(InActor);
 			AFPSGameMode* FPSGameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 			SetSpeed(isRun);
-			if(Attacker != nullptr && FPSGameMode != nullptr)
+			if (Attacker != nullptr && FPSGameMode != nullptr)
 			{
 				ADefaultGameState* DefaultGameState = Cast<ADefaultGameState>(FPSGameMode->GetGameState<ADefaultGameState>());
 				ADefaultController* AttackerController = Cast<ADefaultController>(Attacker->GetController());
 				ADefaultController* MyController = Cast<ADefaultController>(GetController());
 
-				if(DefaultGameState != nullptr && AttackerController != nullptr && MyController != nullptr)
+				if (DefaultGameState != nullptr && AttackerController != nullptr && MyController != nullptr)
 				{
 					FString AttackerName = AttackerController->GetPlayerState<APlayerState>()->GetPlayerName();
 					FString MyName = MyController->GetPlayerState<APlayerState>()->GetPlayerName();
@@ -201,7 +204,7 @@ void AFPSCharacter::Dead_NMC_Implementation()
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionProfileName("Ragdoll");
 
-	if(WeaponComponent != nullptr && WeaponComponent->CurWeapon != nullptr)
+	if (WeaponComponent != nullptr && WeaponComponent->CurWeapon != nullptr)
 		WeaponComponent->CurWeapon->Destroy();
 }
 
