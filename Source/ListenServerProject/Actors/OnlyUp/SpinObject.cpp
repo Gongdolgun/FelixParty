@@ -30,15 +30,15 @@ void ASpinObject::BeginPlay()
 	switch (RotationType)
 	{
 	case EActorRotationType::Pitch:
-		RotationSpeed = FRotator(45.0f, 0.0f, 0.0f);
+		RotationSpeed = FRotator(RotationSpeed.Pitch, 0.0f, 0.0f);
 		break;
 
 	case EActorRotationType::Yaw:
-		RotationSpeed = FRotator(0.0f, 45.0f, 0.0f);
+		RotationSpeed = FRotator(0.0f, RotationSpeed.Yaw, 0.0f);
 		break;
 
 	case EActorRotationType::Roll:
-		RotationSpeed = FRotator(0.0f, 0.0f, 45.0f);
+		RotationSpeed = FRotator(0.0f, 0.0f, RotationSpeed.Roll);
 		break;
 	}
 }

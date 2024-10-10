@@ -3,6 +3,7 @@
 #include "Global.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
+#include "Controllers/DefaultController.h"
 #include "GameModes/OnlyUpGameMode.h"
 #include "Net/UnrealNetwork.h"
 
@@ -41,7 +42,7 @@ void ADefaultHUD::AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacter
 
 		CharacterOverlay = CreateWidget<UUserWidget>(PlayerController, InCharacterOverlay);
 
-		if(CharacterOverlay != nullptr)
+		if (CharacterOverlay != nullptr)
 			CharacterOverlay->AddToViewport();
 	}
 }
@@ -61,15 +62,17 @@ void ADefaultHUD::CreateOptionWidgets()
 			UUserWidget* OptionWidget = CreateWidget<UUserWidget>(PlayerController, WidgetClass);
 			if (OptionWidget)
 			{
-				OptionWidgets.Add(OptionType, OptionWidget); 
+				OptionWidgets.Add(OptionType, OptionWidget);
 			}
 		}
 	}
+
+
 }
 
 void ADefaultHUD::ShowOptionWidget(EOptionTypes InOptionType)
 {
-	APlayerController* PlayerController = GetOwningPlayerController();
+	ADefaultController* PlayerController = Cast<ADefaultController>(GetOwningPlayerController());
 	if (PlayerController == nullptr) return;
 
 	UUserWidget** FoundWidgetPtr = OptionWidgets.Find(InOptionType);
@@ -80,11 +83,30 @@ void ADefaultHUD::ShowOptionWidget(EOptionTypes InOptionType)
 
 		if (FoundWidget && !FoundWidget->IsInViewport())
 		{
-			FoundWidget->AddToViewport();
-			FoundWidget->SetFocus();
+			if (InOptionType == EOptionTypes::EmoteOption)
+			{
+				if (PlayerController->bPressKey == false)
+				{
+					PlayerController->bPressKey = true;
+					FoundWidget->AddToViewport();
+					FoundWidget->SetFocus();
 
-			PlayerController->SetShowMouseCursor(true);
-			PlayerController->SetInputMode(FInputModeGameAndUI());
+					PlayerController->SetShowMouseCursor(true);
+					PlayerController->SetInputMode(FInputModeGameAndUI());
+				}
+			}
+
+			else
+			{
+				FoundWidget->AddToViewport();
+				FoundWidget->SetFocus();
+
+				PlayerController->SetShowMouseCursor(true);
+				PlayerController->SetInputMode(FInputModeGameAndUI());
+			}
+			
+
+			
 		}
 	}
 }
@@ -94,7 +116,7 @@ void ADefaultHUD::ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateTyp
 	switch (InNewGameType)
 	{
 	case EGameStateType::GameStart:
-		if(HUDClasses.Contains(EHudTypes::Countdown))
+		if (HUDClasses.Contains(EHudTypes::Countdown))
 			AddCharacterOverlay(HUDClasses[EHudTypes::Countdown]);
 		break;
 

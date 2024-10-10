@@ -69,10 +69,7 @@ void APushGameMode::RespawnPlayer(AController* InController)
                 UpdatePlayer();
                 RespawnCharacter->PlayMaterialEvent();
             }
-            else
-            {
-                CLog::Print("Spawn Failed. Why?");
-            }
+            
         }
     }
 }

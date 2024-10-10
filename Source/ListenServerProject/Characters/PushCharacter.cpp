@@ -188,7 +188,6 @@ void APushCharacter::Dead_NMC_Implementation(FVector InImpulse)
     GetMesh()->AddImpulse(InImpulse, NAME_None, true);
 
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 }
 
 void APushCharacter::SpawnObject_Server_Implementation(UClass* InClass, FTransform InTransform)

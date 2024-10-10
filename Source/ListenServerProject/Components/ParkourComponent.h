@@ -34,15 +34,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FVector GetParkourPos2();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void CorrectPlayerLocation_NMC(EParkourType InParkourType);
-
-	UFUNCTION(Server, Reliable)
-	void CorrectPlayerLocation_Server(EParkourType InParkourType);
-
-	UFUNCTION(BlueprintCallable)
-	void CorrectPlayerLocation(EParkourType InParkourType);
-
 	void SetCanParkour(bool bInCanParkour);
 
 public:
@@ -146,15 +137,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Parkour")
 	FParkourStruct OutParkourStruct;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Parkour")
-	FVector CharacterLocation;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Parkour")
-	FVector CharacterForward;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Parkour")
-	float AddPlayerLocationZ;
 
 public:
 	// Play Montage

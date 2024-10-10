@@ -15,7 +15,7 @@ UParkourComponent::UParkourComponent()
 
     // Parkour 타입별로 초기값 세팅
     HighStruct.ZOffsetHand = -60.0f;
-    HighStruct.ZOffsetLanding = -65.0f;
+    HighStruct.ZOffsetLanding = -70.0f;
     HighStruct.MontageLength = 1.1f;
 
     LowStruct.ZOffsetHand = 5.0f;
@@ -73,52 +73,6 @@ FVector UParkourComponent::GetParkourPos1()
 FVector UParkourComponent::GetParkourPos2()
 {
     return ParkourPos2;
-}
-
-void UParkourComponent::CorrectPlayerLocation_NMC_Implementation(EParkourType InParkourType)
-{
-    CharacterLocation = OwnerCharacter->GetActorLocation();
-    CharacterForward = OwnerCharacter->GetActorForwardVector();
-
-    AddPlayerLocationZ = 0.0f;
-
-    switch (InParkourType)
-    {
-    case EParkourType::High:
-        AddPlayerLocationZ = ParkourRelative.AddPlayerLocationZ_High;
-        ParkourRelative.AddPlayerLocationForward = 0.0f;
-        break;
-
-    case EParkourType::Low:
-        AddPlayerLocationZ = ParkourRelative.AddPlayerLocationZ_Low;
-        ParkourRelative.AddPlayerLocationForward = 0.0f;
-        break;
-
-    case EParkourType::Jump:
-        AddPlayerLocationZ = ParkourRelative.AddPlayerLocationZ_Jump;
-        ParkourRelative.AddPlayerLocationForward = 15.0f;
-        break;
-
-    default:
-        CLog::Print("Default Error");
-        break;
-    }
-
-    falling_ImpactPoint = FVector(
-        CharacterLocation.X, CharacterLocation.Y, falling_ImpactPoint.Z + AddPlayerLocationZ)
-        + FVector(CharacterForward * ParkourRelative.AddPlayerLocationForward);
-
-    OwnerCharacter->SetActorLocation(falling_ImpactPoint);
-}
-
-void UParkourComponent::CorrectPlayerLocation_Server_Implementation(EParkourType InParkourType)
-{
-    CorrectPlayerLocation_NMC(InParkourType);
-}
-
-void UParkourComponent::CorrectPlayerLocation(EParkourType InParkourType)
-{
-    CorrectPlayerLocation_Server(InParkourType);
 }
 
 void UParkourComponent::SetCanParkour(bool bInCanParkour)
@@ -281,8 +235,10 @@ void UParkourComponent::ParkourCheck_NMC_Implementation(float InSecondaryTraceZO
             float Height = falling_ImpactPoint.Z - OwnerCharacter->GetActorLocation().Z;
             //CLog::Print(Height);
             bool bHeightCheck = true;
-            bHeightCheck &= 20.0f < Height;
+            bHeightCheck &= 18.0f < Height;
             bHeightCheck &= Height < 45.0f;
+
+            //CLog::Print(Height);
 
             // 일반 파쿠르에서 Low와 High 의 사이
             if (bHeightCheck == true)

@@ -52,4 +52,9 @@ private:
 	float GamePlayTime;
 	float GameOverTime;
 
+public:
+	UPROPERTY(BlueprintReadWrite)
+	bool bPressKey;
+
+
 };
