@@ -1,10 +1,17 @@
 #include "GameModes/DefaultGameMode.h"
 #include "Global.h"
+#include "Actors/Spawner_TotalCharacter.h"
 #include "Actors/TotalScoreCharacter.h"
 #include "Characters/DefaultCharacter.h"
 #include "Controllers/DefaultController.h"
 #include "GameInstances/OnlineGameInstance.h"
 #include "GameState/DefaultGameState.h"
+
+ADefaultGameMode::ADefaultGameMode()
+{
+	Helpers::GetClass(&Spawner_TotalCharacter, "/Game/Widgets/TotalRank/BP_Spawner_TotalCharacter.BP_Spawner_TotalCharacter_C");
+	
+}
 
 void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 {
@@ -87,24 +94,14 @@ void ADefaultGameMode::OnGameStateTypeChanged(EGameStateType InPrevGameType, EGa
 {
 	if(InNewGameType == EGameStateType::GameOver)
 	{
-		ADefaultGameState* DefaultGameState = GetGameState<ADefaultGameState>();
-
-		if(DefaultGameState != nullptr && TotalScoreCharacterClass != nullptr)
+		if(Spawner_TotalCharacter != nullptr)
 		{
-			for (int32 i = 0; i < DefaultGameState->PlayerDatas.Num(); i++)
-			{
-				FActorSpawnParameters params;
-				params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			FActorSpawnParameters params;
+			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-				ATotalScoreCharacter* SpawnedCharacter = GetWorld()->SpawnActor<ATotalScoreCharacter>(TotalScoreCharacterClass, FVector::ZeroVector, FRotator::ZeroRotator, params);
+			FVector SpawnLocation = FVector(0, 0, -10000);
 
-				if (SpawnedCharacter != nullptr)
-				{
-					SpawnedCharacter->Number = i;
-					SpawnedCharacter->Init();
-				}
-			}
+			ASpawner_TotalCharacter* SpawnedActor = GetWorld()->SpawnActor<ASpawner_TotalCharacter>(Spawner_TotalCharacter, SpawnLocation, FRotator::ZeroRotator, params);
 		}
 	}
-	
 }

@@ -11,6 +11,8 @@ class LISTENSERVERPROJECT_API ADefaultGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	ADefaultGameMode();
+
 	virtual void OnPostLogin(AController* NewPlayer) override;
 	virtual void BeginPlay() override;
 
@@ -21,7 +23,7 @@ public:
 	bool IsDebugging = false;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ATotalScoreCharacter> TotalScoreCharacterClass;
+	TSubclassOf<class ASpawner_TotalCharacter> Spawner_TotalCharacter;
 
 public:
 	void UpdatePlayer();
