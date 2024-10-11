@@ -58,7 +58,7 @@ void ADefaultHUD::CreateWidgets(TMap<EnumType, TSubclassOf<UUserWidget>>& InWidg
 	APlayerController* PlayerController = GetOwningPlayerController();
 	if (PlayerController == nullptr) return;
 
-	for (const auto& WidgetPair : InWidgetClasses)
+	for (auto& WidgetPair : InWidgetClasses)
 	{
 		EnumType WidgetType = static_cast<EnumType>(WidgetPair.Key);
 		TSubclassOf<SelectWidget> WidgetClass = WidgetPair.Value;
@@ -67,7 +67,10 @@ void ADefaultHUD::CreateWidgets(TMap<EnumType, TSubclassOf<UUserWidget>>& InWidg
 		{
 			if (SelectWidget* widget = CreateWidget<SelectWidget>(PlayerController, WidgetClass))
 			{
-				WidgetMap.FindOrAdd(static_cast<int32>(WidgetType)) = widget;
+				WidgetMap.Add(static_cast<int32>(WidgetType)) = widget;
+
+				//CLog::Print(widget);
+				//CLog::Print(UEnum::GetDisplayValueAsText(WidgetType).ToString());
 			}
 		}
 	}
@@ -84,6 +87,9 @@ void ADefaultHUD::ShowOptionWidget(EOptionTypes InOptionType)
 	{
 		UUserWidget* FoundWidget = *FoundWidgetPtr;
 
+		CLog::Print(FoundWidget);
+		CLog::Print(UEnum::GetDisplayValueAsText(InOptionType).ToString());
+
 		if (FoundWidget && !FoundWidget->IsInViewport())
 		{
 			if (InOptionType == EOptionTypes::EmoteOption)
@@ -99,7 +105,7 @@ void ADefaultHUD::ShowOptionWidget(EOptionTypes InOptionType)
 				}
 			}
 
-			else
+			else if(InOptionType == EOptionTypes::GamePlayOption)
 			{
 				FoundWidget->AddToViewport();
 				FoundWidget->SetFocus();
