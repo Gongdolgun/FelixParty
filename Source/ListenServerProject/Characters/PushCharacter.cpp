@@ -96,7 +96,6 @@ void APushCharacter::Hit(AActor* InActor, const FHitData& InHitData)
     if (playerController)
     {
         playerController->PlayHitAnim(EHitAnimType::Blood);
-        CLog::Print("Hit Hit Man");
     }
 
     if (InActor->GetOwner() != nullptr)
