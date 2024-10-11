@@ -136,6 +136,13 @@ void ADefaultController::ViewOption(EOptionTypes InOptionType)
 	DefaultHUD->ShowOptionWidget(InOptionType);
 }
 
+void ADefaultController::PlayHitAnim(EHitAnimType InHitAnimType)
+{
+	if (DefaultHUD == nullptr) return;
+
+	DefaultHUD->PlayHitAnim(InHitAnimType);
+}
+
 void ADefaultController::WidgetTypeChange_NMC_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)
 {
 	if (DefaultHUD == nullptr) return;
