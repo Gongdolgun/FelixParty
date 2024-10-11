@@ -36,6 +36,7 @@ public:
 	void WidgetTypeChange_NMC(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
 	void ViewOption(EOptionTypes InOptionType);
+	void PlayHitAnim(EHitAnimType InHitAnimType);
 
 private:
 	UPROPERTY()
@@ -51,5 +52,10 @@ private:
 	float GameStartTime;
 	float GamePlayTime;
 	float GameOverTime;
+
+public:
+	UPROPERTY(BlueprintReadWrite)
+	bool bPressKey;
+
 
 };

@@ -86,11 +86,16 @@ public:
 	void PlayerMaterialEventOnSpawn_Implementation();
 
 public:
+	UFUNCTION(BlueprintCallable)
 	void SetSpawnIndex(int32 InIndex);
-	FORCEINLINE void AddSpawnIndex() { SpawnIndex++; }
+
+	class AOnlyUpGameMode* OnlyUpGameMode;
+	void RespawnPlayer(FTransform InTransform);
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 SpawnIndex = 1;
 
 private:
-	int32 SpawnIndex = 1;
 
 
 };

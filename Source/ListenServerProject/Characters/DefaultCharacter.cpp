@@ -106,8 +106,8 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Completed, this, &ThisClass::End_Action);
 
 		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::ShowGamePlayOption);
-		EnhancedInputComponent->BindAction(IA_Emote, ETriggerEvent::Started, this, &ThisClass::ShowEmoteOption);
 
+		EnhancedInputComponent->BindAction(IA_Emote, ETriggerEvent::Started, this, &ThisClass::ShowEmoteOption);
 	}
 }
 

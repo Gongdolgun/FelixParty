@@ -107,6 +107,8 @@ public:
 
 protected:
 	void ShowGamePlayOption();
+
+	UFUNCTION(BlueprintCallable)
 	void ShowEmoteOption();
 
 

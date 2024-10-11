@@ -12,6 +12,7 @@
 
 ADefaultController::ADefaultController()
 {
+	PrimaryActorTick.bCanEverTick = true;
 
 }
 
@@ -133,7 +134,13 @@ void ADefaultController::ViewOption(EOptionTypes InOptionType)
 	if (DefaultHUD == nullptr) return;
 
 	DefaultHUD->ShowOptionWidget(InOptionType);
+}
 
+void ADefaultController::PlayHitAnim(EHitAnimType InHitAnimType)
+{
+	if (DefaultHUD == nullptr) return;
+
+	DefaultHUD->PlayHitAnim(InHitAnimType);
 }
 
 void ADefaultController::WidgetTypeChange_NMC_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)

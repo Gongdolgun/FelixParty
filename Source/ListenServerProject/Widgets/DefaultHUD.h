@@ -14,16 +14,21 @@ class LISTENSERVERPROJECT_API ADefaultHUD : public AHUD
 public:
 	virtual void DrawHUD() override;
 
-	UPROPERTY(EditAnywhere, Category = "Hud Types")
+private:
+	UPROPERTY(EditAnywhere, Category = "HUD Types")
 	TMap<EHudTypes, TSubclassOf<class UUserWidget>> HUDClasses;
 
-	UUserWidget* CharacterOverlay;
+	UPROPERTY(EditAnywhere, Category = "HUD Types")
+	TMap<EOptionTypes, TSubclassOf<class UUserWidget>> OptionWidgetClasses;
 
-	UPROPERTY(EditAnywhere, Category = "Hud Types")
-	TMap<EOptionTypes, TSubclassOf<class UUserWidget>> OptionClasses;
+	UPROPERTY(EditAnywhere, Category = "HUD Types")
+	TMap<EHitAnimType, TSubclassOf<class UUserWidget>> HitAnimClasses;
 
 	UPROPERTY()
-	TMap<EOptionTypes, UUserWidget*> OptionWidgets;
+	TMap<int32, UUserWidget*> WidgetMap;
+
+public:
+	UUserWidget* CharacterOverlay;
 
 protected:
 	virtual void BeginPlay() override;
@@ -33,11 +38,16 @@ public:
 	void AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacterOverlay);
 
 	// Option
-	void CreateOptionWidgets();
+	template <typename SelectWidget, typename EnumType>
+	void CreateWidgets(TMap<EnumType, TSubclassOf<UUserWidget>>& InWidgetClasses);
+
 	void ShowOptionWidget(EOptionTypes InOptionType);
 
 public:
 	UFUNCTION()
 	void ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateType InNewGameType);
+
+	// Hit Blood
+	void PlayHitAnim(EHitAnimType InHitAnimType);
 
 };
