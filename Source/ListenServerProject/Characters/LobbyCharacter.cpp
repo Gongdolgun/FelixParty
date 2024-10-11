@@ -2,6 +2,8 @@
 #include "EnhancedInputComponent.h"
 #include "Global.h"
 #include "Components/MoveComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Components/SceneCaptureComponent.h"
 #include "Controllers/LobbyController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerStart.h"
@@ -14,14 +16,23 @@ ALobbyCharacter::ALobbyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	Helpers::CreateComponent<USpringArmComponent>(this, &SpringArm, "SpringArm", GetCapsuleComponent());
+	Helpers::CreateComponent<USceneCaptureComponent2D>(this, &SceneCaptureCamera, "SceneCaptureCamera", SpringArm);
+
+	SpringArm->SetRelativeRotation(FRotator(0, 180, 0));
+	SpringArm->TargetArmLength = 300.f;
+	SpringArm->bDoCollisionTest = false;
+
+	SceneCaptureCamera->PrimitiveRenderMode = ESceneCapturePrimitiveRenderMode::PRM_UseShowOnlyList;
+	SceneCaptureCamera->FOVAngle = 46.f;
 }
 
 void ALobbyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//UpdatePlayer_Server();
-
+	SceneCaptureCamera->ShowOnlyActors.Add(this);
+	SetTextureTarget();
 }
 
 void ALobbyCharacter::Tick(float DeltaTime)
@@ -60,9 +71,26 @@ void ALobbyCharacter::PlayReadyMontage(UAnimMontage* InMontage)
 	PlayReadyMontage_Server(InMontage);
 }
 
+void ALobbyCharacter::SetTextureTarget_Implementation()
+{
+	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
+
+	if(LobbyGameMode != nullptr)
+	{
+		ALobbyController* LobbyController = Cast<ALobbyController>(GetController());
+		if (LobbyController)
+		{
+			int32 Num = LobbyGameMode->ConnectedPlayers.Find(LobbyController);
+
+			SceneCaptureCamera->TextureTarget = TextureRenderTargets[Num];
+		}
+	}
+}
+
+
 void ALobbyCharacter::UpdatePlayer_Server_Implementation()
 {
-	if(ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode()))
+	if (ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode()))
 		LobbyGameMode->UpdatePlayerMaterial();
 }
 
@@ -86,6 +114,17 @@ void ALobbyCharacter::ChangeMaterial_NMC_Implementation(FColor InColor)
 				MaterialInstance->SetVectorParameterValue(FName("Tint"), InColor);
 		}
 	}
+
+	if (OverlayMaterial != nullptr)
+	{
+		UMaterialInstanceDynamic* MaterialInstance = UMaterialInstanceDynamic::Create(OverlayMaterial, this);
+
+		if (MaterialInstance)
+		{
+			MaterialInstance->SetVectorParameterValue(FName("Color"), FLinearColor(InColor));
+			GetMesh()->SetOverlayMaterial(MaterialInstance);
+		}
+	}
 }
 
 void ALobbyCharacter::AddSelectedColor_Implementation(const FString& InColor)
@@ -94,7 +133,7 @@ void ALobbyCharacter::AddSelectedColor_Implementation(const FString& InColor)
 	if (LobbyGameMode)
 	{
 		ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(LobbyGameMode->GetGameState<ALobbyGameState>());
-		if(LobbyGameState)
+		if (LobbyGameState)
 		{
 			if (!LobbyGameState->SelectedColors.Contains(InColor))
 				LobbyGameState->SelectedColors.Add(InColor);

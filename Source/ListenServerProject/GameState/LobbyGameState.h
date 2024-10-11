@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
+#include "Misc/Structures.h"
 #include "LobbyGameState.generated.h"
 
 UCLASS()
@@ -24,4 +25,14 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Replicated)
 	int32 MapIndex;
+
+	UPROPERTY(BlueprintReadWrite, Replicated)
+	int32 RoundIndex;   
+
+	UPROPERTY(BlueprintReadWrite, Replicated)
+	TArray<FPlayerBaseInfo> PlayerBaseInfos;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetTotalRound(int32 InRoundNum);
 };

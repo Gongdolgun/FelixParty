@@ -43,6 +43,8 @@ private:
 	class ADefaultGameState* DefaultGameState;
 	UMaterialInstanceDynamic* OverlayMaterialDynamic;
 
+	TArray<UMaterialInstanceDynamic*> MyMaterials;
+
 public:
 	UFUNCTION()
 	void OnGameStateTypeChanged(EGameStateType InPrevGameType, EGameStateType InNewGameType);

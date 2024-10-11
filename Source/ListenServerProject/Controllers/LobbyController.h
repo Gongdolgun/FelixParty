@@ -21,7 +21,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void ChangeCharacter(FColor MaterialColor);
+	void ChangeCharacter(FColor MaterialColor, int32 ColorNum);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdatePlayerList(const TArray<FPlayerBaseInfo>& PlayerBaseInfos);

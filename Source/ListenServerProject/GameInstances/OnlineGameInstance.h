@@ -24,6 +24,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FSaveSettings Instance_Settings;
 
+	UPROPERTY(BlueprintReadOnly)
+	int32 TotalRound;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 CurrentRound;
+
 public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SavePlayerInfo(const FString& PlayerID, FPlayerData PlayerData);

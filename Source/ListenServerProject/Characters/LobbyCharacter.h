@@ -24,11 +24,27 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* SpringArm;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USceneCaptureComponent2D* SceneCaptureCamera;
+
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UTextureRenderTarget2D*> TextureRenderTargets;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInterface* OverlayMaterial;
+
+	UMaterialInstanceDynamic* OverlayMaterialDynamic;
 
 public:
 	void ChangeMaterial(FColor InColor);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ChangeMaterial_Server(FColor InColor);
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -51,4 +67,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayReadyMontage(class UAnimMontage* InMontage);
+
+	UFUNCTION(Server, Reliable)
+	void SetTextureTarget();
+
 };

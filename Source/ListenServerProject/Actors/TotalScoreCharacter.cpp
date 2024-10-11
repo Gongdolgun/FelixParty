@@ -32,6 +32,17 @@ void ATotalScoreCharacter::BeginPlay()
 	if (OverlayMaterial != nullptr)
 		OverlayMaterialDynamic = UMaterialInstanceDynamic::Create(OverlayMaterial, this);
 
+	int32 MaterialCount = GetMesh()->GetNumMaterials();
+	for (int32 i = 0; i < MaterialCount; i++)
+	{
+		UMaterialInstanceDynamic* MaterialInstance = Cast<UMaterialInstanceDynamic>(GetMesh()->GetMaterial(i));
+		if (!MaterialInstance)
+			MaterialInstance = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+
+		if (MaterialInstance)
+			MyMaterials.Add(MaterialInstance);
+	}
+
 	DefaultGameState = Cast<ADefaultGameState>(GetWorld()->GetGameState());
 
 	SceneCaptureCamera->ShowOnlyActors.Add(this);
@@ -46,6 +57,14 @@ void ATotalScoreCharacter::Tick(float DeltaTime)
 	{
 		OverlayMaterialDynamic->SetVectorParameterValue(FName("Color"), FLinearColor(DefaultGameState->PlayerDatas[Number].PlayerColor));
 		GetMesh()->SetOverlayMaterial(OverlayMaterialDynamic);
+	}
+
+	if(!MyMaterials.IsEmpty() && DefaultGameState != nullptr)
+	{
+		for(auto MyMaterial : MyMaterials)
+		{
+			MyMaterial->SetVectorParameterValue(FName("Tint"), DefaultGameState->PlayerDatas[Number].PlayerColor);
+		}
 	}
 }
 
