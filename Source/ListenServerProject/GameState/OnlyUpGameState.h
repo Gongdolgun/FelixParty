@@ -18,12 +18,13 @@ protected:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-private:
+public:
 	UPROPERTY(VisibleAnywhere, Replicated)
 	TArray<class APlayerController*> PlayerRanking;
 
 public:
 	int32 PlayerRank(APlayerController* InController);
 	const TArray<int32> RankScores = { 50, 30, 20, 10 };
+
 
 };

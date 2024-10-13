@@ -41,7 +41,7 @@ void ADefaultHUD::AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacter
 
 		CharacterOverlay = CreateWidget<UUserWidget>(PlayerController, InCharacterOverlay);
 
-		if (CharacterOverlay != nullptr)
+		if(CharacterOverlay != nullptr)
 			CharacterOverlay->AddToViewport();
 	}
 }
@@ -61,7 +61,7 @@ void ADefaultHUD::CreateOptionWidgets()
 			UUserWidget* OptionWidget = CreateWidget<UUserWidget>(PlayerController, WidgetClass);
 			if (OptionWidget)
 			{
-				OptionWidgets.Add(OptionType, OptionWidget);
+				OptionWidgets.Add(OptionType, OptionWidget); 
 			}
 		}
 	}
@@ -94,7 +94,7 @@ void ADefaultHUD::ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateTyp
 	switch (InNewGameType)
 	{
 	case EGameStateType::GameStart:
-		if (HUDClasses.Contains(EHudTypes::Countdown))
+		if(HUDClasses.Contains(EHudTypes::Countdown))
 			AddCharacterOverlay(HUDClasses[EHudTypes::Countdown]);
 		break;
 

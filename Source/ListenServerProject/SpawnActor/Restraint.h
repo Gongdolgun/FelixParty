@@ -9,14 +9,14 @@ UCLASS()
 class LISTENSERVERPROJECT_API ARestraint : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ARestraint();
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 public:

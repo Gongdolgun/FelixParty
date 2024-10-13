@@ -4,70 +4,76 @@
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Global.h"
+#include "GameState/PushGameState.h"
 
 APushGameMode::APushGameMode()
 {
+    PrimaryActorTick.bCanEverTick = true;
+
 
 }
 
 void APushGameMode::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
-	SpawnElectricField();
+    PushGameState = GetGameState<APushGameState>();
+
+    SpawnElectricField();
 }
 
 void APushGameMode::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaSeconds);
+    Super::Tick(DeltaSeconds);
+
 
 }
 
 void APushGameMode::SpawnElectricField()
 {
-	FActorSpawnParameters params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    FActorSpawnParameters params;
+    params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	FTransform transform;
-	transform.SetLocation(FVector::ZeroVector);
-	transform.SetScale3D(FVector(50.0f, 50.0f, 50.0f));
+    FTransform transform;
+    transform.SetLocation(FVector::ZeroVector);
+    transform.SetScale3D(FVector(80.0f, 80.0f, 80.0f));
 
-	if (ElectricFieldClass)
-	{
-		ElectricField = GetWorld()->SpawnActor<AElectricField>(ElectricFieldClass, transform, params);
-
-	}
+    if (ElectricFieldClass)
+        ElectricField = GetWorld()->SpawnActor<AElectricField>(ElectricFieldClass, transform, params);
 }
 
 void APushGameMode::RespawnPlayer(AController* InController)
 {
-    if (InController != nullptr)
+    if (InController != nullptr && PushGameState->GetGameStateType() == EGameStateType::GamePlay)
     {
         UWorld* World = GetWorld();
         if (World)
         {
-            TArray<AActor*> PlayerStarts;
-            UGameplayStatics::GetAllActorsOfClass(World, APlayerStart::StaticClass(), PlayerStarts);
+            RespawnRadius = ElectricField->CurrFieldRadius - 50.0f;
 
-            if (PlayerStarts.Num() > 0)
+            // 랜덤 위치 세팅
+            FVector RandomLocation = FVector(
+                FMath::RandRange(-RespawnRadius, RespawnRadius),
+                FMath::RandRange(-RespawnRadius, RespawnRadius),
+                65.0f // Z 위치
+            );
+
+            FActorSpawnParameters params;
+            params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+            APushCharacter* RespawnCharacter = World->SpawnActor<APushCharacter>(DefaultPawnClass, FTransform(RandomLocation), params);
+
+            if (RespawnCharacter)
             {
-                int32 RandomIndex = FMath::RandRange(0, PlayerStarts.Num() - 1);
-
-                FActorSpawnParameters params;
-                params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-                APushCharacter* NewCharacter = World->SpawnActor<APushCharacter>(DefaultPawnClass, PlayerStarts[RandomIndex]->GetActorTransform(), params);
-
-
-                if (NewCharacter)
-                {
-                    InController->Possess(NewCharacter);
-                    UpdatePlayer();
-                    NewCharacter->PlayMaterialEvent();
-                }
+                InController->Possess(RespawnCharacter);
+                UpdatePlayer();
+                RespawnCharacter->PlayMaterialEvent();
+            }
+            else
+            {
+                CLog::Print("Spawn Failed. Why?");
             }
         }
     }
 }
- 
-
 

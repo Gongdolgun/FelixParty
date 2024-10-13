@@ -32,6 +32,7 @@ protected:
 public:
 	void AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacterOverlay);
 
+	// Option
 	void CreateOptionWidgets();
 	void ShowOptionWidget(EOptionTypes InOptionType);
 

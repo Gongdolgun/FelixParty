@@ -11,15 +11,14 @@ UCLASS()
 class LISTENSERVERPROJECT_API ABomb : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ABomb();
 
 protected:
 	virtual void BeginPlay() override;
-	
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
@@ -48,26 +47,16 @@ public:
 	UWidgetComponent* CountDownWidget;
 
 public:
-	UPROPERTY(ReplicatedUsing = OnRep_CountdownSound, EditAnywhere)
-	USoundBase* CountdownSound;
-
-public:
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_UpdateColor, BlueprintReadOnly, Category = "Bomb")
 	FVector BombColor;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION()
-	void OnRep_CountdownSound();
-
-	UFUNCTION()
 	void OnRep_UpdateColor();
 
 	UPROPERTY()
 	FLinearColor CountdownColor;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiStartCountdown();
 
 	UFUNCTION(Server, Reliable)
 	void Explosion();
@@ -79,8 +68,7 @@ public:
 	void CallRespawnbomb();
 
 public:
-
-	void UpDateSoundAndColor(float DeltaTime);
+	void UpDateColor(float DeltaTime);
 
 	void UpdateShakeEffect(float DeltaTime);
 

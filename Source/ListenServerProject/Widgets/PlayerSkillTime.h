@@ -12,26 +12,4 @@ class LISTENSERVERPROJECT_API UPlayerSkillTime : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	UFUNCTION(BlueprintImplementableEvent, Category = "Cooldown")
-	void UpdateWallCooldown(float CooldownPercent);  
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Cooldown")
-	void UpdateRestraintCooldown(float CooldownPercent);
-
-public:
-	UPROPERTY(meta = (BindWidget))
-	UCanvasPanel* CanvasPanel;
-
-	UPROPERTY(meta = (BindWidget))
-	UImage* WallCooldownIcon;
-
-	UPROPERTY(meta = (BindWidget))
-	UImage* RestraintCooldownIcon; 
-
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UProgressBar* WallCooldownBar; 
-
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UProgressBar* RestraintCooldownBar; 
 };

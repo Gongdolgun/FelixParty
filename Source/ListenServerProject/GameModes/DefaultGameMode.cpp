@@ -22,8 +22,6 @@ void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 
 	if (!IsDebugging)
 	{
-		CLog::Print("hello");
-
 		// 플레이어들 접속 확인
 		if (ConnectedPlayers.Num() < FCString::Atoi(*ParamValue))
 		{

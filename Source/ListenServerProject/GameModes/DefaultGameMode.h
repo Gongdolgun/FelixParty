@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Misc/Structures.h"
 #include "DefaultGameMode.generated.h"
 
 UCLASS()

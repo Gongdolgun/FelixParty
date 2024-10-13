@@ -14,12 +14,8 @@ void APushController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CreateHPBar();
-	//ADefaultGameState* gameState = Cast<ADefaultGameState>(UGameplayStatics::GetGameState(this));
-	//if (gameState)
-	//{
-	//	gameState->OnGameStateTypeChanged.AddDynamic(this, &ThisClass::OnGamePlayStart);
-	//}
+	CreateOverlayWidget();
+
 }
 
 void APushController::Tick(float DeltaSeconds)
@@ -27,16 +23,15 @@ void APushController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-void APushController::CreateHPBar()
+void APushController::CreateOverlayWidget()
 {
-	// HP Widget
-	if (SelectHPBar && IsLocalController())
+	if (SelectOverlay && IsLocalController())
 	{
-		HpWidget = CreateWidget<UUserWidget>(this, SelectHPBar);
-		if (HpWidget)
+		OverlayWidget = CreateWidget<UUserWidget>(this, SelectOverlay);
+		if (OverlayWidget)
 		{
-			HpWidget->AddToViewport();
-			HpWidget->SetVisibility(ESlateVisibility::Visible);
+			OverlayWidget->AddToViewport();
+			OverlayWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }
@@ -45,7 +40,7 @@ void APushController::OnGamePlayStart(EGameStateType InPrevGameType, EGameStateT
 {
 	if (InNewGameType == EGameStateType::GameStart)
 	{
-		CreateHPBar();
+		CreateOverlayWidget();
 	}
 }
 

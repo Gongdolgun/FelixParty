@@ -20,8 +20,9 @@ ABomb::ABomb()
 	Helpers::CreateComponent<UWidgetComponent>(this, &CountDownWidget, "CountDownWidget", StaticMesh);
 
 	CountDownWidget->SetWidgetSpace(EWidgetSpace::Screen);
+
 	ElapseTime = 0.0f;
-	
+
 }
 
 void ABomb::BeginPlay()
@@ -44,24 +45,26 @@ void ABomb::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(CurrentExplosionTime > 0 && !bIsExplosion)
+	if (CurrentExplosionTime > 0 && !bIsExplosion)
 	{
 		CurrentExplosionTime -= DeltaTime;
 	}
 
 	else
 	{
-		if(!bIsExplosion)
+		if (!bIsExplosion)
 			Explosion();
 
 		bIsExplosion = true;
 	}
 
-	/*if (ElapseTime < ExplosionTime)
+	if (ElapseTime < ExplosionTime)
 	{
 		ElapseTime += DeltaTime;
-		UpDateSoundAndColor(DeltaTime);
-	}*/
+		UpDateColor(DeltaTime);
+	}
+	UpdateShakeEffect(DeltaTime);
+
 }
 
 void ABomb::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -72,23 +75,11 @@ void ABomb::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ThisClass, CurrentExplosionTime);
 }
 
-void ABomb::OnRep_CountdownSound()
-{
-	if (Audio && CountdownSound)
-	{
-		Audio->SetSound(CountdownSound);
-		Audio->Play();
-	}
-}
-
 void ABomb::OnRep_UpdateColor()
 {
 	if (DynamicMaterial)
 	{
 		DynamicMaterial->SetVectorParameterValue(FName("BaseColor"), BombColor);
-
-		//UpdateShakeEffect(GetWorld()->GetDeltaSeconds());
-
 	}
 }
 
@@ -102,7 +93,7 @@ void ABomb::Explosion_Implementation()
 
 		FTimerHandle RespawnTimer;
 
-		GetWorld()->GetTimerManager().SetTimer(RespawnTimer, this, &ThisClass::CallRespawnbomb, 3.f, false);
+		GetWorld()->GetTimerManager().SetTimer(RespawnTimer, this, &ThisClass::CallRespawnbomb, 3.0f, false);
 	}
 }
 
@@ -111,28 +102,15 @@ void ABomb::ExplosionEvent_Implementation(FVector InLocation)
 	StaticMesh->SetHiddenInGame(true);
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, InLocation, FRotator::ZeroRotator, FVector::OneVector, true);
 	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, InLocation);
+	Audio->Stop();
 }
-
-void ABomb::MultiStartCountdown_Implementation()
-{
-	ElapseTime = 0.0f;
-
-	if (Audio && CountdownSound)
-	{
-		Audio->SetSound(CountdownSound);
-		Audio->Play();
-	}
-
-	//GetWorld()->GetTimerManager().SetTimer(CountdownTimerHandle, this, &ABomb::Explosion, TotalCountdownTime, false);
-}
-
 
 void ABomb::CallRespawnbomb_Implementation()
 {
 	ABombGameMode* BombGameMode = Cast<ABombGameMode>(GetWorld()->GetAuthGameMode());
 	ADefaultController* DeadController = Cast<ADefaultController>(Owner->GetController());
 
-	if(BombGameMode != nullptr && DeadController != nullptr)
+	if (BombGameMode != nullptr && DeadController != nullptr)
 	{
 		BombGameMode->SomeoneDead(DeadController);
 
@@ -140,17 +118,15 @@ void ABomb::CallRespawnbomb_Implementation()
 	}
 }
 
-void ABomb::UpDateSoundAndColor(float DeltaTime)
+void ABomb::UpDateColor(float DeltaTime)
 {
 	float remainingTime = ExplosionTime - ElapseTime;
 
 	float progress = ElapseTime / ExplosionTime;
 	BombColor = FVector(FLinearColor::LerpUsingHSV(FLinearColor::Black, FLinearColor::Red, progress));
 
-	if (HasAuthority())
-	{
-		OnRep_UpdateColor();  // 서버에서 직접 색상 업데이트 호출
-	}
+	OnRep_UpdateColor(); // 서버에서 직접 색상 업데이트 호출
+	
 }
 
 void ABomb::UpdateShakeEffect(float DeltaTime)
@@ -158,8 +134,8 @@ void ABomb::UpdateShakeEffect(float DeltaTime)
 	float remainingTime = ExplosionTime - ElapseTime;
 	float shakeIntensity = FMath::Clamp(1.0f - (remainingTime / ExplosionTime), 0.0f, 1.0f);
 	FVector newLocation = GetActorLocation();
-	newLocation.X += FMath::Sin(GetWorld()->GetTimeSeconds() * 20.0f * shakeIntensity) * 5.0f;
-	newLocation.Y += FMath::Cos(GetWorld()->GetTimeSeconds() * 10.0f * shakeIntensity) * 5.0f;
+	newLocation.X += FMath::Sin(GetWorld()->GetTimeSeconds() * 10.0f * shakeIntensity) * 5.0f;
+	newLocation.Y += FMath::Cos(GetWorld()->GetTimeSeconds() * 15.0f * shakeIntensity) * 5.0f;
 
 	SetActorLocation(newLocation);
 }

@@ -79,5 +79,5 @@ enum class EActorRotationType : uint8
 UENUM(BlueprintType)
 enum class ELevelInputType : uint8
 {
-	None = 0, Up, Down, Right, Left, Shift,
+	None = 0, Up, Down, Right, Left, Shift, 
 };

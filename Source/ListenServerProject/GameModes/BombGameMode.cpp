@@ -17,7 +17,7 @@ void ABombGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	ABombGameState* BombGameState = GetGameState<ABombGameState>();
-	if(BombGameState)
+	if (BombGameState)
 	{
 		BombGameState->OnGameStateTypeChanged.AddDynamic(this, &ABombGameMode::CreateBombSpawn);
 	}
@@ -28,20 +28,25 @@ void ABombGameMode::CreateBombSpawn(EGameStateType InPrevGameType, EGameStateTyp
 	if (InNewGameType == EGameStateType::GameStart)
 	{
 		SurvivedControllers = ConnectedPlayers;
+
+		//FTimerHandle SpawnTimerHandle;
+
+		//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ABombGameMode::SpawnBomb, 3.0f, false);
+
 		SpawnBomb();
 	}
 }
 
 void ABombGameMode::OnPlayerDead(ABombCharacter* DeadPlayer)
 {
-	
+
 }
 
 void ABombGameMode::SpawnBomb()
 {
 	if (SurvivedControllers.IsEmpty())
 		return;
-	
+
 	if (BombClass)
 	{
 		int Randominteger = UKismetMathLibrary::RandomIntegerInRange(0, SurvivedControllers.Num() - 1);
@@ -68,20 +73,20 @@ void ABombGameMode::SomeoneDead(ADefaultController* InController)
 {
 	SurvivedControllers.Remove(InController);
 
-	for(auto SurvivedController : SurvivedControllers)
+	for (auto SurvivedController : SurvivedControllers)
 	{
 		ABombGameState* BombGameState = GetGameState<ABombGameState>();
-		if(BombGameState)
+		if (BombGameState)
 		{
 			FString PlayerName = SurvivedController->GetPlayerState<APlayerState>()->GetPlayerName();
 			BombGameState->UpdatePlayerScore(PlayerName, 5);
 		}
 	}
 
-	if(SurvivedControllers.Num() == 1)
+	if (SurvivedControllers.Num() == 1)
 	{
 		ADefaultGameState* DefaultGameState = GetGameState<ADefaultGameState>();
-		if(DefaultGameState != nullptr)
+		if (DefaultGameState != nullptr)
 		{
 			DefaultGameState->SetGameState(EGameStateType::GameOver);
 			return;

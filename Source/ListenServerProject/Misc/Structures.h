@@ -9,11 +9,11 @@
 USTRUCT(BlueprintType)
 struct FPlayerBaseInfo
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    bool IsReady = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsReady = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName PlayerName = FName(TEXT("Player Name"));
@@ -22,7 +22,7 @@ public:
 USTRUCT(BlueprintType)
 struct FPlayerData
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName PlayerName = FName(TEXT("Player Name"));
@@ -155,8 +155,8 @@ struct FPlayerInGameData
     FPlayerInGameData(const FString& InPlayerName, int32 InScore, FColor InColor, int32 InTotalScore)
         : PlayerName(InPlayerName)
         , Score(InScore)
-        , PlayerColor(InColor)
-        , TotalScore(InTotalScore)
+		, PlayerColor(InColor)
+		, TotalScore(InTotalScore)
     {}
 };
 
@@ -175,7 +175,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float MontageLength;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FVector OutLocation1;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -251,7 +251,7 @@ public:
 USTRUCT(BlueprintType)
 struct FGameInfo : public FTableRowBase
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
