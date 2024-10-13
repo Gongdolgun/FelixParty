@@ -69,7 +69,7 @@ void ABombCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 	ABombGameMode* BombGameMode = Cast<ABombGameMode>(GetWorld()->GetAuthGameMode());
 	ABombCharacter* Attacker = Cast<ABombCharacter>(InActor);
 
-	if(BombGameMode != nullptr && Attacker != nullptr)
+	if (BombGameMode != nullptr && Attacker != nullptr)
 	{
 		BombGameMode->HitAttachBomb(this);
 	}
@@ -118,7 +118,7 @@ void ABombCharacter::Tick(float DeltaTime)
 		}
 	}
 
-	if(CurrentWallCoolTime > 0)
+	if (CurrentWallCoolTime > 0)
 	{
 		CurrentWallCoolTime = UKismetMathLibrary::FClamp(CurrentWallCoolTime - DeltaTime, 0, MaxWallCooltime);
 	}
@@ -141,7 +141,7 @@ void ABombCharacter::Action()
 {
 	Super::Action();
 
-	if(GetCurrentMontage() == nullptr)
+	if (GetCurrentMontage() == nullptr)
 	{
 		if (HasAuthority())
 		{
@@ -158,16 +158,17 @@ void ABombCharacter::HandleAction()
 {
 	bIsAim = false;
 
-	if(TargetDecal && CurrentWallCoolTime == 0)
+	if (TargetDecal && CurrentWallCoolTime == 0)
 	{
 		CurrentWallCoolTime = MaxWallCooltime;
+		PlayMontage(Wall_Montage);
 		ServerSpawnWall(TargetDecal->GetActorLocation(), GetActorRotation());
 	}
 }
 
 void ABombCharacter::Aim()
 {
-	if(CurrentWallCoolTime == 0)
+	if (CurrentWallCoolTime == 0)
 		bIsAim = true;
 }
 
@@ -205,14 +206,14 @@ void ABombCharacter::ServerSpawnRestraint_Implementation(const FVector& Location
 	GetWorld()->SpawnActor<AActor>(RestraintClass, Location, Rotation);
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	
+
 }
 
 void ABombCharacter::OnSphereBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	IIDamage* HittedCharacter = Cast<IIDamage>(OtherActor);
 
-	if(HittedCharacter != nullptr && HittedCharacter != this && bBomb == true)
+	if (HittedCharacter != nullptr && HittedCharacter != this && bBomb == true)
 	{
 		HittedCharacter->Hit(this, FHitData());
 	}
@@ -237,9 +238,9 @@ void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 void ABombCharacter::ChangeSpeed()
 {
-	if(bBomb)
+	if (bBomb)
 	{
-		if(HasAuthority())
+		if (HasAuthority())
 		{
 			ChangeSpeed_NMC(BaseMovementSpeed * BombMovementSpeed);
 		}
@@ -252,7 +253,7 @@ void ABombCharacter::ChangeSpeed()
 
 	else
 	{
-		if(HasAuthority())
+		if (HasAuthority())
 		{
 			ChangeSpeed_NMC(BaseMovementSpeed);
 		}

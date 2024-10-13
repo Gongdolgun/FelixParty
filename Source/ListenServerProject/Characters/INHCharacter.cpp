@@ -102,6 +102,12 @@ void AINHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	}
 }
 
+void AINHCharacter::Jump()
+{
+	if(GetCurrentMontage() == nullptr)
+		Super::Jump();
+}
+
 void AINHCharacter::OnCollision()
 {
 	Super::OnCollision();
@@ -179,7 +185,10 @@ void AINHCharacter::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		IIDamage* HittedCharacter = Cast<IIDamage>(OtherActor);
 
 		if (HittedCharacter != nullptr)
+		{
+			Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			HittedCharacter->Hit(this, FHitData());
+		}
 	}
 }
 

@@ -76,7 +76,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Restraint")
 	TSubclassOf<class UTargetAim> TargetAimClass;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_SubAction;
 
@@ -100,10 +100,10 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastAttack();
-	
+
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnWall(const FVector& Location, const FRotator& Rotation);
-	
+
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnRestraint(const FVector& Location, const FRotator& Rotation);
 
@@ -113,10 +113,8 @@ public:
 	void SetZooming(const FInputActionValue& Value);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
-public:
-	//UPROPERTY(Replicated, BlueprintReadOnly)
 
+public:
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	bool bBomb = false;
 
@@ -125,7 +123,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* NewCountdownSound;
-
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
@@ -153,5 +150,5 @@ public:
 	float RestraintCoolTime = 30.0f;
 
 	void PlayMontage(UAnimMontage* Montage);
-	
+
 };
