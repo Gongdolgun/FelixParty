@@ -9,10 +9,10 @@ AElectricField::AElectricField()
     PrimaryActorTick.bCanEverTick = true;
     bReplicates = true;
 
-    Helpers::CreateComponent<UCapsuleComponent>(this, &RingCapsule, "RingCapsule");
-    Helpers::CreateComponent<UStaticMeshComponent>(this, &RingMesh, "RingMesh", RingCapsule);
+    Helpers::CreateComponent<UStaticMeshComponent>(this, &RingMesh, "RingMesh");
+    Helpers::CreateComponent<UCapsuleComponent>(this, &RingCapsule, "RingCapsule", RingMesh);
 
-    RingMesh->SetCollisionProfileName("OverlapAllDynamic");
+    RingMesh->SetCollisionProfileName("RingCapsule");
 
     //SetActorTickInterval(1.0f);
 }

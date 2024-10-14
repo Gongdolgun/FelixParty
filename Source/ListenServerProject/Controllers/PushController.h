@@ -17,7 +17,9 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 public:
-	void CreateOverlayWidget();
+	UFUNCTION(Client, Reliable)
+	void CreateOverlayWidget_Client();
+
 
 	UFUNCTION()
 	void OnGamePlay(EGameStateType InPrevGameType, EGameStateType InNewGameType);

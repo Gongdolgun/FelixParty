@@ -26,7 +26,7 @@ void AOnlyUpGameMode::Tick(float DeltaSeconds)
 void AOnlyUpGameMode::RespawnPlayer(FTransform InTransform, AController* InController)
 {
     if (InController != nullptr && OnlyUpGameState->GetGameStateType() == EGameStateType::GamePlay)
-	   {
+    {
         UWorld* World = GetWorld();
         if (World)
         {
@@ -38,12 +38,19 @@ void AOnlyUpGameMode::RespawnPlayer(FTransform InTransform, AController* InContr
 
             if (RespawnCharacter)
             {
+                // 이전 캐릭터의 SavePoint 값을 가져와서 설정
+                AOnlyUpCharacter* PreviousCharacter = Cast<AOnlyUpCharacter>(InController->GetPawn());
+                if (PreviousCharacter)
+                {
+                    RespawnCharacter->SetSpawnIndex(PreviousCharacter->SpawnIndex);
+                }
+
                 InController->Possess(RespawnCharacter);
                 UpdatePlayer();
                 RespawnCharacter->PlayMaterialEvent();
             }
-
         }
     }
 }
+
 

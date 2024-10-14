@@ -49,7 +49,7 @@ void APushGameMode::RespawnPlayer(AController* InController)
         UWorld* World = GetWorld();
         if (World)
         {
-            RespawnRadius = ElectricField->CurrFieldRadius - 50.0f;
+            RespawnRadius = ElectricField->CurrFieldRadius - 85.0f;
 
             FVector RandomLocation = FVector(
                 FMath::RandRange(-RespawnRadius, RespawnRadius),

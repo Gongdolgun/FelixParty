@@ -20,8 +20,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	virtual void OnDestroy();
-	virtual void Destroyed() override;
+	void OnDestroy();
 
 private:
 	UPROPERTY(EditAnywhere, Category = "HitData")
