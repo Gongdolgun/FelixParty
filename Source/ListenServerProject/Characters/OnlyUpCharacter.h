@@ -86,13 +86,19 @@ public:
 	void PlayerMaterialEventOnSpawn_Implementation();
 
 public:
+	UFUNCTION(NetMulticast, Reliable)
+	void SetSpawnIndex_NMC(int32 InIndex);
+
+	UFUNCTION(Server, Reliable)
+	void SetSpawnIndex_Server(int32 InIndex);
+
 	UFUNCTION(BlueprintCallable)
 	void SetSpawnIndex(int32 InIndex);
 
 	class AOnlyUpGameMode* OnlyUpGameMode;
 	void RespawnPlayer(FTransform InTransform);
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Replicated)
 	int32 SpawnIndex = 1;
 
 private:
