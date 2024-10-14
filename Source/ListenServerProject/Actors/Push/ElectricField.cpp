@@ -9,10 +9,8 @@ AElectricField::AElectricField()
     PrimaryActorTick.bCanEverTick = true;
     bReplicates = true;
 
-    Helpers::CreateComponent<UStaticMeshComponent>(this, &RingMesh, "RingMesh");
-    Helpers::CreateComponent<UCapsuleComponent>(this, &RingCapsule, "RingCapsule", RingMesh);
-
-    RingMesh->SetCollisionProfileName("RingCapsule");
+    Helpers::CreateComponent<UCapsuleComponent>(this, &RingCapsule, "RingCapsule");
+    Helpers::CreateComponent<UStaticMeshComponent>(this, &RingMesh, "RingMesh", RingCapsule);
 
     //SetActorTickInterval(1.0f);
 }
