@@ -159,6 +159,7 @@ void ABombCharacter::HandleAction()
 	{
 		bIsAim = true;
 	}
+
 	else
 	{
 		if (TargetDecal && CurrentWallCoolTime == 0)
