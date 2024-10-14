@@ -124,8 +124,6 @@ void APushCharacter::Hit(AActor* InActor, const FHitData& InHitData)
         // 몽타주가 있을 때만
         if (InHitData.Montage)
         {
-            StateComponent->SetHittedMode();
-
             if (HasAuthority())
                 PlayActionMontage_NMC(InHitData.Montage);
 
