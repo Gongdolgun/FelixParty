@@ -77,13 +77,7 @@ void ALobbyCharacter::SetTextureTarget_Server_Implementation()
 
 	if(LobbyGameMode != nullptr)
 	{
-		ALobbyController* LobbyController = Cast<ALobbyController>(GetController());
-		if (LobbyController)
-		{
-			int32 Num = LobbyGameMode->ConnectedPlayers.Find(LobbyController);
-
-			SetTextureTarget_NMC(Num);
-		}
+		LobbyGameMode->UpdatePlayerTextureRender();
 	}
 }
 

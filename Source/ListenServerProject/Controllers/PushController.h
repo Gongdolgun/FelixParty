@@ -20,7 +20,7 @@ public:
 	void CreateOverlayWidget();
 
 	UFUNCTION()
-	void OnGamePlayStart(EGameStateType InPrevGameType, EGameStateType InNewGameType);
+	void OnGamePlay(EGameStateType InPrevGameType, EGameStateType InNewGameType);
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Widget")
@@ -28,6 +28,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Widget")
 	UUserWidget* OverlayWidget;
+
+private:
+	ADefaultGameState* DefaultGameState;
 
 };
 
