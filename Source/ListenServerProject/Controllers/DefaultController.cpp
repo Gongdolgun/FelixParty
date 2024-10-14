@@ -55,6 +55,8 @@ void ADefaultController::Tick(float DeltaSeconds)
 
 	SetHUDTime();
 	SetGameStateType();
+
+	//CLog::Print(bPressKey);
 }
 
 void ADefaultController::OnPossess(APawn* InPawn)

@@ -22,10 +22,10 @@ void ADefaultHUD::BeginPlay()
 		AddCharacterOverlay(HUDClasses[EHudTypes::Ready]);
 
 	// Option Widget 持失
-	CreateWidgets<UUserWidget, EOptionTypes>(OptionWidgetClasses);
+	CreateWidgets<UUserWidget, EOptionTypes>(OptionWidgetClasses, OptionMap);
 
 	// Hit Widget 持失
-	CreateWidgets<UUserWidget, EHitAnimType>(HitAnimClasses);
+	CreateWidgets<UUserWidget, EHitAnimType>(HitAnimClasses, HitAnimMap);
 }
 
 void ADefaultHUD::Tick(float DeltaSeconds)
@@ -49,71 +49,6 @@ void ADefaultHUD::AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacter
 
 		if (CharacterOverlay != nullptr)
 			CharacterOverlay->AddToViewport();
-	}
-}
-
-template <typename SelectWidget, typename EnumType>
-void ADefaultHUD::CreateWidgets(TMap<EnumType, TSubclassOf<UUserWidget>>& InWidgetClasses)
-{
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (PlayerController == nullptr) return;
-
-	for (auto& WidgetPair : InWidgetClasses)
-	{
-		EnumType WidgetType = static_cast<EnumType>(WidgetPair.Key);
-		TSubclassOf<SelectWidget> WidgetClass = WidgetPair.Value;
-
-		if (WidgetClass)
-		{
-			if (SelectWidget* widget = CreateWidget<SelectWidget>(PlayerController, WidgetClass))
-			{
-				WidgetMap.Add(static_cast<int32>(WidgetType)) = widget;
-
-				//CLog::Print(widget);
-				//CLog::Print(UEnum::GetDisplayValueAsText(WidgetType).ToString());
-			}
-		}
-	}
-}
-
-void ADefaultHUD::ShowOptionWidget(EOptionTypes InOptionType)
-{
-	ADefaultController* PlayerController = Cast<ADefaultController>(GetOwningPlayerController());
-	if (PlayerController == nullptr) return;
-
-	UUserWidget** FoundWidgetPtr = WidgetMap.Find((int32)InOptionType);
-
-	if (FoundWidgetPtr)
-	{
-		UUserWidget* FoundWidget = *FoundWidgetPtr;
-
-		CLog::Print(FoundWidget);
-		CLog::Print(UEnum::GetDisplayValueAsText(InOptionType).ToString());
-
-		if (FoundWidget && !FoundWidget->IsInViewport())
-		{
-			if (InOptionType == EOptionTypes::EmoteOption)
-			{
-				if (PlayerController->bPressKey == false)
-				{
-					PlayerController->bPressKey = true;
-					FoundWidget->AddToViewport();
-					FoundWidget->SetFocus();
-
-					PlayerController->SetShowMouseCursor(true);
-					PlayerController->SetInputMode(FInputModeUIOnly());
-				}
-			}
-
-			else if(InOptionType == EOptionTypes::GamePlayOption)
-			{
-				FoundWidget->AddToViewport();
-				FoundWidget->SetFocus();
-
-				PlayerController->SetShowMouseCursor(true);
-				PlayerController->SetInputMode(FInputModeUIOnly());
-			}
-		}
 	}
 }
 
@@ -148,12 +83,50 @@ void ADefaultHUD::ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateTyp
 	}
 }
 
+void ADefaultHUD::ShowOptionWidget(EOptionTypes InOptionType)
+{
+	ADefaultController* PlayerController = Cast<ADefaultController>(GetOwningPlayerController());
+	if (PlayerController == nullptr) return;
+
+	UUserWidget** FoundWidgetPtr = OptionMap.Find(InOptionType);
+
+	if (FoundWidgetPtr)
+	{
+		UUserWidget* FoundWidget = *FoundWidgetPtr;
+
+		if (FoundWidget && !FoundWidget->IsInViewport())
+		{
+			if (InOptionType == EOptionTypes::EmoteOption)
+			{
+				if (PlayerController->bPressKey == false)
+				{
+					PlayerController->bPressKey = true;
+
+					FoundWidget->AddToViewport();
+					FoundWidget->SetFocus();
+
+					PlayerController->SetShowMouseCursor(true);
+					PlayerController->SetInputMode(FInputModeGameAndUI());
+				}
+			}
+			else if (InOptionType == EOptionTypes::GamePlayOption)
+			{
+				FoundWidget->AddToViewport();
+				FoundWidget->SetFocus();
+
+				PlayerController->SetShowMouseCursor(true);
+				PlayerController->SetInputMode(FInputModeUIOnly());
+			}
+		}
+	}
+}
+
 void ADefaultHUD::PlayHitAnim(EHitAnimType InHitAnimType)
 {
 	ADefaultController* PlayerController = Cast<ADefaultController>(GetOwningPlayerController());
 	if (PlayerController == nullptr) return;
 
-	UUserWidget** FoundWidgetPtr = WidgetMap.Find((int32)InHitAnimType);
+	UUserWidget** FoundWidgetPtr = HitAnimMap.Find(InHitAnimType);
 
 	if (FoundWidgetPtr)
 	{
@@ -162,12 +135,14 @@ void ADefaultHUD::PlayHitAnim(EHitAnimType InHitAnimType)
 		if (FoundWidget)
 		{
 			if (!FoundWidget->IsInViewport())
-			{
 				FoundWidget->AddToViewport();
-			}
 
 			UHitBlood* hitBlood = Cast<UHitBlood>(FoundWidget);
-			hitBlood->PlayHitAnimation();
+			if (hitBlood)
+			{
+				hitBlood->PlayHitAnimation();
+			}
 		}
 	}
 }
+
