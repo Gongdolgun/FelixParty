@@ -8,7 +8,7 @@ ATargetDecal::ATargetDecal()
 	MouseDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("DecalComponent"));
 	MouseDecal->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("/Script/Engine.Material'/Game/GameTypes/Bomb/Decal/M_Cursor_Decal.M_Cursor_Decal'"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/GameTypes/Bomb/Material/M_Crack_Inst.M_Crack_Inst'"));
 	if (DecalMaterialAsset.Succeeded())
 	{
 		MouseDecal->SetDecalMaterial(DecalMaterialAsset.Object);

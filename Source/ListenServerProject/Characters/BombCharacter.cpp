@@ -53,7 +53,7 @@ void ABombCharacter::BeginPlay()
 	{
 		if (!TargetDecal)
 		{
-			TargetDecal = GetWorld()->SpawnActor<ATargetDecal>(DecalClass, FVector::ZeroVector, FRotator::ZeroRotator);
+			TargetDecal = GetWorld()->SpawnActor<ADecalActor>(DecalClass, FVector::ZeroVector, FRotator::ZeroRotator);
 			if (TargetDecal)
 			{
 				TargetDecal->SetActorHiddenInGame(true);
@@ -131,7 +131,6 @@ void ABombCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ABombCharacter::Action);
-		EnhancedInputComponent->BindAction(IA_SubAction, ETriggerEvent::Started, this, &ABombCharacter::Aim);
 		EnhancedInputComponent->BindAction(IA_SubAction, ETriggerEvent::Completed, this, &ABombCharacter::HandleAction);
 		EnhancedInputComponent->BindAction(IA_Zoom, ETriggerEvent::Started, this, &ABombCharacter::SetZooming);
 	}
@@ -156,20 +155,28 @@ void ABombCharacter::Action()
 
 void ABombCharacter::HandleAction()
 {
-	bIsAim = false;
-
-	if (TargetDecal && CurrentWallCoolTime == 0)
+	if (!bIsAim)
 	{
-		CurrentWallCoolTime = MaxWallCooltime;
-		PlayMontage(Wall_Montage);
-		ServerSpawnWall(TargetDecal->GetActorLocation(), GetActorRotation());
-	}
-}
-
-void ABombCharacter::Aim()
-{
-	if (CurrentWallCoolTime == 0)
 		bIsAim = true;
+	}
+	else
+	{
+		if (TargetDecal && CurrentWallCoolTime == 0)
+		{
+			CurrentWallCoolTime = MaxWallCooltime;
+			PlayMontage(Wall_Montage);
+			ServerSpawnWall(TargetDecal->GetActorLocation(), GetActorRotation());
+
+			TargetDecal->SetActorHiddenInGame(true);
+			bIsAim = false; 
+		}
+
+		else if (CurrentWallCoolTime > 0)
+		{
+			TargetDecal->SetActorHiddenInGame(true);
+			bIsAim = false;
+		}
+	}
 }
 
 void ABombCharacter::DeadEvent_NMC_Implementation()
@@ -198,7 +205,10 @@ void ABombCharacter::MulticastAttack_Implementation()
 
 void ABombCharacter::ServerSpawnWall_Implementation(const FVector& Location, const FRotator& Rotation)
 {
-	GetWorld()->SpawnActor<AActor>(WallClass, Location, Rotation);
+	if (TargetDecal)
+	{
+		GetWorld()->SpawnActor<AActor>(WallClass, Location, Rotation);
+	}
 }
 
 void ABombCharacter::ServerSpawnRestraint_Implementation(const FVector& Location, const FRotator& Rotation)

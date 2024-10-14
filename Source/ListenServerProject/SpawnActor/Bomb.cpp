@@ -92,11 +92,6 @@ void ABomb::Explosion_Implementation()
 
 		Owner->DeadEvent_NMC();
 
-		if (CountDownWidget)
-		{
-			CountDownWidget->GetUserWidgetObject()->SetVisibility(ESlateVisibility::Hidden); 
-		}
-
 		FTimerHandle RespawnTimer;
 
 		GetWorld()->GetTimerManager().SetTimer(RespawnTimer, this, &ThisClass::CallRespawnbomb, 3.0f, false);
@@ -108,6 +103,12 @@ void ABomb::ExplosionEvent_Implementation(FVector InLocation)
 	StaticMesh->SetHiddenInGame(true);
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, InLocation, FRotator::ZeroRotator, FVector::OneVector, true);
 	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, InLocation);
+
+	if (CountDownWidget)
+	{
+		CountDownWidget->GetUserWidgetObject()->SetVisibility(ESlateVisibility::Hidden);
+	}
+
 	Audio->Stop();
 }
 
@@ -119,11 +120,6 @@ void ABomb::CallRespawnbomb_Implementation()
 	if (BombGameMode != nullptr && DeadController != nullptr)
 	{
 		BombGameMode->SomeoneDead(DeadController);
-
-		if (CountDownWidget)
-		{
-			CountDownWidget->GetUserWidgetObject()->SetVisibility(ESlateVisibility::Visible);
-		}
 
 		Destroy();
 	}
