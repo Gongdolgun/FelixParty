@@ -38,7 +38,7 @@ void ADeadCollision::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp
         AOnlyUpGameMode* onlyUpGameMode = Cast<AOnlyUpGameMode>(GetWorld()->GetAuthGameMode());
         if (onlyUpGameMode == nullptr) return;
         
-        int32 SpawnIndex = character->GetSpawnIndex();
+        SpawnIndex = character->GetSpawnIndex();
         FName TagToCheck = FName(*FString::Printf(TEXT("%d"), SpawnIndex));
 
         for (AActor* PlayerStart : PlayerStarts)

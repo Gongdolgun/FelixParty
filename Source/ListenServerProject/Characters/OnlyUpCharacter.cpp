@@ -91,7 +91,7 @@ void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-
+	DOREPLIFETIME(ThisClass, SpawnIndex);
 }
 
 void AOnlyUpCharacter::Action()
@@ -177,12 +177,22 @@ void AOnlyUpCharacter::PlayerMaterialEventOnSpawn_Implementation()
 
 }
 
-void AOnlyUpCharacter::SetSpawnIndex(int32 InIndex)
+void AOnlyUpCharacter::SetSpawnIndex_NMC_Implementation(int32 InIndex)
 {
 	if (InIndex >= SpawnIndex)
 	{
 		SpawnIndex = InIndex;
 	}
+}
+
+void AOnlyUpCharacter::SetSpawnIndex_Server_Implementation(int32 InIndex)
+{
+	SetSpawnIndex_NMC(InIndex);
+}
+
+void AOnlyUpCharacter::SetSpawnIndex(int32 InIndex)
+{
+	SetSpawnIndex_Server(InIndex);
 }
 
 void AOnlyUpCharacter::RespawnPlayer(FTransform InTransform)

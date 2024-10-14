@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UWeaponComponent* WeaponComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UChatComponent* ChatComponent;
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Move;

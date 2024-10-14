@@ -4,6 +4,7 @@
 #include "Components/MoveComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/SceneCaptureComponent.h"
+#include "Components/ChatComponent.h"
 #include "Controllers/LobbyController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerStart.h"
@@ -18,6 +19,8 @@ ALobbyCharacter::ALobbyCharacter()
 
 	Helpers::CreateComponent<USpringArmComponent>(this, &SpringArm, "SpringArm", GetCapsuleComponent());
 	Helpers::CreateComponent<USceneCaptureComponent2D>(this, &SceneCaptureCamera, "SceneCaptureCamera", SpringArm);
+
+	Helpers::CreateActorComponent<UChatComponent>(this, &ChatComponent, "ChatComponent");
 
 	SpringArm->SetRelativeRotation(FRotator(0, 180, 0));
 	SpringArm->TargetArmLength = 300.f;
