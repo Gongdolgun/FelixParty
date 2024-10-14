@@ -21,7 +21,8 @@ void AOnlyUpController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	
+	//
+	// ::LogAndPrint(bPressKey);
 }
 
 void AOnlyUpController::OnPossess(APawn* InPawn)

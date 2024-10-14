@@ -92,24 +92,27 @@ void APushCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 
     if (StateComponent->IsDeadMode() == true) return;
 
+    APushController* playerController = Cast<APushController>(GetController());
+    if (playerController)
+    {
+        playerController->PlayHitAnim(EHitAnimType::Blood);
+    }
+
     if (InActor->GetOwner() != nullptr)
     {
         APushCharacter* attacker = Cast<APushCharacter>(InActor->GetOwner());
-        if (attacker != nullptr)
-        {
+
+        if (attacker)
             SetAttacker_Server(attacker);
-        }
 
         if (Attacker)
         {
             APushController* attackerController = Cast<APushController>(Attacker->GetController());
-            APushController* playerController = Cast<APushController>(GetController());
 
             if (attackerController && playerController)
             {
                 attackerName = attackerController->GetPlayerState<APlayerState>()->GetPlayerName();
                 playerName = playerController->GetPlayerState<APlayerState>()->GetPlayerName();
-
             }
         }
     }
@@ -149,8 +152,6 @@ void APushCharacter::Hit(AActor* InActor, const FHitData& InHitData)
 
         // 랜덤 위치 캐릭터 스폰
         GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &APushCharacter::RespawnCharacter, 2.0f, false);
-
-        //RespawnCharacter();
     }
 
 }
@@ -188,7 +189,6 @@ void APushCharacter::Dead_NMC_Implementation(FVector InImpulse)
     GetMesh()->AddImpulse(InImpulse, NAME_None, true);
 
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 }
 
 void APushCharacter::SpawnObject_Server_Implementation(UClass* InClass, FTransform InTransform)

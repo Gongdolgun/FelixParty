@@ -13,7 +13,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Root")
 	class USceneComponent* Root;
 
-	UPROPERTY(VisibleAnywhere, Category = "Static Mesh")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Static Mesh", meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* StaticMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Collision")

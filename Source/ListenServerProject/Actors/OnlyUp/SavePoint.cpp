@@ -33,6 +33,7 @@ void ASavePoint::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AA
 	if (character && (OtherActor != this))
 	{
 		character->SetSpawnIndex(SavePoint);
+
 	}
 }
 

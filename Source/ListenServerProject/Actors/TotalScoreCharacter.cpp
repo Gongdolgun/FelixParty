@@ -3,6 +3,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Global.h"
 #include "GameState/DefaultGameState.h"
+#include "Net/UnrealNetwork.h"
 
 ATotalScoreCharacter::ATotalScoreCharacter()
 {
@@ -32,10 +33,28 @@ void ATotalScoreCharacter::BeginPlay()
 	if (OverlayMaterial != nullptr)
 		OverlayMaterialDynamic = UMaterialInstanceDynamic::Create(OverlayMaterial, this);
 
+	int32 MaterialCount = GetMesh()->GetNumMaterials();
+	for (int32 i = 0; i < MaterialCount; i++)
+	{
+		UMaterialInstanceDynamic* MaterialInstance = Cast<UMaterialInstanceDynamic>(GetMesh()->GetMaterial(i));
+		if (!MaterialInstance)
+			MaterialInstance = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+
+		if (MaterialInstance)
+			MyMaterials.Add(MaterialInstance);
+	}
+
 	DefaultGameState = Cast<ADefaultGameState>(GetWorld()->GetGameState());
 
 	SceneCaptureCamera->ShowOnlyActors.Add(this);
 	//GetMesh()->SetHiddenInGame(true);
+}
+
+void ATotalScoreCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, Number);
 }
 
 void ATotalScoreCharacter::Tick(float DeltaTime)
@@ -46,6 +65,14 @@ void ATotalScoreCharacter::Tick(float DeltaTime)
 	{
 		OverlayMaterialDynamic->SetVectorParameterValue(FName("Color"), FLinearColor(DefaultGameState->PlayerDatas[Number].PlayerColor));
 		GetMesh()->SetOverlayMaterial(OverlayMaterialDynamic);
+	}
+
+	if(!MyMaterials.IsEmpty() && DefaultGameState != nullptr)
+	{
+		for(auto MyMaterial : MyMaterials)
+		{
+			MyMaterial->SetVectorParameterValue(FName("Tint"), DefaultGameState->PlayerDatas[Number].PlayerColor);
+		}
 	}
 }
 
@@ -62,7 +89,7 @@ void ATotalScoreCharacter::OnGameStateTypeChanged(EGameStateType InPrevGameType,
 	}
 }
 
-void ATotalScoreCharacter::Init()
+void ATotalScoreCharacter::Init_Implementation()
 {
 	if(!TextureRenderTargets.IsEmpty())
 	{

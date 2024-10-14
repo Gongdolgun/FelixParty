@@ -51,11 +51,10 @@ void APushGameMode::RespawnPlayer(AController* InController)
         {
             RespawnRadius = ElectricField->CurrFieldRadius - 50.0f;
 
-            // 랜덤 위치 세팅
             FVector RandomLocation = FVector(
                 FMath::RandRange(-RespawnRadius, RespawnRadius),
                 FMath::RandRange(-RespawnRadius, RespawnRadius),
-                65.0f // Z 위치
+                250.0f 
             );
 
             FActorSpawnParameters params;
@@ -69,10 +68,7 @@ void APushGameMode::RespawnPlayer(AController* InController)
                 UpdatePlayer();
                 RespawnCharacter->PlayMaterialEvent();
             }
-            else
-            {
-                CLog::Print("Spawn Failed. Why?");
-            }
+            
         }
     }
 }

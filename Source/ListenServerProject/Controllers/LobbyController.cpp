@@ -5,6 +5,7 @@
 #include "Misc/Structures.h"
 #include "GameInstances/OnlineGameInstance.h"
 #include "GameModes/LobbyGameMode.h"
+#include "GameState/LobbyGameState.h"
 #include "Net/UnrealNetwork.h"
 
 ALobbyController::ALobbyController()
@@ -26,7 +27,7 @@ void ALobbyController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	
+
 }
 
 void ALobbyController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -72,7 +73,7 @@ void ALobbyController::SetReadyStatus_Implementation()
 	}
 }
 
-void ALobbyController::ChangeCharacter_Implementation(FColor MaterialColor)
+void ALobbyController::ChangeCharacter_Implementation(FColor MaterialColor, int32 ColorNum)
 {
 	// Game Instance의 Player Data 편집 요청 로그 작성
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
@@ -83,12 +84,28 @@ void ALobbyController::ChangeCharacter_Implementation(FColor MaterialColor)
 			FPlayerData PlayerData = *GameInstance->PlayerDatas.Find(GetPlayerState<APlayerState>()->GetPlayerName());
 			PlayerData.PlayerColor = MaterialColor;
 
-			GameInstance->SavePlayerInfo(GetPlayerState<APlayerState>()->GetPlayerName() , PlayerData);
+			GameInstance->SavePlayerInfo(GetPlayerState<APlayerState>()->GetPlayerName(), PlayerData);
+		}
+	}
+
+	ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState());
+	if(LobbyGameState != nullptr)
+	{
+		FString PlayerName = GetPlayerState<APlayerState>()->GetPlayerName();
+
+		for(int i = 0; i < LobbyGameState->PlayerBaseInfos.Num(); i++)
+		{
+			if (LobbyGameState->PlayerBaseInfos[i].PlayerName == PlayerName)
+			{
+				LobbyGameState->PlayerBaseInfos[i].PlayerColor = MaterialColor;
+				LobbyGameState->PlayerBaseInfos[i].SelectedColorIndex = ColorNum;
+				break;
+			}
 		}
 	}
 
 	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
-	if(LobbyGameMode != nullptr)
+	if (LobbyGameMode != nullptr)
 	{
 		LobbyGameMode->UpdatePlayerMaterial();
 	}
@@ -116,7 +133,7 @@ void ALobbyController::LeaveSession_Server_Implementation()
 {
 	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
 
-	if(LobbyGameMode != nullptr)
+	if (LobbyGameMode != nullptr)
 	{
 		LobbyGameMode->LeaveSession(this);
 	}

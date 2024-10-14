@@ -106,8 +106,8 @@ void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Completed, this, &ThisClass::End_Action);
 
 		EnhancedInputComponent->BindAction(IA_Option, ETriggerEvent::Started, this, &ThisClass::ShowGamePlayOption);
-		EnhancedInputComponent->BindAction(IA_Emote, ETriggerEvent::Started, this, &ThisClass::ShowEmoteOption);
 
+		EnhancedInputComponent->BindAction(IA_Emote, ETriggerEvent::Started, this, &ThisClass::ShowEmoteOption);
 	}
 }
 
@@ -212,6 +212,8 @@ void ADefaultCharacter:: ShowEmoteOption()
 {
 	ADefaultController* PlayerController = Cast<ADefaultController>(GetController());
 	if (PlayerController == nullptr) return;
+
+	CLog::Print("ShowEmoteOption Pressed");
 
 	PlayerController->ViewOption(EOptionTypes::EmoteOption);
 }

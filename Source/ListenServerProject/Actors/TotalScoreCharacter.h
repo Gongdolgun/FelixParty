@@ -22,12 +22,13 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	int32 Number;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -43,6 +44,8 @@ private:
 	class ADefaultGameState* DefaultGameState;
 	UMaterialInstanceDynamic* OverlayMaterialDynamic;
 
+	TArray<UMaterialInstanceDynamic*> MyMaterials;
+
 public:
 	UFUNCTION()
 	void OnGameStateTypeChanged(EGameStateType InPrevGameType, EGameStateType InNewGameType);
@@ -51,5 +54,6 @@ public:
 	void PlayanimMontage_NMC(UAnimMontage* InAnimMontage);
 
 public:
+	UFUNCTION(NetMulticast, Reliable)
 	void Init();
 };

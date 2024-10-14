@@ -17,7 +17,7 @@ void ASpawner_TotalCharacter::SpawnActor()
 		{
 			for (int32 i = 0; i < DefaultGameState->PlayerDatas.Num(); i++)
 			{
-				FVector location = GetActorLocation() + SpawnLocation;
+				FVector location = GetActorLocation() + FVector(0, 0, 100);
 
 				FActorSpawnParameters params;
 				params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

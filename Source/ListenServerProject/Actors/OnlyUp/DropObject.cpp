@@ -11,6 +11,8 @@ ADropObject::ADropObject()
 	Helpers::CreateComponent<UStaticMeshComponent>(this, &StaticMesh, "StaticMesh", Root);
 
 	Helpers::CreateComponent<UBoxComponent>(this, &Collision, "Collision", StaticMesh);
+
+	StaticMesh->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 }
 
 void ADropObject::BeginPlay()
@@ -27,6 +29,7 @@ void ADropObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
 }
 
 void ADropObject::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -38,12 +41,14 @@ void ADropObject::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 	{
 		GetWorld()->GetTimerManager().SetTimer(
 			SwingTimerHandle, this, &ThisClass::StartSwing, 3.0f, false);
-	}
 
+	}
 }
 
 void ADropObject::StartSwing()
 {
+	StaticMesh->SetCollisionProfileName(TEXT("Object"));
+
 	GetWorld()->GetTimerManager().SetTimer(SwingTimerHandle, this, &ThisClass::Swing, 0.03f, true);
 	GetWorld()->GetTimerManager().SetTimer(DropTimerHandle, this, &ThisClass::DropObject, 2.0f, false);
 }
@@ -53,8 +58,7 @@ void ADropObject::Swing()
 	// 현재 Roll 각도 계산
 	float CurrentRoll = FMath::Sin(GetWorld()->GetTimeSeconds() * SwingSpeed) * MaxSwingAmount;
 
-	// Roll 적용
-	FRotator NewRotation = FRotator(CurrentRoll, 0.0f, 0.0f); // Pitch와 Yaw는 0으로 설정
+	FRotator NewRotation = FRotator(CurrentRoll, 0.0f, CurrentRoll);
 	SetActorRotation(NewRotation);
 }
 
@@ -71,7 +75,6 @@ void ADropObject::DropObject()
 
 void ADropObject::RespawnOriginialLocation()
 {
-
 	GetWorld()->GetTimerManager().ClearTimer(DropTimerHandle);
 
 	SetActorHiddenInGame(true);
@@ -83,6 +86,5 @@ void ADropObject::RespawnOriginialLocation()
 	ADropObject* NewObject = GetWorld()->SpawnActor<ADropObject>(GetClass(), OriginalLocation, OriginalRotation, SpawnParams);
 
 	Destroy();
-
 }
 

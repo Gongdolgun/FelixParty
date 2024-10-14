@@ -67,6 +67,8 @@ void ADefaultGameMode::BeginPlay()
 			int32 TotalScore = It.Value().TotalScore;
 			DefaultGameState->AddPlayerData(PlayerName, 0, PlayerColor, TotalScore);
 		}
+
+		GameInstance->CurrentRound++;
 	}
 }
 

@@ -70,11 +70,16 @@ enum class EOptionTypes : uint8
 };
 
 UENUM(BlueprintType)
+enum class EHitAnimType : uint8
+{
+	None = 0, Blood, Electirc, 
+};
+
+UENUM(BlueprintType)
 enum class EActorRotationType : uint8
 {
 	None = 0, Pitch, Yaw, Roll
 };
-
 
 UENUM(BlueprintType)
 enum class ELevelInputType : uint8

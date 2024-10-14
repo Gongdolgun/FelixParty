@@ -3,13 +3,12 @@
 #include "EnhancedInputComponent.h"
 #include "Components/ParkourComponent.h"
 #include "Global.h"
-#include "MotionWarpingComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/MoveComponent.h"
 #include "Components/StateComponent.h"
-#include "Controllers/OnlyUpController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameModes/OnlyUpGameMode.h"
 #include "Net/UnrealNetwork.h"
 
 AOnlyUpCharacter::AOnlyUpCharacter()
@@ -65,6 +64,7 @@ void AOnlyUpCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OnlyUpGameMode = Cast<AOnlyUpGameMode>(GetWorld()->GetAuthGameMode());
 }
 
 void AOnlyUpCharacter::Tick(float DeltaTime)
@@ -179,11 +179,18 @@ void AOnlyUpCharacter::PlayerMaterialEventOnSpawn_Implementation()
 
 void AOnlyUpCharacter::SetSpawnIndex(int32 InIndex)
 {
-	if (InIndex > SpawnIndex)
+	if (InIndex >= SpawnIndex)
 	{
 		SpawnIndex = InIndex;
 	}
 }
 
+void AOnlyUpCharacter::RespawnPlayer(FTransform InTransform)
+{
+	if (OnlyUpGameMode)
+		OnlyUpGameMode->RespawnPlayer(InTransform, GetController());
+
+	Destroy();
+}
 
 

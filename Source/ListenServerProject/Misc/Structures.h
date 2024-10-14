@@ -17,6 +17,12 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName PlayerName = FName(TEXT("Player Name"));
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FColor PlayerColor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 SelectedColorIndex = 0;
 };
 
 USTRUCT(BlueprintType)
