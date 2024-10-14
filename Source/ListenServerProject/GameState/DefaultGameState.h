@@ -26,8 +26,6 @@ protected:
 	virtual void SetTimer(float InTime);
 	virtual void SetScore() {};
 
-	
-
 public:
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable)
 	FGameStateTypeChanged OnGameStateTypeChanged;

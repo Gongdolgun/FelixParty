@@ -21,10 +21,8 @@ void ADefaultHUD::BeginPlay()
 	if (HUDClasses.Contains(EHudTypes::Ready))
 		AddCharacterOverlay(HUDClasses[EHudTypes::Ready]);
 
-	// Option Widget 持失
+	// 是銭 持失
 	CreateWidgets<UUserWidget, EOptionTypes>(OptionWidgetClasses, OptionMap);
-
-	// Hit Widget 持失
 	CreateWidgets<UUserWidget, EHitAnimType>(HitAnimClasses, HitAnimMap);
 }
 

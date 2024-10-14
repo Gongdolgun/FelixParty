@@ -14,8 +14,12 @@ void APushController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CreateOverlayWidget();
-
+	//CreateOverlayWidget();
+	DefaultGameState = Cast<ADefaultGameState>(UGameplayStatics::GetGameState(this));
+	if (DefaultGameState)
+	{
+		DefaultGameState->OnGameStateTypeChanged.AddDynamic(this, &ThisClass::OnGamePlay);
+	}
 }
 
 void APushController::Tick(float DeltaSeconds)
@@ -36,11 +40,9 @@ void APushController::CreateOverlayWidget()
 	}
 }
 
-void APushController::OnGamePlayStart(EGameStateType InPrevGameType, EGameStateType InNewGameType)
+void APushController::OnGamePlay(EGameStateType InPrevGameType, EGameStateType InNewGameType)
 {
-	if (InNewGameType == EGameStateType::GameStart)
-	{
+	if (InNewGameType == EGameStateType::GamePlay)
 		CreateOverlayWidget();
-	}
 }
 
