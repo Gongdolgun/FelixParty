@@ -27,7 +27,7 @@ void APushController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-void APushController::CreateOverlayWidget()
+void APushController::CreateOverlayWidget_Client_Implementation()
 {
 	if (SelectOverlay && IsLocalController())
 	{
@@ -35,7 +35,6 @@ void APushController::CreateOverlayWidget()
 		if (OverlayWidget)
 		{
 			OverlayWidget->AddToViewport();
-			OverlayWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }
@@ -43,6 +42,6 @@ void APushController::CreateOverlayWidget()
 void APushController::OnGamePlay(EGameStateType InPrevGameType, EGameStateType InNewGameType)
 {
 	if (InNewGameType == EGameStateType::GamePlay)
-		CreateOverlayWidget();
+		CreateOverlayWidget_Client();
 }
 
