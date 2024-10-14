@@ -213,6 +213,8 @@ void ADefaultCharacter:: ShowEmoteOption()
 	ADefaultController* PlayerController = Cast<ADefaultController>(GetController());
 	if (PlayerController == nullptr) return;
 
+	CLog::Print("ShowEmoteOption Pressed");
+
 	PlayerController->ViewOption(EOptionTypes::EmoteOption);
 }
 
