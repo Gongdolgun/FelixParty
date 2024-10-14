@@ -85,12 +85,11 @@ private:
 
 public:
 	FAttachmentBeginOverlap OnAttachmentBeginOverlap;
-	ATargetDecal* TargetDecal;
+	ADecalActor* TargetDecal;
 
 public:
 	void Action() override;
 	void HandleAction();
-	void Aim();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void DeadEvent_NMC();

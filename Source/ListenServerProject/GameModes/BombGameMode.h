@@ -35,4 +35,7 @@ public:
 	void HitAttachBomb(ABombCharacter* InCharacter);
 
 	void SomeoneDead(ADefaultController* InController);
+
+	FTimerHandle SpawnBombTimerHandle;
+
 };

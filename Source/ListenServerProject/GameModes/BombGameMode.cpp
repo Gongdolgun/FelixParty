@@ -29,7 +29,7 @@ void ABombGameMode::CreateBombSpawn(EGameStateType InPrevGameType, EGameStateTyp
 	{
 		SurvivedControllers = ConnectedPlayers;
 
-		SpawnBomb();
+		GetWorld()->GetTimerManager().SetTimer(SpawnBombTimerHandle, this, &ABombGameMode::SpawnBomb, 3.0f, false);
 	}
 }
 
@@ -53,6 +53,11 @@ void ABombGameMode::SpawnBomb()
 			SpawnedBomb = Cast<ABomb>(GetWorld()->SpawnActor(BombClass));
 
 			HitAttachBomb(SelectedCharacter);
+			
+			if (SpawnedBomb && SpawnedBomb->CountDownWidget)
+			{
+				SpawnedBomb->CountDownWidget->GetUserWidgetObject()->SetVisibility(ESlateVisibility::Visible);
+			}
 		}
 	}
 }
