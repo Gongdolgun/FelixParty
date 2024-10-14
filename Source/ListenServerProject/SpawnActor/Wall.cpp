@@ -19,8 +19,6 @@ void AWall::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetLifeSpan(10);
-	
 }
 
 void AWall::Tick(float DeltaTime)

@@ -1,9 +1,12 @@
 #include "SpawnActor/Bomb.h"
 #include "Global.h"
+#include "Characters/BombCharacter.h"
 #include "Components/AudioComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Controllers/DefaultController.h"
+#include "GameModes/BombGameMode.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -12,30 +15,21 @@ ABomb::ABomb()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
-	bBombReplicate = true;
-	bBombReplicateMovement = true;
-
-	Helpers::CreateComponent<USphereComponent>(this, &Sphere, "Sphere");
-	Helpers::CreateComponent<UAudioComponent>(this, &Audio, "Audio", Sphere);
-	Helpers::CreateComponent<UStaticMeshComponent>(this, &StaticMesh, "StaticMesh", Sphere);
-	Helpers::CreateComponent<UWidgetComponent>(this, &CountDownWidget, "CountDownWidget", Sphere);
-
-	Sphere->SetCollisionProfileName(TEXT("PhysicsActor"));
-	Sphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	Sphere->SetCollisionObjectType(ECC_PhysicsBody);
-	Sphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	Sphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	Helpers::CreateComponent<UStaticMeshComponent>(this, &StaticMesh, "StaticMesh");
+	Helpers::CreateComponent<UAudioComponent>(this, &Audio, "Audio", StaticMesh);
+	Helpers::CreateComponent<UWidgetComponent>(this, &CountDownWidget, "CountDownWidget", StaticMesh);
 
 	CountDownWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
-	TotalCountdownTime = 20.0f;
 	ElapseTime = 0.0f;
-	
+
 }
 
 void ABomb::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CurrentExplosionTime = ExplosionTime;
 
 	if (StaticMesh)
 	{
@@ -45,42 +39,33 @@ void ABomb::BeginPlay()
 			OnRep_UpdateColor();  // 초기 색상 설정
 		}
 	}
-
-	if (HasAuthority())
-	{
-		StartCountdown();
-	}
-
-	if (CountdownWidgetClass)
-	{
-		if (CountDownWidget)
-		{
-			CountDownWidget->SetWidgetClass(CountdownWidgetClass);
-			CountDownWidget->InitWidget();
-
-			UCountDown* CountdownWidget = Cast<UCountDown>(CountDownWidget->GetWidget());
-			if (CountdownWidget)
-			{
-				CountdownWidget->UpdateCountdown(20.0f); // 초기 카운트다운 값을 설정
-			}
-
-			CountDownWidget->AttachToComponent(Sphere, FAttachmentTransformRules::KeepRelativeTransform);
-			CountDownWidget->SetDrawAtDesiredSize(true);
-		}
-	}
 }
 
 void ABomb::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (ElapseTime < TotalCountdownTime)
+	if (CurrentExplosionTime > 0 && !bIsExplosion)
+	{
+		CurrentExplosionTime -= DeltaTime;
+	}
+
+	else
+	{
+		if (!bIsExplosion)
+			Explosion();
+
+		bIsExplosion = true;
+	}
+
+	if (ElapseTime < ExplosionTime)
 	{
 		ElapseTime += DeltaTime;
-		UpDateSoundAndColor(DeltaTime);
-		UpdateShakeEffect(DeltaTime);
-		UpdateCountdownWidget(DeltaTime);
+		UpDateColor(DeltaTime);
 	}
+
+	UpdateShakeEffect(DeltaTime);
+
 }
 
 void ABomb::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -88,29 +73,7 @@ void ABomb::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	// 서버에서 클라이언트로 값 전송
-	DOREPLIFETIME(ABomb, bBombReplicate);
-	DOREPLIFETIME(ABomb, bBombReplicateMovement);
-	DOREPLIFETIME(ABomb, BombLocation);
-	DOREPLIFETIME(ABomb, CountdownSound);
-	DOREPLIFETIME(ABomb, BombColor);
-}
-
-// 복제된 속성이 변경될 때 자동으로 호출
-void ABomb::OnRep_UpdateBombLocation()
-{
-	// 클라이언트들에게 위치 변경을 알리기 위해
-	SetActorLocation(BombLocation);
-	UpdateShakeEffect(GetWorld()->GetDeltaSeconds());
-	//CLog::Log(*BombLocation.ToString());
-}
-
-void ABomb::OnRep_CountdownSound()
-{
-	if (Audio && CountdownSound)
-	{
-		Audio->SetSound(CountdownSound);
-		Audio->Play();
-	}
+	DOREPLIFETIME(ThisClass, CurrentExplosionTime);
 }
 
 void ABomb::OnRep_UpdateColor()
@@ -123,84 +86,88 @@ void ABomb::OnRep_UpdateColor()
 
 void ABomb::Explosion_Implementation()
 {
-	if (Particle)
+	if (Particle != nullptr && ExplosionSound != nullptr && Owner != nullptr)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, GetActorLocation(), FRotator::ZeroRotator, FVector::OneVector, true);
-		UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation());
+		ExplosionEvent(GetActorLocation());
 
-		DestroyBomb();
+		Owner->DeadEvent_NMC();
+
+		if (CountDownWidget)
+		{
+			CountDownWidget->GetUserWidgetObject()->SetVisibility(ESlateVisibility::Hidden); 
+		}
+
+		FTimerHandle RespawnTimer;
+
+		GetWorld()->GetTimerManager().SetTimer(RespawnTimer, this, &ThisClass::CallRespawnbomb, 3.0f, false);
 	}
 }
 
-void ABomb::DestroyBomb()
+void ABomb::ExplosionEvent_Implementation(FVector InLocation)
 {
-	Destroy();
+	StaticMesh->SetHiddenInGame(true);
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, InLocation, FRotator::ZeroRotator, FVector::OneVector, true);
+	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, InLocation);
+	Audio->Stop();
 }
 
-void ABomb::StartCountdown()
+void ABomb::CallRespawnbomb_Implementation()
 {
-	if (HasAuthority())
+	ABombGameMode* BombGameMode = Cast<ABombGameMode>(GetWorld()->GetAuthGameMode());
+	ADefaultController* DeadController = Cast<ADefaultController>(Owner->GetController());
+
+	if (BombGameMode != nullptr && DeadController != nullptr)
 	{
-		MultiStartCountdown();
+		BombGameMode->SomeoneDead(DeadController);
+
+		if (CountDownWidget)
+		{
+			CountDownWidget->GetUserWidgetObject()->SetVisibility(ESlateVisibility::Visible);
+		}
+
+		Destroy();
 	}
 }
 
-void ABomb::MultiStartCountdown_Implementation()
+void ABomb::UpDateColor(float DeltaTime)
 {
-	TotalCountdownTime = 20.0f;
-	ElapseTime = 0.0f;
+	float remainingTime = ExplosionTime - ElapseTime;
 
-	if (Audio && CountdownSound)
-	{
-		Audio->SetSound(CountdownSound);
-		Audio->Play();
-	}
-
-	GetWorld()->GetTimerManager().SetTimer(CountdownTimerHandle, this, &ABomb::Explosion, TotalCountdownTime, false);
-}
-
-void ABomb::UpDateSoundAndColor(float DeltaTime)
-{
-	float remainingTime = TotalCountdownTime - ElapseTime;
-
-	float progress = ElapseTime / TotalCountdownTime;
+	float progress = ElapseTime / ExplosionTime;
 	BombColor = FVector(FLinearColor::LerpUsingHSV(FLinearColor::Black, FLinearColor::Red, progress));
 
-	if (HasAuthority())
-	{
-		OnRep_UpdateColor();  // 서버에서 직접 색상 업데이트 호출
-	}
+	OnRep_UpdateColor(); // 서버에서 직접 색상 업데이트 호출
+	
 }
 
 void ABomb::UpdateShakeEffect(float DeltaTime)
 {
-	float remainingTime = TotalCountdownTime - ElapseTime;
-	float shakeIntensity = FMath::Clamp(1.0f - (remainingTime / TotalCountdownTime), 0.0f, 1.0f);
-	FVector newLocation = GetActorLocation();
-	newLocation.X += FMath::Sin(GetWorld()->GetTimeSeconds() * 20.0f * shakeIntensity) * 5.0f;
-	newLocation.Y += FMath::Cos(GetWorld()->GetTimeSeconds() * 10.0f * shakeIntensity) * 5.0f;
-
-	SetActorLocation(newLocation);
-
-	// 흔들림 효과 위치 복제
-	BombLocation = newLocation;
-}
-
-void ABomb::ResetShakeEffect()
-{
-	ElapseTime = 0.0f;
-	TotalCountdownTime = 20.0f;
-}
-
-void ABomb::UpdateCountdownWidget(float DeltaTime)
-{
-	if (CountDownWidget)
+	if (Owner && Owner->BombSphereComponent)
 	{
-		UCountDown* CountdownWidget = Cast<UCountDown>(CountDownWidget->GetWidget());
-		if (CountdownWidget)
-		{
-			int RemainingTime = FMath::CeilToInt(TotalCountdownTime - ElapseTime);
-			CountdownWidget->UpdateCountdown(RemainingTime);
-		}
+		FVector sphereLocation = Owner->BombSphereComponent->GetComponentLocation();
+
+		float shakeIntensity = FMath::Clamp(FMath::Sin(GetWorld()->GetTimeSeconds() * 2.0f), 3.0f, 5.0f);
+
+		FVector shakeOffset;
+		shakeOffset.X = FMath::Sin(GetWorld()->GetTimeSeconds() * 25.0f) * shakeIntensity * 5.0f; 
+		shakeOffset.Y = FMath::Cos(GetWorld()->GetTimeSeconds() * 15.0f) * shakeIntensity * 5.0f;
+
+		SetActorLocation(sphereLocation + shakeOffset);
 	}
+}
+
+void ABomb::AttachBomb(ABombCharacter* InCharacter)
+{
+	if (Owner != nullptr)
+	{
+		Owner->bBomb = false;
+		Owner->ChangeSpeed();
+	}
+
+	Owner = InCharacter;
+	Owner->bBomb = true;
+	Owner->ChangeSpeed();
+
+	AttachToComponent(InCharacter->BombSphereComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
 }

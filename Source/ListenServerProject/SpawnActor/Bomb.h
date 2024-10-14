@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Characters/BombCharacter.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
 #include "Widgets/CountDown.h"
@@ -10,20 +11,17 @@ UCLASS()
 class LISTENSERVERPROJECT_API ABomb : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ABomb();
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(VisibleDefaultsOnly)
-	class USphereComponent* Sphere;
-
 	UPROPERTY(VisibleDefaultsOnly)
 	class UStaticMeshComponent* StaticMesh;
 
@@ -32,6 +30,8 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> CountdownWidgetClass;
+
+	ABombCharacter* Owner;
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -43,67 +43,49 @@ public:
 	UPROPERTY(EditAnywhere)
 	USoundBase* ExplosionSound;
 
-public:
-	UPROPERTY(ReplicatedUsing = OnRep_CountdownSound, EditAnywhere)
-	USoundBase* CountdownSound;
+	UPROPERTY(EditAnywhere)
+	UWidgetComponent* CountDownWidget;
 
 public:
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Bomb")
-	bool bBombReplicate;
-
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Bomb")
-	bool bBombReplicateMovement;
-
-	UPROPERTY(ReplicatedUsing = OnRep_UpdateBombLocation, BlueprintReadOnly, Category = "Bomb")
-	FVector BombLocation;
-
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_UpdateColor, BlueprintReadOnly, Category = "Bomb")
 	FVector BombColor;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION()
-	void OnRep_UpdateBombLocation();
-
-	UFUNCTION()
-	void OnRep_CountdownSound();
-
-	UFUNCTION()
 	void OnRep_UpdateColor();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Explosion();
-
-	void DestroyBomb();
-
-	void StartCountdown();
-
-	UPROPERTY()
-	FLinearColor InitialColor;
 
 	UPROPERTY()
 	FLinearColor CountdownColor;
 
+	UFUNCTION(Server, Reliable)
+	void Explosion();
+
 	UFUNCTION(NetMulticast, Reliable)
-	void MultiStartCountdown();
+	void ExplosionEvent(FVector InLocation);
+
+	UFUNCTION(Server, Reliable)
+	void CallRespawnbomb();
 
 public:
-	void UpDateSoundAndColor(float DeltaTime);
+	void UpDateColor(float DeltaTime);
 
 	void UpdateShakeEffect(float DeltaTime);
 
-	void ResetShakeEffect();
-
-	FTimerHandle CountdownTimerHandle;
-
-	UPROPERTY(Replicated)
-	float TotalCountdownTime;
+	void AttachBomb(ABombCharacter* InCharacter);
 
 	UPROPERTY(Replicated)
 	float ElapseTime;
 
-	UPROPERTY(EditAnywhere)
-	UWidgetComponent* CountDownWidget;
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	float CurrentExplosionTime;
 
-	void UpdateCountdownWidget(float DeltaTime);
+	UPROPERTY(EditAnywhere, Category = "Bomb")
+	float ExplosionTime = 30.0f;
+
+	bool bIsExplosion;
+
+	FTimerHandle CountdownTimerHandle;
+
 };
+

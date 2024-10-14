@@ -14,7 +14,7 @@ void UNFS_ActionState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequen
     {
         if (ABombCharacter* Character = Cast<ABombCharacter>(MeshComp->GetOwner()))
         {
-            Character->SetActionState(EActionState::InAction);
+
         }
     }
 }
@@ -27,7 +27,7 @@ void UNFS_ActionState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequence
     {
         if (ABombCharacter* Character = Cast<ABombCharacter>(MeshComp->GetOwner()))
         {
-            Character->SetActionState(EActionState::Idle);
+
         }
     }
 }
