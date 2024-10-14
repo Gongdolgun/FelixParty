@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/MoveComponent.h"
 #include "Components/WeaponComponent.h"
+#include "Components/ChatComponent.h"
 #include "Global.h"
 #include "Blueprint/UserWidget.h"
 #include "Controllers/DefaultController.h"
@@ -23,6 +24,7 @@ ADefaultCharacter::ADefaultCharacter()
 
 	Helpers::CreateActorComponent<UMoveComponent>(this, &MoveComponent, "MoveComponent");
 	Helpers::CreateActorComponent<UWeaponComponent>(this, &WeaponComponent, "WeaponComponent");
+	Helpers::CreateActorComponent<UChatComponent>(this, &ChatComponent, "ChatComponent");
 
 	SpringArm->SetRelativeLocation(FVector(0, 0, 60));
 	SpringArm->TargetArmLength = 270;

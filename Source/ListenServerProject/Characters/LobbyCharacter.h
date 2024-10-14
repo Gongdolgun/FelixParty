@@ -31,6 +31,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USceneCaptureComponent2D* SceneCaptureCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UChatComponent* ChatComponent;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
