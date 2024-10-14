@@ -32,7 +32,7 @@ void ALobbyCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	SceneCaptureCamera->ShowOnlyActors.Add(this);
-	SetTextureTarget();
+	SetTextureTarget_Server();
 }
 
 void ALobbyCharacter::Tick(float DeltaTime)
@@ -71,7 +71,7 @@ void ALobbyCharacter::PlayReadyMontage(UAnimMontage* InMontage)
 	PlayReadyMontage_Server(InMontage);
 }
 
-void ALobbyCharacter::SetTextureTarget_Implementation()
+void ALobbyCharacter::SetTextureTarget_Server_Implementation()
 {
 	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
 
@@ -82,11 +82,15 @@ void ALobbyCharacter::SetTextureTarget_Implementation()
 		{
 			int32 Num = LobbyGameMode->ConnectedPlayers.Find(LobbyController);
 
-			SceneCaptureCamera->TextureTarget = TextureRenderTargets[Num];
+			SetTextureTarget_NMC(Num);
 		}
 	}
 }
 
+void ALobbyCharacter::SetTextureTarget_NMC_Implementation(int32 InNumber)
+{
+	SceneCaptureCamera->TextureTarget = TextureRenderTargets[InNumber];
+}
 
 void ALobbyCharacter::UpdatePlayer_Server_Implementation()
 {

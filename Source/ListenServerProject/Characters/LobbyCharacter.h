@@ -69,6 +69,8 @@ public:
 	void PlayReadyMontage(class UAnimMontage* InMontage);
 
 	UFUNCTION(Server, Reliable)
-	void SetTextureTarget();
+	void SetTextureTarget_Server();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void SetTextureTarget_NMC(int32 InNumber);
 };

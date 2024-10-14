@@ -3,6 +3,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Global.h"
 #include "GameState/DefaultGameState.h"
+#include "Net/UnrealNetwork.h"
 
 ATotalScoreCharacter::ATotalScoreCharacter()
 {
@@ -49,6 +50,13 @@ void ATotalScoreCharacter::BeginPlay()
 	//GetMesh()->SetHiddenInGame(true);
 }
 
+void ATotalScoreCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, Number);
+}
+
 void ATotalScoreCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -81,7 +89,7 @@ void ATotalScoreCharacter::OnGameStateTypeChanged(EGameStateType InPrevGameType,
 	}
 }
 
-void ATotalScoreCharacter::Init()
+void ATotalScoreCharacter::Init_Implementation()
 {
 	if(!TextureRenderTargets.IsEmpty())
 	{
