@@ -29,10 +29,6 @@ void ABombGameMode::CreateBombSpawn(EGameStateType InPrevGameType, EGameStateTyp
 	{
 		SurvivedControllers = ConnectedPlayers;
 
-		//FTimerHandle SpawnTimerHandle;
-
-		//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ABombGameMode::SpawnBomb, 3.0f, false);
-
 		SpawnBomb();
 	}
 }

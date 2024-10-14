@@ -63,6 +63,7 @@ void ABomb::Tick(float DeltaTime)
 		ElapseTime += DeltaTime;
 		UpDateColor(DeltaTime);
 	}
+
 	UpdateShakeEffect(DeltaTime);
 
 }
@@ -91,6 +92,11 @@ void ABomb::Explosion_Implementation()
 
 		Owner->DeadEvent_NMC();
 
+		if (CountDownWidget)
+		{
+			CountDownWidget->GetUserWidgetObject()->SetVisibility(ESlateVisibility::Hidden); 
+		}
+
 		FTimerHandle RespawnTimer;
 
 		GetWorld()->GetTimerManager().SetTimer(RespawnTimer, this, &ThisClass::CallRespawnbomb, 3.0f, false);
@@ -114,6 +120,11 @@ void ABomb::CallRespawnbomb_Implementation()
 	{
 		BombGameMode->SomeoneDead(DeadController);
 
+		if (CountDownWidget)
+		{
+			CountDownWidget->GetUserWidgetObject()->SetVisibility(ESlateVisibility::Visible);
+		}
+
 		Destroy();
 	}
 }
@@ -131,13 +142,18 @@ void ABomb::UpDateColor(float DeltaTime)
 
 void ABomb::UpdateShakeEffect(float DeltaTime)
 {
-	float remainingTime = ExplosionTime - ElapseTime;
-	float shakeIntensity = FMath::Clamp(1.0f - (remainingTime / ExplosionTime), 0.0f, 1.0f);
-	FVector newLocation = GetActorLocation();
-	newLocation.X += FMath::Sin(GetWorld()->GetTimeSeconds() * 10.0f * shakeIntensity) * 5.0f;
-	newLocation.Y += FMath::Cos(GetWorld()->GetTimeSeconds() * 15.0f * shakeIntensity) * 5.0f;
+	if (Owner && Owner->BombSphereComponent)
+	{
+		FVector sphereLocation = Owner->BombSphereComponent->GetComponentLocation();
 
-	SetActorLocation(newLocation);
+		float shakeIntensity = FMath::Clamp(FMath::Sin(GetWorld()->GetTimeSeconds() * 2.0f), 3.0f, 5.0f);
+
+		FVector shakeOffset;
+		shakeOffset.X = FMath::Sin(GetWorld()->GetTimeSeconds() * 25.0f) * shakeIntensity * 5.0f; 
+		shakeOffset.Y = FMath::Cos(GetWorld()->GetTimeSeconds() * 15.0f) * shakeIntensity * 5.0f;
+
+		SetActorLocation(sphereLocation + shakeOffset);
+	}
 }
 
 void ABomb::AttachBomb(ABombCharacter* InCharacter)
@@ -153,4 +169,5 @@ void ABomb::AttachBomb(ABombCharacter* InCharacter)
 	Owner->ChangeSpeed();
 
 	AttachToComponent(InCharacter->BombSphereComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
 }
