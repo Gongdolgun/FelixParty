@@ -116,3 +116,16 @@ void ALobbyGameMode::LeaveSession(ALobbyController* InController)
 		}
 	}
 }
+
+void ALobbyGameMode::UpdatePlayerTextureRender()
+{
+	for (auto Player : ConnectedPlayers)
+	{
+		ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(Player->GetPawn());
+		if(LobbyCharacter != nullptr)
+		{
+			int32 Num = ConnectedPlayers.Find(Player);
+			LobbyCharacter->SetTextureTarget_NMC(Num);
+		}
+	}
+}
