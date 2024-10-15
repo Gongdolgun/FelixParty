@@ -34,6 +34,7 @@ void ARestraint::BeginPlay()
 	PlayerCharacter = Cast<ABombCharacter>(GetOwner());
 
 	Capsule->OnComponentHit.AddDynamic(this, &ARestraint::OnHit);
+	
 }
 
 void ARestraint::Tick(float DeltaTime)

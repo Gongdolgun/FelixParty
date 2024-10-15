@@ -7,7 +7,6 @@
 #include "Components/WidgetComponent.h"
 #include "Controllers/DefaultController.h"
 #include "GameModes/BombGameMode.h"
-#include "Particles/ParticleSystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
 ABomb::ABomb()

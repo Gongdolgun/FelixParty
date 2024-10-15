@@ -40,6 +40,7 @@ public:
 
 	void DisableMovement(ABombCharacter* TargetCharacter);
 
+
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
