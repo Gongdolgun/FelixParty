@@ -8,10 +8,10 @@ ADestroyObject::ADestroyObject()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
-	Helpers::CreateComponent<USphereComponent>(this, &Sphere, "Sphere");
+	/*Helpers::CreateComponent<USphereComponent>(this, &Sphere, "Sphere");
 	Helpers::CreateComponent<UStaticMeshComponent>(this, &StaticMesh, "StaticMesh", Sphere);
-	Helpers::CreateComponent<UParticleSystem>(this, &Particle, "Particle", StaticMesh);
-	Helpers::CreateActorComponent<UProjectileMovementComponent>(this, &Projectile, "Projectile");
+	Helpers::CreateComponent<UParticleSystem>(this, &Particle, "Particle", StaticMesh);*/
+	//Helpers::CreateActorComponent<UProjectileMovementComponent>(this, &Projectile, "Projectile");
 
 }
 
