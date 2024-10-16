@@ -1,9 +1,17 @@
 #include "GameModes/DefaultGameMode.h"
 #include "Global.h"
+#include "Actors/Spawner_TotalCharacter.h"
+#include "Actors/TotalScoreCharacter.h"
 #include "Characters/DefaultCharacter.h"
 #include "Controllers/DefaultController.h"
 #include "GameInstances/OnlineGameInstance.h"
 #include "GameState/DefaultGameState.h"
+
+ADefaultGameMode::ADefaultGameMode()
+{
+	Helpers::GetClass(&Spawner_TotalCharacter, "/Game/Widgets/TotalRank/BP_Spawner_TotalCharacter.BP_Spawner_TotalCharacter_C");
+	
+}
 
 void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 {
@@ -34,12 +42,9 @@ void ADefaultGameMode::OnPostLogin(AController* NewPlayer)
 
 	else
 	{
-		if (ConnectedPlayers.Num() < FCString::Atoi(*ParamValue))
+		if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
 		{
-			if (ADefaultController* Controller = Cast<ADefaultController>(NewPlayer))
-			{
-				ConnectedPlayers.Add(Controller);
-			}
+			ConnectedPlayers.Add(Controller);
 		}
 	}
 }
@@ -53,12 +58,17 @@ void ADefaultGameMode::BeginPlay()
 
 	if (DefaultGameState != nullptr && GameInstance != nullptr)
 	{
+		DefaultGameState->OnGameStateTypeChanged.AddDynamic(this, &ADefaultGameMode::OnGameStateTypeChanged);
+
 		for (auto It = GameInstance->PlayerDatas.CreateConstIterator(); It; ++It)
 		{
 			FString PlayerName = It.Value().PlayerName.ToString();
 			FColor PlayerColor = It.Value().PlayerColor;
-			DefaultGameState->AddPlayerData(PlayerName, 0, PlayerColor);
+			int32 TotalScore = It.Value().TotalScore;
+			DefaultGameState->AddPlayerData(PlayerName, 0, PlayerColor, TotalScore);
 		}
+
+		GameInstance->CurrentRound++;
 	}
 }
 
@@ -78,6 +88,22 @@ void ADefaultGameMode::UpdatePlayer()
 					DefaultCharacter->ChangeMaterial(GameInstance->PlayerDatas[PlayerID].PlayerColor);
 				}
 			}
+		}
+	}
+}
+
+void ADefaultGameMode::OnGameStateTypeChanged(EGameStateType InPrevGameType, EGameStateType InNewGameType)
+{
+	if(InNewGameType == EGameStateType::GameOver)
+	{
+		if(Spawner_TotalCharacter != nullptr)
+		{
+			FActorSpawnParameters params;
+			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			FVector SpawnLocation = FVector(0, 0, -10000);
+
+			ASpawner_TotalCharacter* SpawnedActor = GetWorld()->SpawnActor<ASpawner_TotalCharacter>(Spawner_TotalCharacter, SpawnLocation, FRotator::ZeroRotator, params);
 		}
 	}
 }

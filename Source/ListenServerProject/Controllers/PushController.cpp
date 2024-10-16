@@ -14,12 +14,12 @@ void APushController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CreateHPBar();
-	//ADefaultGameState* gameState = Cast<ADefaultGameState>(UGameplayStatics::GetGameState(this));
-	//if (gameState)
-	//{
-	//	gameState->OnGameStateTypeChanged.AddDynamic(this, &ThisClass::OnGamePlayStart);
-	//}
+	//CreateOverlayWidget();
+	DefaultGameState = Cast<ADefaultGameState>(UGameplayStatics::GetGameState(this));
+	if (DefaultGameState)
+	{
+		DefaultGameState->OnGameStateTypeChanged.AddDynamic(this, &ThisClass::OnGamePlay);
+	}
 }
 
 void APushController::Tick(float DeltaSeconds)
@@ -27,25 +27,21 @@ void APushController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-void APushController::CreateHPBar()
+void APushController::CreateOverlayWidget_Client_Implementation()
 {
-	// HP Widget
-	if (SelectHPBar && IsLocalController())
+	if (SelectOverlay && IsLocalController())
 	{
-		HpWidget = CreateWidget<UUserWidget>(this, SelectHPBar);
-		if (HpWidget)
+		OverlayWidget = CreateWidget<UUserWidget>(this, SelectOverlay);
+		if (OverlayWidget)
 		{
-			HpWidget->AddToViewport();
-			HpWidget->SetVisibility(ESlateVisibility::Visible);
+			OverlayWidget->AddToViewport();
 		}
 	}
 }
 
-void APushController::OnGamePlayStart(EGameStateType InPrevGameType, EGameStateType InNewGameType)
+void APushController::OnGamePlay(EGameStateType InPrevGameType, EGameStateType InNewGameType)
 {
-	if (InNewGameType == EGameStateType::GameStart)
-	{
-		CreateHPBar();
-	}
+	if (InNewGameType == EGameStateType::GamePlay)
+		CreateOverlayWidget_Client();
 }
 

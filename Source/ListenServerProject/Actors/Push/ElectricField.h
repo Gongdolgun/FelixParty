@@ -17,14 +17,14 @@ private:
 	UPROPERTY(EditAnywhere, Replicated)
 	class UStaticMeshComponent* RingMesh;
 
-public:	
+public:
 	AElectricField();
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
@@ -49,11 +49,12 @@ private:
 
 	class APushGameState* PushGameState;
 
-
 	float GamePlayTime = 0.0f;
-
 	float CapsuleRadius = 0.0f;
-	float FieldRadius = 0.0f;
+
+public:
+	float CurrFieldRadius = 0.0f;
+
 };
 
 

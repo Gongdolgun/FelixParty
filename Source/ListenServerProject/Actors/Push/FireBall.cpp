@@ -16,15 +16,17 @@ AFireBall::AFireBall()
 
 	bReplicates = true;
 	Particle->SetIsReplicated(true);
-	ProjectileComponent->InitialSpeed = 1000.0f;
-
+	ProjectileComponent->InitialSpeed = 2000.0f;
 }
 
 void AFireBall::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetLifeSpan(5.0f);
+	SetLifeSpan(4.0f);
+
+	OwnerCharacter = Cast<ACharacter>(GetOwner());
+	if (OwnerCharacter == nullptr) return;
 
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnComponentBeginOverlap);
 }
@@ -33,6 +35,17 @@ void AFireBall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (ProjectileComponent)
+	{
+		if (OwnerCharacter)
+		{
+			Object_Velocity = OwnerCharacter->GetActorForwardVector() * ProjectileComponent->InitialSpeed;
+
+			ProjectileComponent->Velocity = UKismetMathLibrary::VInterpTo(ProjectileComponent->Velocity, Object_Velocity, DeltaTime, InterpSpeed);
+			SetActorRotation(UKismetMathLibrary::RInterpTo(GetActorRotation(), Object_Rotation, DeltaTime, InterpSpeed));
+		}
+	}
+	
 }
 
 void AFireBall::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -40,25 +53,25 @@ void AFireBall::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AAc
 {
 	ACharacter* character = Cast<ACharacter>(OtherActor);
 	IIDamage* HittedCharacter = Cast<IIDamage>(OtherActor);
-	if (HittedCharacter == nullptr || character == nullptr) return;
 
-	HitData.Damage = 40.0f;
-	HitData.Launch = GetActorForwardVector() * 1500.0f;
+	if (OtherActor != OwnerCharacter)
+	{
+		if (HittedCharacter && character)
+		{
+			HitData.Damage = 5.0f;
+			HitData.Launch = (GetActorForwardVector() * 1800.0f) + FVector(0.0f, 0.0f, 300.0f);
 
-	HittedCharacter->Hit(this, HitData);
+			HittedCharacter->Hit(this, HitData);
+		}
+		
+		OnDestroy();
 
-	Destroyed();
+		return;
+	}
 }
 
 void AFireBall::OnDestroy()
 {
-	
-}
-
-void AFireBall::Destroyed()
-{
-	Super::Destroyed();
-
 	if (this == nullptr) return;
 
 	if (Explosion)
@@ -75,4 +88,3 @@ void AFireBall::Destroyed()
 	Particle->SetActive(false);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
-

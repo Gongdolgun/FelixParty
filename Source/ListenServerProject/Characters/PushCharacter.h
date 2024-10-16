@@ -10,7 +10,7 @@ class LISTENSERVERPROJECT_API APushCharacter : public ADefaultCharacter
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(BlueprintReadOnly, Replicated, VisibleAnywhere, Category = "Components")
 	class UStateComponent* StateComponent;
 
 public:
@@ -32,7 +32,7 @@ protected:
 	virtual void Jump() override;
 
 	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
-	virtual void ViewOption() override;
+
 
 public:
 	UFUNCTION(Server, Reliable)
@@ -64,7 +64,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	class UAnimMontage* HittedMontage;
 
-	UPROPERTY(EditAnywhere, Category ="Respawn")
+	UPROPERTY(EditAnywhere, Category = "Respawn")
 	TSubclassOf<AActor> Respawner;
 
 	FTimerHandle SpawnTimerHandle;

@@ -13,8 +13,9 @@ UParkourComponent::UParkourComponent()
     Arrows.SetNum((int32)EParkourArrowType::Max);
     HitResults.SetNum((int32)EParkourArrowType::Max);
 
+    // Parkour 타입별로 초기값 세팅
     HighStruct.ZOffsetHand = -60.0f;
-    HighStruct.ZOffsetLanding = 30.0f;
+    HighStruct.ZOffsetLanding = -70.0f;
     HighStruct.MontageLength = 1.1f;
 
     LowStruct.ZOffsetHand = 5.0f;
@@ -24,6 +25,11 @@ UParkourComponent::UParkourComponent()
     JumpStruct.ZOffsetHand = 0.0f;
     JumpStruct.ZOffsetLanding = 30.0f;
     JumpStruct.MontageLength = 0.9f;
+
+    // Parkour 에셋 세팅
+    //Helpers::GetAsset<UAnimMontage>(&High_ParkourMontage, "/Game/GameTypes/OnlyUp/Animations/Montages/RE_ParkourHigh.RE_ParkourHigh");
+    //Helpers::GetAsset<UAnimMontage>(&Low_ParkourMontage, "/Game/GameTypes/OnlyUp/Animations/Montages/RE_ParkourLow.RE_ParkourLow");
+    //Helpers::GetAsset<UAnimMontage>(&Jump_ParkourMontage, "/Game/GameTypes/OnlyUp/Animations/Montages/RE_JumpParkour.RE_JumpParkour");
 }
 
 void UParkourComponent::BeginPlay()
@@ -55,25 +61,8 @@ void UParkourComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(ThisClass, OwnerCharacter);
-
-    DOREPLIFETIME(ThisClass, bCanParkour);
-    DOREPLIFETIME(ThisClass, Correction_Height_Relative);
-
-    DOREPLIFETIME(ThisClass, last_TraceAdd1);
-    DOREPLIFETIME(ThisClass, last_TraceAdd2);
-
-    DOREPLIFETIME(ThisClass, ParkourPos1);
-    DOREPLIFETIME(ThisClass, ParkourPos2);
-
-    DOREPLIFETIME(ThisClass, ParkourRelative);
-    DOREPLIFETIME(ThisClass, falling_ImpactPoint);
-
-    DOREPLIFETIME(ThisClass, OutParkourStruct);
-
-    DOREPLIFETIME(ThisClass, CharacterLocation);
-    DOREPLIFETIME(ThisClass, CharacterForward);
-    DOREPLIFETIME(ThisClass, AddPlayerLocationZ);
+   
+   
 }
 
 FVector UParkourComponent::GetParkourPos1()
@@ -84,42 +73,6 @@ FVector UParkourComponent::GetParkourPos1()
 FVector UParkourComponent::GetParkourPos2()
 {
     return ParkourPos2;
-}
-
-void UParkourComponent::CorrectPlayerLocation(EParkourType ParkourType)
-{
-    CharacterLocation = OwnerCharacter->GetActorLocation();
-    CharacterForward = OwnerCharacter->GetActorForwardVector();
-
-    AddPlayerLocationZ = 0.0f;
-
-    switch (ParkourType)
-    {
-    case EParkourType::High:
-        AddPlayerLocationZ = ParkourRelative.AddPlayerLocationZ_High;
-        ParkourRelative.AddPlayerLocationForward = 0.0f;
-        break;
-
-    case EParkourType::Low:
-        AddPlayerLocationZ = ParkourRelative.AddPlayerLocationZ_Low;
-        ParkourRelative.AddPlayerLocationForward = 0.0f;
-        break;
-
-    case EParkourType::Jump:
-        AddPlayerLocationZ = ParkourRelative.AddPlayerLocationZ_Jump;
-        ParkourRelative.AddPlayerLocationForward = 15.0f;
-        break;
-
-    default:
-        CLog::Print("Default Error");
-        break;
-    }
-
-    falling_ImpactPoint = FVector(
-        CharacterLocation.X, CharacterLocation.Y, falling_ImpactPoint.Z + AddPlayerLocationZ)
-        + FVector(CharacterForward * ParkourRelative.AddPlayerLocationForward);
-
-    OwnerCharacter->SetActorLocation(falling_ImpactPoint);
 }
 
 void UParkourComponent::SetCanParkour(bool bInCanParkour)
@@ -205,7 +158,7 @@ void UParkourComponent::ParkourTrace(FParkourStruct InParkourLocation, float InI
     // 모든 방향이 충돌했을 때 또는 Down 방향만 충돌했을 때
     if ((bAllHit && Check_ObjectRotation()) || (bDownHit && OwnerCharacter->CanJump()))
     {
-        ParkourCheck(InSecondaryTraceZOffset, InFallingHeightMultiplier, OutParkourStruct.ParkourType);
+        ParkourCheck_NMC(InSecondaryTraceZOffset, InFallingHeightMultiplier, OutParkourStruct.ParkourType);
     }
 
     else
@@ -219,11 +172,12 @@ void UParkourComponent::ParkourTrace(FParkourStruct InParkourLocation, float InI
 
 }
 
-void UParkourComponent::ParkourCheck(float InSecondaryTraceZOffset, float InFallingHeightMultiplier, EParkourType ParkourType)
+void UParkourComponent::ParkourCheck_NMC_Implementation(float InSecondaryTraceZOffset, float InFallingHeightMultiplier,
+	EParkourType InParkourType)
 {
     FVector falling_Start;
     FVector falling_End;
-    EParkourType parkourType = ParkourType;
+    EParkourType parkourType = InParkourType;
 
     bool falling = OwnerCharacter->GetCharacterMovement()->IsFalling();
 
@@ -281,8 +235,10 @@ void UParkourComponent::ParkourCheck(float InSecondaryTraceZOffset, float InFall
             float Height = falling_ImpactPoint.Z - OwnerCharacter->GetActorLocation().Z;
             //CLog::Print(Height);
             bool bHeightCheck = true;
-            bHeightCheck &= 20.0f < Height;
+            bHeightCheck &= 18.0f < Height;
             bHeightCheck &= Height < 45.0f;
+
+            //CLog::Print(Height);
 
             // 일반 파쿠르에서 Low와 High 의 사이
             if (bHeightCheck == true)
@@ -349,6 +305,17 @@ void UParkourComponent::ParkourCheck(float InSecondaryTraceZOffset, float InFall
             }
         }
     }
+}
+
+void UParkourComponent::ParkourCheck_Server_Implementation(float InSecondaryTraceZOffset,
+                                                           float InFallingHeightMultiplier, EParkourType InParkourType)
+{
+    ParkourCheck_NMC(InSecondaryTraceZOffset, InFallingHeightMultiplier, InParkourType);
+}
+
+void UParkourComponent::ParkourCheck(float InSecondaryTraceZOffset, float InFallingHeightMultiplier, EParkourType InParkourType)
+{
+    ParkourCheck_Server(InSecondaryTraceZOffset, InFallingHeightMultiplier, InParkourType);
 }
 
 void UParkourComponent::LineTrace(EParkourArrowType InType, float InInitialTraceLength)
@@ -440,8 +407,7 @@ void UParkourComponent::PlayParkourMontage_Server_Implementation(EParkourType Pa
 
 void UParkourComponent::PlayParkourMontage(EParkourType ParkourType)
 {
-    if (OwnerCharacter->IsLocallyControlled())
-        PlayParkourMontage_Server(ParkourType);
+	PlayParkourMontage_Server(ParkourType);
 }
 
 

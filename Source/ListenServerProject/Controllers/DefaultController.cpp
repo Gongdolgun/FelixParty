@@ -12,6 +12,7 @@
 
 ADefaultController::ADefaultController()
 {
+	PrimaryActorTick.bCanEverTick = true;
 
 }
 
@@ -33,6 +34,19 @@ void ADefaultController::BeginPlay()
 	// Input Mode
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
+
+	// Host의 Ready상태는 True 고정
+	if(HasAuthority())
+	{
+		for (auto& PlayerData : DefaultGameState->PlayerDatas)
+		{
+			if (PlayerData.PlayerName == GetPlayerState<APlayerState>()->GetPlayerName())
+			{
+				PlayerData.Ready = true;
+				break;
+			}
+		}
+	}
 }
 
 void ADefaultController::Tick(float DeltaSeconds)
@@ -41,17 +55,15 @@ void ADefaultController::Tick(float DeltaSeconds)
 
 	SetHUDTime();
 	SetGameStateType();
+
+	//CLog::Print(bPressKey);
 }
 
 void ADefaultController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	ADefaultCharacter* DefaultCharacter = Cast<ADefaultCharacter>(InPawn);
-	if (DefaultCharacter)
-	{
-
-	}
+	
 }
 
 void ADefaultController::SetHUDTime()
@@ -117,6 +129,20 @@ void ADefaultController::SetGameStateType()
 	{
 		CharacterOverlay->GameStateType->SetText(FText::FromString(EnumToString(DefaultGameState->GetGameStateType())));
 	}
+}
+
+void ADefaultController::ViewOption(EOptionTypes InOptionType)
+{
+	if (DefaultHUD == nullptr) return;
+
+	DefaultHUD->ShowOptionWidget(InOptionType);
+}
+
+void ADefaultController::PlayHitAnim(EHitAnimType InHitAnimType)
+{
+	if (DefaultHUD == nullptr) return;
+
+	DefaultHUD->PlayHitAnim(InHitAnimType);
 }
 
 void ADefaultController::WidgetTypeChange_NMC_Implementation(EGameStateType InPrevGameType, EGameStateType InNewGameType)

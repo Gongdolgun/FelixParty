@@ -15,23 +15,28 @@ void UNF_SpawnObject::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase
 	if (MeshComp == nullptr) return;
 	if (MeshComp->GetOwner() == nullptr) return;
 
-	APushCharacter* OwerCharacter = Cast<APushCharacter>(MeshComp->GetOwner());
-	if (OwerCharacter == nullptr) return;
+	APushCharacter* OwnerCharacter = Cast<APushCharacter>(MeshComp->GetOwner());
+	if (OwnerCharacter == nullptr) return;
+	APlayerController* PlayerController = Cast<APlayerController>(OwnerCharacter->GetController());
+	if (PlayerController == nullptr) return;
 
-	if (ActorClass && OwerCharacter->IsLocallyControlled())
+	if (ActorClass && OwnerCharacter->IsLocallyControlled())
 	{
+		// 화면 크기를 가져와서 중앙의 스크린 좌표 계산
+		FIntPoint Size = GEngine->GameViewport->Viewport->GetSizeXY();
+		FVector2D ScreenCenter = FVector2D(Size.X, Size.Y) * 0.5f;
+
+		// 스크린 좌표를 월드 좌표로 변환
+		FVector WorldLocation;
+		FVector WorldDirection;
+		PlayerController->DeprojectScreenPositionToWorld(ScreenCenter.X, ScreenCenter.Y, WorldLocation, WorldDirection);
+
 		FTransform transform;
-		transform.SetLocation(OwerCharacter->GetActorLocation() + 
-			(OwerCharacter->GetActorForwardVector() * 60.0f) + OwerCharacter->GetActorRightVector() * LeftDistance);
-		transform.SetRotation(FQuat(OwerCharacter->GetActorForwardVector().Rotation()));
-		transform.SetScale3D(FVector(1.0f, 1.0f, 1.0f));
+		transform.SetLocation(OwnerCharacter->GetActorLocation() +
+			(OwnerCharacter->GetActorForwardVector() * 80.0f) + (OwnerCharacter->GetActorRightVector() * 15.0f));
+		transform.SetRotation(FQuat(WorldDirection.Rotation()));
 
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = OwerCharacter;
-
-		OwerCharacter->SpawnObject_Server(ActorClass, transform);
-		//OwerCharacter->GetWorld()->SpawnActor(ActorClass, &transform, SpawnParams);
+		OwnerCharacter->SpawnObject_Server(ActorClass, transform);
+		
 	}
-
-	
 }

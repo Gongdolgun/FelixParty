@@ -5,7 +5,6 @@
 #include "Components/SphereComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "SpawnActor/TargetDecal.h"
-#include "Widgets/PlayerSkillTime.h"
 #include "Widgets/TargetAim.h"
 #include "BombCharacter.generated.h"
 
@@ -28,6 +27,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
+	virtual void OnCollision() override;
+	virtual void OffCollision() override;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -41,7 +43,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TargetAimCamera;
 
-private:
+public:
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* Attack_Montage;
 
@@ -58,6 +60,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent* HandSphere;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USphereComponent* BombSphereComponent;
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Wall")
 	TSubclassOf<class AWall> WallClass;
@@ -71,39 +76,22 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Restraint")
 	TSubclassOf<class UTargetAim> TargetAimClass;
 
-	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<class UPlayerSkillTime> PlayerSkillTimeWidgetClass;
-
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_SubAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Zoom;
 
-	UPROPERTY(EditAnywhere, Category = "Wall")
-	float Rate;
-
 public:
 	FAttachmentBeginOverlap OnAttachmentBeginOverlap;
-
-	class ABombCharacter* PlayerCharacter;
-
-	class ABomb* Bomb;
-
-	EActionState CurrentActionState = EActionState::Idle;
-
-	ATargetDecal* TargetDecal;
-
-	UTargetAim* TargetAimWidget;
-
-	UPlayerSkillTime* PlayerSkillTimeWidget;
+	ADecalActor* TargetDecal;
 
 public:
 	void Action() override;
-
 	void HandleAction();
 
-	void Attack();
+	UFUNCTION(NetMulticast, Reliable)
+	void DeadEvent_NMC();
 
 	UFUNCTION(Server, Reliable)
 	void ServerAttack();
@@ -112,120 +100,29 @@ public:
 	void MulticastAttack();
 
 	UFUNCTION(Server, Reliable)
-	void ServerPlayWall();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiPlayWall();
-
-	UFUNCTION(Server, Reliable)
 	void ServerSpawnWall(const FVector& Location, const FRotator& Rotation);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiSpawnWall(const FVector& Location, const FRotator& Rotation);
+	UFUNCTION(Server, Reliable)
+	void ServerSpawnRestraint(const FVector& Location, const FRotator& Rotation);
 
 	UFUNCTION(Server, Reliable)
-	void ServerPlayRestraint();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiPlayRestraint();
-
-	UFUNCTION(Server, Reliable)
-	void ServerSpawnRestraint();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiSpawnRestraint(const FVector& Location, const FRotator& Rotation, const FVector& Velocity);
-
-	UFUNCTION(BlueprintCallable, Category = "Cooldown")
-	void StartWallCooldown();
-
-	UFUNCTION(BlueprintCallable, Category = "Cooldown")
-	void StartRestraintCooldown();
-
-	// 서버에서 폭탄을 생성
-	UFUNCTION(Server, Reliable)
-	void ServerSpawnBomb(TSubclassOf<class ABomb> BombSpawn);
-
-	// 모든 클라이언트에게 폭탄 생성 및 부착 정보 전파
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiSpawnBomb(ABomb* SpawnBomb);
-
-	UFUNCTION()
 	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnAttackSuccess(ACharacter* Attacker, ACharacter* HitActor);
-
-	void PlaceWall();
-
-	void SetActionState(EActionState NewState);
-
-	bool IsInAction() const;
 
 	void SetZooming(const FInputActionValue& Value);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
-	UPROPERTY(Replicated)
-	bool bBombReplicate;
-
-	UPROPERTY(Replicated)
-	bool bBombReplicateMovement;
-
-	UPROPERTY(Replicated)
-	FVector BombLocation;
-
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, BlueprintReadOnly)
 	bool bBomb = false;
 
-	UPROPERTY(Replicated)
-	bool bIsDead = false;
-
-	bool bAttack = false;
-
-	bool bIsSpawningRestraint = false;
-
-	bool bIsDecal = false;
-
-	bool bUsingTargetAimCamera = false;
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsAim = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* NewCountdownSound;
 
-private:
-	void EnableCollision();
-	void DisableCollision();
-
-	void BombExplosion();
-
-	void ResetBomb();
-
-	void PlayDead();
-
-	void Dead();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiDead();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiDestroyCharacter();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void CreateWidget_NMC(EGameStateType InPrevGameType, EGameStateType InNewGameType);
-
-	FTimerHandle CollisionTimerHandle;
-
-	FTimerHandle BombTimerHandle;
-
-	FTimerHandle BombParticleHandle;
-
-	FTimerHandle DeadTimerHandle;
-
-	FTimerHandle ResetSpawnFlagHandle;
-
 public:
-	bool IsAlive() const { return !bIsDead; }
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float BaseMovementSpeed = 600.0f;
 
@@ -233,21 +130,23 @@ public:
 	float BombMovementSpeed = 1.5f;
 
 	UFUNCTION(BlueprintCallable)
-	float GetCurrentMovementSpeed() const;
+	void ChangeSpeed();
+
+	UFUNCTION(Server, Reliable)
+	void ChangeSpeed_Server(float InSpeed);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ChangeSpeed_NMC(float InSpeed);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxWallCooltime = 10.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CoolTime")
-	float WallCoolTime = 10.0f;
+	float CurrentWallCoolTime = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CoolTime")
 	float RestraintCoolTime = 30.0f;
 
-	float LastWallSpawnTime;
-
-	float LastRestraintSpawnTime;
-
-	float WallCooldownRemaining;
-	float RestraintCooldownRemaining;
+	void PlayMontage(UAnimMontage* Montage);
 
 };
-
-

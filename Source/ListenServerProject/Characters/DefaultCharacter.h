@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UWeaponComponent* WeaponComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UChatComponent* ChatComponent;
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Move;
@@ -60,6 +63,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* IA_Option;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* IA_Emote;
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<UMaterialInstanceDynamic*> MyMaterials;
@@ -103,10 +109,30 @@ public:
 	void ChangeMaterial(FColor InColor);
 
 protected:
-	virtual void ViewOption();
+	void ShowGamePlayOption();
+
+	UFUNCTION(BlueprintCallable)
+	void ShowEmoteOption();
+
+
+public:
+	UFUNCTION(NetMulticast, Reliable)
+	void PlayEmoteMontage_NMC(UAnimMontage* InAnimMontage);
+
+	UFUNCTION(Server, Reliable)
+	void PlayEmoteMontage_Server(UAnimMontage* InAnimMontage);
+
+	UFUNCTION(BlueprintCallable)
+	void PlayEmoteMontage(UAnimMontage* InAnimMontage);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Widget")
 	TSubclassOf<class UUserWidget> SelectOptionWidget;
 	UUserWidget* OptionWidget;
+
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<class UUserWidget> SelectEmoteWidget;
+	UUserWidget* EmoteWidget;
 };
+
+

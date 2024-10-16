@@ -17,6 +17,12 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName PlayerName = FName(TEXT("Player Name"));
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FColor PlayerColor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 SelectedColorIndex = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -137,6 +143,9 @@ struct FPlayerInGameData
     int32 Score;
 
     UPROPERTY(BlueprintReadOnly)
+    int32 TotalScore;
+
+    UPROPERTY(BlueprintReadOnly)
     bool Ready = false;
 
     FPlayerInGameData()
@@ -149,10 +158,11 @@ struct FPlayerInGameData
         , Score(InScore)
     {}
 
-    FPlayerInGameData(const FString& InPlayerName, int32 InScore, FColor InColor)
+    FPlayerInGameData(const FString& InPlayerName, int32 InScore, FColor InColor, int32 InTotalScore)
         : PlayerName(InPlayerName)
         , Score(InScore)
 		, PlayerColor(InColor)
+		, TotalScore(InTotalScore)
     {}
 };
 
@@ -229,4 +239,36 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mouse")
     bool bTempInvertY = false;
+};
+
+USTRUCT(BlueprintType)
+struct FInputTypeInPreviewUI : public FTableRowBase
+{
+    GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString InputName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D* InputImage;
+};
+
+USTRUCT(BlueprintType)
+struct FGameInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FText GameName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FInputTypeInPreviewUI> InputTypes;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString Game_Description;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    class UMediaSource* MediaSource;
 };

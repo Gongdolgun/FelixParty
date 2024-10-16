@@ -19,7 +19,4 @@ protected:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-public:
-	int32 GetPlayerScore(const FString& PlayerName) const;
-
 };

@@ -7,6 +7,7 @@
 #include "Global.h"
 #include "OnlineSubsystem.h"
 #include "Characters/LobbyCharacter.h"
+#include "GameState/LobbyGameState.h"
 #include "Interfaces/OnlineFriendsInterface.h"
 
 void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
@@ -17,19 +18,28 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
 
 	// 인게임에서 사용할 플레이어 데이터 초기화 (Game Instance)
-	if(Controller && GameInstance)
+	if (Controller && GameInstance)
 	{
 		FString PlayerID = Controller->GetPlayerState<APlayerState>()->GetPlayerName();
 
 		GameInstance->PlayerDatas.Add(PlayerID, DefaultPlayerData);
-		if(GameInstance->PlayerDatas.Contains(PlayerID))
+		if (GameInstance->PlayerDatas.Contains(PlayerID))
 		{
 			GameInstance->PlayerDatas[PlayerID].PlayerName = FName(*PlayerID);
 		}
 	}
 
+	ALobbyGameState* LobbyGameState = GetGameState<ALobbyGameState>();
+	if(LobbyGameState && Controller)
+	{
+		FPlayerBaseInfo PlayerInfo;
+		PlayerInfo.PlayerName = FName(Controller->GetPlayerState<APlayerState>()->GetPlayerName());
+		LobbyGameState->PlayerBaseInfos.Add(PlayerInfo);
+	}
+
+
 	// Player Base Info 초기화
-	if(Controller && GameInstance)
+	if (Controller && GameInstance)
 	{
 		ConnectedPlayers.Add(Controller);
 
@@ -42,7 +52,7 @@ void ALobbyGameMode::OnPostLogin(AController* NewPlayer)
 
 		PlayerBaseInfos.Add(Controller->PlayerInfo);
 
-		for(auto Player : ConnectedPlayers)
+		for (auto Player : ConnectedPlayers)
 		{
 			Player->UpdatePlayerList(PlayerBaseInfos);
 		}
@@ -53,7 +63,7 @@ void ALobbyGameMode::UpdatePlayerLists()
 {
 	PlayerBaseInfos.Empty();
 
-	for(auto Player : ConnectedPlayers)
+	for (auto Player : ConnectedPlayers)
 		PlayerBaseInfos.Add(Player->PlayerInfo);
 
 	for (auto Player : ConnectedPlayers)
@@ -65,11 +75,11 @@ void ALobbyGameMode::UpdatePlayerMaterial()
 	for (auto Player : ConnectedPlayers)
 	{
 		UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
-		if(GameInstance != nullptr)
+		if (GameInstance != nullptr)
 		{
 			FString PlayerID = Player->GetPlayerState<APlayerState>()->GetPlayerName();
 
-			if(GameInstance->PlayerDatas.Contains(PlayerID))
+			if (GameInstance->PlayerDatas.Contains(PlayerID))
 			{
 				if (ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(Player->GetPawn()))
 				{
@@ -80,27 +90,42 @@ void ALobbyGameMode::UpdatePlayerMaterial()
 	}
 }
 
+// 세션 나가기
 void ALobbyGameMode::LeaveSession(ALobbyController* InController)
 {
 	ConnectedPlayers.Remove(InController);
 	UOnlineGameInstance* GameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
-	if(GameInstance != nullptr)
+
+	if (GameInstance != nullptr)
 	{
 		FString PlayerID = InController->GetPlayerState<APlayerState>()->GetPlayerName();
-		if(GameInstance->PlayerDatas.Contains(PlayerID))
+		if (GameInstance->PlayerDatas.Contains(PlayerID))
 		{
 			GameInstance->PlayerDatas.Remove(PlayerID);
 		}
 
-		for(int i = 0; i < PlayerBaseInfos.Num(); i++)
+		for (int i = 0; i < PlayerBaseInfos.Num(); i++)
 		{
 			if (PlayerBaseInfos[i].PlayerName == PlayerID)
 				PlayerBaseInfos.RemoveAt(i);
 		}
 
-		for(auto Player : ConnectedPlayers)
+		for (auto Player : ConnectedPlayers)
 		{
 			Player->UpdatePlayerList(PlayerBaseInfos);
+		}
+	}
+}
+
+void ALobbyGameMode::UpdatePlayerTextureRender()
+{
+	for (auto Player : ConnectedPlayers)
+	{
+		ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(Player->GetPawn());
+		if(LobbyCharacter != nullptr)
+		{
+			int32 Num = ConnectedPlayers.Find(Player);
+			LobbyCharacter->SetTextureTarget_NMC(Num);
 		}
 	}
 }

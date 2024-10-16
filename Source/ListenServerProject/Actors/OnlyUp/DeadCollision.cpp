@@ -4,6 +4,7 @@
 #include "Global.h"
 #include "Characters/OnlyUpCharacter.h"
 #include "GameFramework/PlayerStart.h"
+#include "GameModes/OnlyUpGameMode.h"
 
 ADeadCollision::ADeadCollision()
 {
@@ -20,8 +21,6 @@ void ADeadCollision::BeginPlay()
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnComponentBeginOverlap);
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), PlayerStarts);
-
-	
 }
 
 void ADeadCollision::Tick(float DeltaTime)
@@ -33,20 +32,26 @@ void ADeadCollision::Tick(float DeltaTime)
 void ADeadCollision::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
     AOnlyUpCharacter* character = Cast<AOnlyUpCharacter>(OtherActor);
-
-    if (character && (OtherActor != this))
+    
+    if (character)
     {
-        int32 SpawnIndex = character->GetSpawnIndex();
+        AOnlyUpGameMode* onlyUpGameMode = Cast<AOnlyUpGameMode>(GetWorld()->GetAuthGameMode());
+        if (onlyUpGameMode == nullptr) return;
+        
+        SpawnIndex = character->GetSpawnIndex();
+        FName TagToCheck = FName(*FString::Printf(TEXT("%d"), SpawnIndex));
 
         for (AActor* PlayerStart : PlayerStarts)
         {
-            FName TagToCheck = FName(*FString::Printf(TEXT("%d"), SpawnIndex));
-
-            if (PlayerStart->ActorHasTag(TagToCheck))
+            if (PlayerStart->ActorHasTag(TagToCheck)) 
             {
-                FVector SpawnLocation = PlayerStart->GetActorLocation();
-                character->PlayerMaterialEventOnSpawn();
-                character->SetActorLocation(SpawnLocation);
+                FTransform transform;
+                transform.SetLocation(PlayerStart->GetActorLocation());
+                transform.SetRotation(FQuat(PlayerStart->GetActorForwardVector().Rotation()));
+
+                character->RespawnPlayer(transform);
+
+                break; 
             }
         }
     }

@@ -3,27 +3,24 @@
 #include "EnhancedInputComponent.h"
 #include "Components/ParkourComponent.h"
 #include "Global.h"
-#include "MotionWarpingComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/MoveComponent.h"
 #include "Components/StateComponent.h"
-#include "Controllers/OnlyUpController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameModes/OnlyUpGameMode.h"
 #include "Net/UnrealNetwork.h"
 
 AOnlyUpCharacter::AOnlyUpCharacter()
 {
 	Helpers::CreateActorComponent<UParkourComponent>(this, &ParkourComponent, "Parkour");
 	Helpers::CreateActorComponent<UStateComponent>(this, &StateComponent, "State");
-	MotionWarpComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("CMotionWarp"));
 
 	// 액터 자체 리플리케이션
 	//SetReplicates(true);
 
 	ParkourComponent->SetIsReplicated(true);
 	StateComponent->SetIsReplicated(true);
-	MotionWarpComponent->SetIsReplicated(true);
 	MoveComponent->SetIsReplicated(true);
 
 	Helpers::CreateComponent<USceneComponent>(this, &ArrowGroup, "ArrowGroup", GetCapsuleComponent());
@@ -67,6 +64,7 @@ void AOnlyUpCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OnlyUpGameMode = Cast<AOnlyUpGameMode>(GetWorld()->GetAuthGameMode());
 }
 
 void AOnlyUpCharacter::Tick(float DeltaTime)
@@ -93,16 +91,7 @@ void AOnlyUpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ThisClass, Initial_Trace_Length);
-	DOREPLIFETIME(ThisClass, Trace_Z_Offset);
-	DOREPLIFETIME(ThisClass, Falling_Height_Multiplier);
-
-	DOREPLIFETIME(ThisClass, ZOffset_Hand);
-	DOREPLIFETIME(ThisClass, ZOffset_Landing);
-	DOREPLIFETIME(ThisClass, Montage_Length);
-
-	//DOREPLIFETIME(ThisClass, ParkourComponent);
-
+	DOREPLIFETIME(ThisClass, SpawnIndex);
 }
 
 void AOnlyUpCharacter::Action()
@@ -125,17 +114,15 @@ void AOnlyUpCharacter::SetModeAndCollision_Server_Implementation(EMovementMode I
 
 void AOnlyUpCharacter::SetModeAndCollision(EMovementMode InMovementMode, bool InCollision)
 {
-	if (IsLocallyControlled())
-	{
-		SetModeAndCollision_Server(InMovementMode, InCollision);
-	}
+	
+	SetModeAndCollision_Server(InMovementMode, InCollision);
+	
 }
 
 void AOnlyUpCharacter::Jump()
 {
-	if (ParkourComponent && ParkourComponent->GetCanParkour() == false)
+	if (StateComponent->IsIdleMode())
 	{
-		//MoveComponent->Jump();
 		Super::Jump();
 	}
 
@@ -153,36 +140,6 @@ void AOnlyUpCharacter::Landed(const FHitResult& Hit)
 	{
 		MoveComponent->UnCrouch();
 	}
-}
-
-void AOnlyUpCharacter::PlayParkour(FVector InParkourPos1, FVector InParkourPos2, float InZOffsetHand,
-                                   float InZOffsetLanding, float InMontageLength)
-{
-	SetModeAndCollision(EMovementMode::MOVE_Flying, false);
-	
-	FVector ParkourPos1 = InParkourPos1 + FVector(0.0f, 0.0f, InZOffsetHand);
-	FVector ParkourPos2 = InParkourPos2 + FVector(0.0f, 0.0f, (InZOffsetLanding - InZOffsetHand));
-	
-	FMotionWarpingTarget Target1;
-	FName motion_Name1 = FName("ParkourPoint1");
-	Target1.Name = motion_Name1;
-	Target1.Location = ParkourPos1;
-	Target1.Rotation = GetActorRotation();
-	MotionWarpComponent->AddOrUpdateWarpTarget(Target1);
-	
-	FMotionWarpingTarget Target2;
-	FName motion_Name2 = FName("ParkourPoint2");
-	Target2.Name = motion_Name2;
-	Target2.Location = ParkourPos2;
-	Target2.Rotation = GetActorRotation();
-	MotionWarpComponent->AddOrUpdateWarpTarget(Target2);
-	
-	//PlayParkourMontage();
-	
-	FTimerHandle timerhandler;
-	GetWorld()->GetTimerManager().SetTimer(timerhandler, FTimerDelegate::CreateLambda([this]() {
-		SetModeAndCollision(EMovementMode::MOVE_Falling, true);
-		}), InMontageLength, false);
 }
 
 void AOnlyUpCharacter::Walk_NMC_Implementation()
@@ -220,13 +177,30 @@ void AOnlyUpCharacter::PlayerMaterialEventOnSpawn_Implementation()
 
 }
 
-void AOnlyUpCharacter::SetSpawnIndex(int32 InIndex)
+void AOnlyUpCharacter::SetSpawnIndex_NMC_Implementation(int32 InIndex)
 {
-	if (InIndex > SpawnIndex)
+	if (InIndex >= SpawnIndex)
 	{
 		SpawnIndex = InIndex;
 	}
 }
 
+void AOnlyUpCharacter::SetSpawnIndex_Server_Implementation(int32 InIndex)
+{
+	SetSpawnIndex_NMC(InIndex);
+}
+
+void AOnlyUpCharacter::SetSpawnIndex(int32 InIndex)
+{
+	SetSpawnIndex_Server(InIndex);
+}
+
+void AOnlyUpCharacter::RespawnPlayer(FTransform InTransform)
+{
+	if (OnlyUpGameMode)
+		OnlyUpGameMode->RespawnPlayer(InTransform, GetController());
+
+	Destroy();
+}
 
 

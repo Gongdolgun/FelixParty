@@ -1,8 +1,10 @@
 #include "Widgets/DefaultHUD.h"
 #include "CharacterOverlay.h"
 #include "Global.h"
+#include "HitBlood.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
+#include "Controllers/DefaultController.h"
 #include "GameModes/OnlyUpGameMode.h"
 #include "Net/UnrealNetwork.h"
 
@@ -18,6 +20,10 @@ void ADefaultHUD::BeginPlay()
 
 	if (HUDClasses.Contains(EHudTypes::Ready))
 		AddCharacterOverlay(HUDClasses[EHudTypes::Ready]);
+
+	// À§Á¬ »ý¼º
+	CreateWidgets<UUserWidget, EOptionTypes>(OptionWidgetClasses, OptionMap);
+	CreateWidgets<UUserWidget, EHitAnimType>(HitAnimClasses, HitAnimMap);
 }
 
 void ADefaultHUD::Tick(float DeltaSeconds)
@@ -39,7 +45,7 @@ void ADefaultHUD::AddCharacterOverlay(TSubclassOf<class UUserWidget> InCharacter
 
 		CharacterOverlay = CreateWidget<UUserWidget>(PlayerController, InCharacterOverlay);
 
-		if(CharacterOverlay != nullptr)
+		if (CharacterOverlay != nullptr)
 			CharacterOverlay->AddToViewport();
 	}
 }
@@ -49,7 +55,7 @@ void ADefaultHUD::ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateTyp
 	switch (InNewGameType)
 	{
 	case EGameStateType::GameStart:
-		if(HUDClasses.Contains(EHudTypes::Countdown))
+		if (HUDClasses.Contains(EHudTypes::Countdown))
 			AddCharacterOverlay(HUDClasses[EHudTypes::Countdown]);
 		break;
 
@@ -63,9 +69,78 @@ void ADefaultHUD::ChangeWidgetClass(EGameStateType InPrevGameType, EGameStateTyp
 			AddCharacterOverlay(HUDClasses[EHudTypes::GameOver]);
 		break;
 
-	case EGameStateType::RankBoard:
-		if (HUDClasses.Contains(EHudTypes::RankBoard))
-			AddCharacterOverlay(HUDClasses[EHudTypes::RankBoard]);
+	case EGameStateType::InGameRankBoard:
+		if (HUDClasses.Contains(EHudTypes::InGameRankBoard))
+			AddCharacterOverlay(HUDClasses[EHudTypes::InGameRankBoard]);
+		break;
+
+	case EGameStateType::TotalRankBoard:
+		if (HUDClasses.Contains(EHudTypes::TotalRankBoard))
+			AddCharacterOverlay(HUDClasses[EHudTypes::TotalRankBoard]);
 		break;
 	}
 }
+
+void ADefaultHUD::ShowOptionWidget(EOptionTypes InOptionType)
+{
+	ADefaultController* PlayerController = Cast<ADefaultController>(GetOwningPlayerController());
+	if (PlayerController == nullptr) return;
+
+	UUserWidget** FoundWidgetPtr = OptionMap.Find(InOptionType);
+
+	if (FoundWidgetPtr)
+	{
+		UUserWidget* FoundWidget = *FoundWidgetPtr;
+
+		if (FoundWidget && !FoundWidget->IsInViewport())
+		{
+			if (InOptionType == EOptionTypes::EmoteOption)
+			{
+				if (PlayerController->bPressKey == false)
+				{
+					PlayerController->bPressKey = true;
+
+					FoundWidget->AddToViewport();
+					FoundWidget->SetFocus();
+
+					PlayerController->SetShowMouseCursor(true);
+					PlayerController->SetInputMode(FInputModeGameAndUI());
+				}
+			}
+			else if (InOptionType == EOptionTypes::GamePlayOption)
+			{
+				FoundWidget->AddToViewport();
+				FoundWidget->SetFocus();
+
+				PlayerController->SetShowMouseCursor(true);
+				PlayerController->SetInputMode(FInputModeUIOnly());
+			}
+		}
+	}
+}
+
+void ADefaultHUD::PlayHitAnim(EHitAnimType InHitAnimType)
+{
+	ADefaultController* PlayerController = Cast<ADefaultController>(GetOwningPlayerController());
+	if (PlayerController == nullptr) return;
+
+	UUserWidget** FoundWidgetPtr = HitAnimMap.Find(InHitAnimType);
+
+	if (FoundWidgetPtr)
+	{
+		UUserWidget* FoundWidget = *FoundWidgetPtr;
+
+		if (FoundWidget)
+		{
+			if (!FoundWidget->IsInViewport())
+				FoundWidget->AddToViewport();
+
+			UHitBlood* hitBlood = Cast<UHitBlood>(FoundWidget);
+			if (hitBlood)
+			{
+				hitBlood->PlayHitAnimation();
+			}
+		}
+	}
+}
+

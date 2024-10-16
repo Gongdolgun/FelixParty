@@ -9,14 +9,14 @@ UCLASS()
 class LISTENSERVERPROJECT_API ARestraint : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ARestraint();
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
@@ -39,6 +39,7 @@ public:
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	void DisableMovement(ABombCharacter* TargetCharacter);
+
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

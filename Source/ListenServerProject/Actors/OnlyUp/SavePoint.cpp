@@ -19,6 +19,12 @@ void ASavePoint::BeginPlay()
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnComponentBeginOverlap);
 }
 
+void ASavePoint::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
+
 void ASavePoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -33,6 +39,7 @@ void ASavePoint::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp, AA
 	if (character && (OtherActor != this))
 	{
 		character->SetSpawnIndex(SavePoint);
+
 	}
 }
 

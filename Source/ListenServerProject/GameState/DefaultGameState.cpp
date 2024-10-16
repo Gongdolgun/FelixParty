@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Net/UnrealNetwork.h"
 #include "Algo/Sort.h"
+#include "GameInstances/OnlineGameInstance.h"
 
 ADefaultGameState::ADefaultGameState()
 {
@@ -36,6 +37,8 @@ void ADefaultGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ThisClass, GameStartTime);
 	DOREPLIFETIME(ThisClass, GamePlayTime);
 	DOREPLIFETIME(ThisClass, GameOverTime);
+	DOREPLIFETIME(ThisClass, InGameRankBoardTime);
+	DOREPLIFETIME(ThisClass, TotalRankBoardTime);
 
 	DOREPLIFETIME(ThisClass, GameStateType);
 
@@ -80,16 +83,28 @@ void ADefaultGameState::SetTimer(float InTime)
 			GameOverTime -= InTime;
 			if (GameOverTime <= 0.0f)
 			{
-				SetGameState(EGameStateType::RankBoard);
+				SetGameState(EGameStateType::InGameRankBoard);
 			}
 		}
 
 		break;
 
-	case EGameStateType::RankBoard:
-		if (RankBoardTime >= 0.0f)
+	case EGameStateType::InGameRankBoard:
+		if (InGameRankBoardTime >= 0.0f)
 		{
-			RankBoardTime -= InTime;
+			InGameRankBoardTime -= InTime;
+			if (InGameRankBoardTime <= 0.0f)
+			{
+				SetGameState(EGameStateType::TotalRankBoard);
+			}
+		}
+
+		break;
+
+	case EGameStateType::TotalRankBoard:
+		if (TotalRankBoardTime >= 0.0f)
+		{
+			TotalRankBoardTime -= InTime;
 		}
 
 		break;
@@ -115,11 +130,14 @@ void ADefaultGameState::SetGameState(EGameStateType InGameStateType)
 			ChangeGameType(EGameStateType::GameOver);
 			break;
 
-		case EGameStateType::RankBoard:
-			ChangeGameType(EGameStateType::RankBoard);
+		case EGameStateType::InGameRankBoard:
+			ChangeGameType(EGameStateType::InGameRankBoard);
+			break;
+
+		case EGameStateType::TotalRankBoard:
+			ChangeGameType(EGameStateType::TotalRankBoard);
 			break;
 		}
-		
 	}
 }
 
@@ -143,6 +161,31 @@ void ADefaultGameState::CalRank()
 	{
 		return A.Score > B.Score;
 	});
+
+	// Total Score 세팅
+	UOnlineGameInstance* OnlineGameInstance = Cast<UOnlineGameInstance>(GetGameInstance());
+
+	if (OnlineGameInstance != nullptr)
+	{
+		for (int i = 0; i < PlayerDatas.Num(); i++)
+		{
+			if (PlayerDatas[i].Score != 0)
+			{
+				PlayerDatas[i].TotalScore += 20 / (i + 1);
+
+				if(OnlineGameInstance->PlayerDatas.Contains(PlayerDatas[i].PlayerName))
+					OnlineGameInstance->PlayerDatas[PlayerDatas[i].PlayerName].TotalScore = PlayerDatas[i].TotalScore;
+			}
+		}
+	}
+}
+
+void ADefaultGameState::CalTotalRank()
+{
+	Algo::Sort(PlayerDatas, [](const FPlayerInGameData& A, const FPlayerInGameData& B)
+	{
+		return A.TotalScore > B.TotalScore;
+	});
 }
 
 void ADefaultGameState::UpdatePlayerScore(const FString& PlayerName, int32 Score)
@@ -152,10 +195,10 @@ void ADefaultGameState::UpdatePlayerScore(const FString& PlayerName, int32 Score
 			PlayerData.Score += Score;
 }
 
-void ADefaultGameState::AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor)
+void ADefaultGameState::AddPlayerData(const FString& PlayerName, int32 Score, FColor PlayerColor, int32 InTotalScore)
 {
 	// 새 플레이어 추가
-	PlayerDatas.Add(FPlayerInGameData(PlayerName, Score, PlayerColor));
+	PlayerDatas.Add(FPlayerInGameData(PlayerName, Score, PlayerColor, InTotalScore));
 }
 
 void ADefaultGameState::SomeoneDeadEvent(FString InAttackerName, FString InHittedCharacterName)
@@ -171,4 +214,11 @@ FPlayerInGameData ADefaultGameState::GetPlayerData(FString PlayerName)
 			return PlayerData;
 
 	return FPlayerInGameData();
+}
+
+void ADefaultGameState::UpdateTotalScore(const FString& InPlayerName, int32 InScore)
+{
+	for (FPlayerInGameData& PlayerData : PlayerDatas)
+		if (PlayerData.PlayerName == InPlayerName)
+			PlayerData.TotalScore += InScore;
 }

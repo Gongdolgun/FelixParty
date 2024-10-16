@@ -8,5 +8,14 @@ UCLASS()
 class LISTENSERVERPROJECT_API ABombController : public ADefaultController
 {
 	GENERATED_BODY()
-	
+
+public:
+	ABombController();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	virtual void Tick(float DeltaSeconds) override;
+
 };

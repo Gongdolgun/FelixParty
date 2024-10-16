@@ -30,6 +30,8 @@ public:
 private:
 	AElectricField* ElectricField;
 	class APushGameState* PushGameState;
+
+	float RespawnRadius = 0.0f;
 };
 
 

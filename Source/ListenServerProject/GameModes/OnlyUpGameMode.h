@@ -17,8 +17,8 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 public:
+	void RespawnPlayer(FTransform InTransform, AController* InController);
 
-
-
-
+private:
+	class AOnlyUpGameState* OnlyUpGameState;
 };

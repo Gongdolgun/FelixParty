@@ -81,7 +81,7 @@ public:
 		ConstructorHelpers::FClassFinder<T> asset(*InPath);
 		*OutClass = asset.Class;
 	}
-	
+
 	static void AttachTo(AActor* InActor, USceneComponent* InParent, FName InSocketName)
 	{
 		InActor->AttachToComponent(InParent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), InSocketName);
