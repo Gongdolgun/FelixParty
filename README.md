@@ -1,4 +1,5 @@
 ![header](https://capsule-render.vercel.app/api?type=waving&color=auto&height=200&section=header&text=Felix&nbsp;Party!&fontSize=60)
+<a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/></a>
 
 <div align=center><h1>Trailor Video</h1></div>
 <div align=center> 
@@ -13,19 +14,8 @@
 <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
 
 # Developers
-<table>
-  <tbody>
-    <tr>
-      <td align="center"><a href=""><img src="width="100px;" alt=""/><br /><sub><b>FE 팀장 : </b></sub></a><br /></td>
-      <td align="center"><a href=""><img src="" width="100px;" alt=""/><br /><sub><b>FE 팀원 : </b></sub></a><br /></td>
-      <td align="center"><a href=""><img src="" width="100px;" alt=""/><br /><sub><b>FE 팀원 : </b></sub></a><br /></td>
-      <td align="center"><a href=""><img src="" width="100px;" alt=""/><br /><sub><b>FE 팀원 : </b></sub></a><br /></td>
-     <tr/>
-      <td align="center"><a href=""><img src="" width="100px;" alt=""/><br /><sub><b>BE 부팀장 : </b></sub></a><br /></td>
-      <td align="center"><a href=""><img src="" width="100px;" alt=""/><br /><sub><b>BE 팀원 : </b></sub></a><br /></td>
-      <td align="center"><a href=""><img src="" width="100px;" alt=""/><br /><sub><b>BE 팀원 : </b></sub></a><br /></td>
-    </tr>
-  </tbody>
-</table>
-
-<a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/></a>
+| 이민학 | 문인수 | 선재형 |
+|:------:|:------:|:------:|
+| <img src="https://github.com/user-attachments/assets/fee705f7-934c-4f29-a76f-5f95311cf833" alt="이민학" width="150"> | <img src="https://github.com/user-attachments/assets/e8964125-a282-4645-8c6c-7657f9ac9df3" alt="문인수" width="150"> | <img src="https://github.com/user-attachments/assets/ecbd9e77-a3bd-4e1d-8e5c-37de161ad0ca" alt="선재형" width="150"> |
+| PL | FE | FE | FE |
+| [GitHub](https://github.com/Gongdolgun) | [GitHub](https://github.com/InsuMoon2) | [GitHub](https://github.com/tjswogud) |
