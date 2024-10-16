@@ -1,4 +1,4 @@
-![header](https://capsule-render.vercel.app/api?type=waving&color=auto&height=200&section=header&text=Felix&nbsp;Party!&fontSize=60)
+![header](https://capsule-render.vercel.app/api?type=waving&color=auto&height=200&section=header&text=Felix&nbsp;Party&fontSize=60)
 
 <div align=center><h1>Trailor Video</h1></div>
 <div align=center> 
