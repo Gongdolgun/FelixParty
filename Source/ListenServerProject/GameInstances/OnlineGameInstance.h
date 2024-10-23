@@ -40,4 +40,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateTotalScore(const FString& InPlayerName, int32 InScore);
+
+	UFUNCTION(BlueprintCallable)
+	void SelectLevel();
 };

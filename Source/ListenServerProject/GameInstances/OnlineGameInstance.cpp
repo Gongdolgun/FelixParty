@@ -28,3 +28,19 @@ void UOnlineGameInstance::SavePlayerInfo_Implementation(const FString& PlayerID,
 		PlayerDatas[PlayerID] = PlayerData;
 	
 }
+
+void UOnlineGameInstance::SelectLevel()
+{
+	if(CurrentRound == TotalRound)	{
+		UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), "servertravel /Game/Levels/FinalMap");
+		return;
+	}
+
+	int32 RandomInteger = UKismetMathLibrary::RandomIntegerInRange(0, Maps.Num() - 1);
+	int32 PlayerCount = PlayerDatas.Num();
+	FString SelectedMap = Maps[RandomInteger];
+
+	Maps.RemoveAt(RandomInteger);
+
+	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), "servertravel /Game/Levels/" + SelectedMap + "?playercount" + FString::FromInt(PlayerCount));
+}

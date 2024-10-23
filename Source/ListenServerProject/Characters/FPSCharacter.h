@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Characters/DefaultCharacter.h"
 #include "Misc/Structures.h"
+#include "AbilitySystemComponent.h"
 #include "FPSCharacter.generated.h"
 
 UCLASS()

@@ -4,6 +4,7 @@
 #include "BlueprintDataDefinitions.h"
 #include "Materials/MaterialInterface.h"
 #include "Enums.h"
+#include "GameplayEffectTypes.h"
 #include "Structures.generated.h"
 
 USTRUCT(BlueprintType)
@@ -271,4 +272,38 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class UMediaSource* MediaSource;
+};
+
+USTRUCT()
+struct FEffectProperties
+{
+    GENERATED_BODY()
+
+    FEffectProperties() {}
+
+    FGameplayEffectContextHandle EffectContextHandle;
+
+    UPROPERTY()
+    UAbilitySystemComponent* SourceASC = nullptr;
+
+    UPROPERTY()
+    AActor* SourceAvatarActor = nullptr;
+
+    UPROPERTY()
+    AController* SourceController = nullptr;
+
+    UPROPERTY()
+    ACharacter* SourceCharacter = nullptr;
+
+    UPROPERTY()
+    UAbilitySystemComponent* TargetASC = nullptr;
+
+    UPROPERTY()
+    AActor* TargetAvatarActor = nullptr;
+
+    UPROPERTY()
+    AController* TargetController = nullptr;
+
+    UPROPERTY()
+    ACharacter* TargetCharacter = nullptr;
 };

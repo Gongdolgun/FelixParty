@@ -27,5 +27,9 @@ public class ListenServerProject : ModuleRules
 
         PublicDependencyModuleNames.Add("MotionWarping");
         PublicDependencyModuleNames.Add("MediaAssets");
+
+        PublicDependencyModuleNames.Add("GameplayAbilities");
+        PublicDependencyModuleNames.Add("GameplayTags");
+        PublicDependencyModuleNames.Add("GameplayTasks");
     }
 }

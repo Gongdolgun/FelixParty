@@ -3,6 +3,7 @@
 #include "AnimInstance_DefaultCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "AbilitySystemComponent.h"
 #include "Global.h"
 #include "Components/MoveComponent.h"
 #include "Controllers/DefaultController.h"

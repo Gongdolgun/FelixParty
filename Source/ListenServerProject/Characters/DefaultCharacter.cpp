@@ -13,6 +13,7 @@
 #include "Controllers/DefaultController.h"
 #include "GameModes/DefaultGameMode.h"
 #include "GameState/DefaultGameState.h"
+#include "GAS/CharacterAttributeSet.h"
 #include "Net/UnrealNetwork.h"
 
 ADefaultCharacter::ADefaultCharacter()
@@ -25,6 +26,9 @@ ADefaultCharacter::ADefaultCharacter()
 	Helpers::CreateActorComponent<UMoveComponent>(this, &MoveComponent, "MoveComponent");
 	Helpers::CreateActorComponent<UWeaponComponent>(this, &WeaponComponent, "WeaponComponent");
 	Helpers::CreateActorComponent<UChatComponent>(this, &ChatComponent, "ChatComponent");
+	Helpers::CreateActorComponent<UAbilitySystemComponent>(this, &AbilitySystemComponent, "AbilitySystemComponent");
+
+	AbilitySystemComponent->SetIsReplicated(true);
 
 	SpringArm->SetRelativeLocation(FVector(0, 0, 60));
 	SpringArm->TargetArmLength = 270;
@@ -90,6 +94,11 @@ void ADefaultCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
+}
+
+UAbilitySystemComponent* ADefaultCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 void ADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

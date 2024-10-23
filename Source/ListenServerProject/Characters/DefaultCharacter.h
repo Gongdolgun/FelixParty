@@ -4,11 +4,13 @@
 #include "InputAction.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/IDamage.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "Misc/Enums.h"
 #include "DefaultCharacter.generated.h"
 
 UCLASS()
-class LISTENSERVERPROJECT_API ADefaultCharacter : public ACharacter, public IIDamage
+class LISTENSERVERPROJECT_API ADefaultCharacter : public ACharacter, public IIDamage, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -26,6 +28,7 @@ public:
 	virtual void OffCollision();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* SpringArm;
@@ -35,6 +38,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
+	UAbilitySystemComponent* AbilitySystemComponent;
 
 	virtual void Hit(AActor* InActor, const FHitData& InHitData) override;
 
@@ -134,5 +140,3 @@ private:
 	TSubclassOf<class UUserWidget> SelectEmoteWidget;
 	UUserWidget* EmoteWidget;
 };
-
-

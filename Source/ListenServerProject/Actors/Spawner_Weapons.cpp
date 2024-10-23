@@ -20,9 +20,9 @@ void ASpawner_Weapons::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCo
 	ADefaultCharacter* OverlappedCharacter = Cast<ADefaultCharacter>(OtherActor);
 	if(OverlappedCharacter != nullptr)
 	{
-		if (IsValid(OverlappedCharacter->WeaponComponent))
+		if (IsValid(OverlappedCharacter->WeaponComponent)) 		
 		{
-			if (SpawnedActor != nullptr && SpawnedActor->IsA(AWeapon::StaticClass()))
+			if (SpawnedActor != nullptr && SpawnedActor->IsA(AWeapon::StaticClass())) 
 			{
 				OverlappedCharacter->WeaponComponent->ChangeType(SpawnedActor->GetClass());
 
