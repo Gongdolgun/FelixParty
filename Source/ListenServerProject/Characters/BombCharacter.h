@@ -84,6 +84,7 @@ private:
 
 public:
 	FAttachmentBeginOverlap OnAttachmentBeginOverlap;
+
 	ADecalActor* TargetDecal;
 
 public:

@@ -48,7 +48,7 @@ void ABombCharacter::BeginPlay()
 	}
 
 	HandSphere->OnComponentBeginOverlap.AddDynamic(this, &ABombCharacter::OnSphereBeginOverlap);
-
+	
 	if (DecalClass)
 	{
 		if (!TargetDecal)
