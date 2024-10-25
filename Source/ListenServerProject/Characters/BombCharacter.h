@@ -8,13 +8,6 @@
 #include "Widgets/TargetAim.h"
 #include "BombCharacter.generated.h"
 
-enum class EActionState
-{
-	Idle,
-	InAction,
-	Dead
-};
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentBeginOverlap, class ACharacter*, InAttacker, AActor*, InAttackCuaser, class ACharacter*, InOther);
 
 UCLASS()

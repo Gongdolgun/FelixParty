@@ -5,15 +5,26 @@
 #include "Components/MoveComponent.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Actors/Crash/DestroyObject.h"
 
 ACrashCharacter::ACrashCharacter()
 {
 	Helpers::CreateActorComponent<UZoomComponent>(this, &Zoom, "Zoom");
+
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed *= 1.5f;
+		GetCharacterMovement()->JumpZVelocity *= 1.5f;
+	}
+
+	SpawnCount = 0;
 }
 
 void ACrashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	MoveComponent->EnableControlRotation();
 }
 
 void ACrashCharacter::Tick(float DeltaSeconds)
@@ -28,6 +39,7 @@ void ACrashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(IA_Action, ETriggerEvent::Started, this, &ACrashCharacter::Action);
+		EnhancedInputComponent->BindAction(IA_SubAction, ETriggerEvent::Started, this, &ACrashCharacter::SubAction);
 		EnhancedInputComponent->BindAction(IA_Zoom, ETriggerEvent::Started, this, &ACrashCharacter::SetZooming);
 	}
 }
@@ -36,11 +48,84 @@ void ACrashCharacter::Action()
 {
 	Super::Action();
 
+	if (GetCurrentMontage() == nullptr)
+	{
+		if (HasAuthority())
+		{
+			Attack_NMC();
+		}
+		else
+		{
+			Attack_Server();
+		}
+	}
+}
+
+void ACrashCharacter::SubAction()
+{
+	if (GetCurrentMontage() == nullptr)
+	{
+		if (HasAuthority())
+		{
+			ThrowAction_NMC();
+		}
+		else
+		{
+			ThrowAction_Server();
+		}
+	}
+}
+
+void ACrashCharacter::Attack_NMC_Implementation()
+{
+	PlayMontage(Attack_Montage);
+}
+
+void ACrashCharacter::Attack_Server_Implementation()
+{
+	Attack_NMC();
+}
+
+void ACrashCharacter::ThrowAction_NMC_Implementation()
+{
+	PlayMontage(Throw_Montage);
+}
+
+void ACrashCharacter::ThrowAction_Server_Implementation()
+{
+	ThrowAction_NMC();
+}
+
+void ACrashCharacter::SpawnDestoryObject_Server_Implementation()
+{
+	if (DestroyObjectClass && SpawnCount < 20)
+	{
+		FVector socketLocation = GetMesh()->GetSocketLocation(FName("Crash_R"));
+		FRotator socketRotation = this->GetControlRotation();
+
+		ADestroyObject* spawnObject = GetWorld()->SpawnActor<ADestroyObject>(DestroyObjectClass, socketLocation, socketRotation);
+
+		if (spawnObject)
+		{
+			spawnObject->Shot();
+			SpawnCount++;
+		}
+	}
+}
+
+void ACrashCharacter::PlayMontage(UAnimMontage* Montage)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (Montage && AnimInstance)
+	{
+		AnimInstance->Montage_Play(Montage);
+	}
 }
 
 void ACrashCharacter::SetZooming(const FInputActionValue& Value)
 {
-	float InValue = Value.Get<float>(); 
+	float InValue = Value.Get<float>();
 
 	InValue = -InValue;
 
