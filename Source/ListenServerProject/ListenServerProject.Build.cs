@@ -27,5 +27,6 @@ public class ListenServerProject : ModuleRules
 
         PublicDependencyModuleNames.Add("MotionWarping");
         PublicDependencyModuleNames.Add("MediaAssets");
+        PublicDependencyModuleNames.Add("ApexDestruction");
     }
 }

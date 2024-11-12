@@ -65,7 +65,8 @@ public:
 
 	void SetZooming(const FInputActionValue& Value);
 
-private:
+public:
 	int SpawnCount;
+
 
 };

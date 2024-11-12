@@ -12,4 +12,7 @@ class LISTENSERVERPROJECT_API ACrashGameMode : public ADefaultGameMode
 protected:
 	void BeginPlay() override;
 
+private:
+	TArray<ADefaultController*> Controllers;
+
 };

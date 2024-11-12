@@ -6,6 +6,9 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Actors/Crash/DestroyObject.h"
+#include "Blueprint/UserWidget.h"
+#include "Controllers/CrashController.h"
+#include "GameState/DefaultGameState.h"
 
 ACrashCharacter::ACrashCharacter()
 {
@@ -25,6 +28,7 @@ void ACrashCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	MoveComponent->EnableControlRotation();
+
 }
 
 void ACrashCharacter::Tick(float DeltaSeconds)
@@ -103,12 +107,21 @@ void ACrashCharacter::SpawnDestoryObject_Server_Implementation()
 		FVector socketLocation = GetMesh()->GetSocketLocation(FName("Crash_R"));
 		FRotator socketRotation = this->GetControlRotation();
 
-		ADestroyObject* spawnObject = GetWorld()->SpawnActor<ADestroyObject>(DestroyObjectClass, socketLocation, socketRotation);
+		FActorSpawnParameters params;
+		params.Owner = this;
+
+		ADestroyObject* spawnObject = GetWorld()->SpawnActor<ADestroyObject>(DestroyObjectClass, socketLocation, socketRotation, params);
 
 		if (spawnObject)
 		{
 			spawnObject->Shot();
 			SpawnCount++;
+
+			ACrashController* CrashController = Cast<ACrashController>(GetController());
+			if (CrashController)
+			{
+				CrashController->CountUpdate_NMC(20 - SpawnCount, 20);
+			}
 		}
 	}
 }
@@ -131,3 +144,4 @@ void ACrashCharacter::SetZooming(const FInputActionValue& Value)
 
 	Zoom->SetZoomValue(InValue);
 }
+

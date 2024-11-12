@@ -1,13 +1,14 @@
 #include "Actors/Crash/CrashFloor.h"
 #include "Utilites/Helpers.h"
+#include "DestructibleComponent.h"
 
 ACrashFloor::ACrashFloor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	Helpers::CreateComponent<USceneComponent>(this, &Root, "Root");
-	Helpers::CreateComponent<UStaticMeshComponent>(this, &StaticMesh, "StaticMesh", Root);
-
+	Helpers::CreateComponent<UDestructibleComponent>(this, &DestructibleMesh, "StaticMesh", Root);
+	
 	Count = 0;
 }
 
@@ -15,9 +16,9 @@ void ACrashFloor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (StaticMesh)
+	if (DestructibleMesh)
 	{
-		DynamicMaterial = StaticMesh->CreateAndSetMaterialInstanceDynamic(0);
+		DynamicMaterial = DestructibleMesh->CreateAndSetMaterialInstanceDynamic(0);
 	}
 }
 
@@ -35,6 +36,7 @@ void ACrashFloor::LifeCount()
 
 	if (Count >= 3)
 	{
+		DestructibleMesh->ApplyRadiusDamage(100.0f, GetActorLocation(), 200.0f, 10.0f, true);
 		Destroy();
 	}
 }

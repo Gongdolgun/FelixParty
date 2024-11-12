@@ -21,6 +21,8 @@ void ADestroyObject::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetLifeSpan(life);
+
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ADestroyObject::OnComponentBeginOverlap);
 
 }
@@ -33,7 +35,7 @@ void ADestroyObject::Tick(float DeltaTime)
 
 void ADestroyObject::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor != nullptr)
+	if (OtherActor != nullptr && OtherActor != GetOwner())
 	{
 		ACrashFloor* CrashFloor = Cast<ACrashFloor>(OtherActor);
 
@@ -43,6 +45,18 @@ void ADestroyObject::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComp
 
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, GetActorLocation(), FRotator::ZeroRotator, particleScale);
 			CrashFloor->LifeCount();
+		}
+
+		ACrashCharacter* HittedCharacter = Cast<ACrashCharacter>(OtherActor);
+
+		if (HittedCharacter)
+		{
+			FVector forwardDirection = GetActorForwardVector();
+			forwardDirection.Z = 0;
+
+			FVector launchDirection = forwardDirection * 1300.0f;
+			launchDirection.Z = 400.0f;
+			HittedCharacter->LaunchCharacter(launchDirection, false, false);
 		}
 	}
 }
@@ -60,3 +74,4 @@ void ADestroyObject::Shot()
 		Projectile->Activate();
 	}
 }
+

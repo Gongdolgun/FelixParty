@@ -23,7 +23,7 @@ public:
 	class USceneComponent* Root;
 
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* StaticMesh;
+	class UDestructibleComponent* DestructibleMesh;
 
 	UPROPERTY(EditAnywhere)
 	UMaterialInstanceDynamic* DynamicMaterial;

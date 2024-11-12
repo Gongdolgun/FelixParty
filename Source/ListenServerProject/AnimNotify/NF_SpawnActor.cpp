@@ -2,6 +2,8 @@
 #include "Global.h"
 #include "Characters/BombCharacter.h"
 #include "Characters/CrashCharacter.h"
+#include "Controllers/CrashController.h"
+#include "Widgets/CountUpdate.h"
 
 FString UNF_SpawnActor::GetNotifyName_Implementation() const
 {
