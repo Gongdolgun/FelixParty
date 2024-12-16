@@ -21,7 +21,6 @@ void ACrashController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-
 void ACrashController::CreateCountWidget_Implementation()
 {
     if (IsLocalController() && CountUpdateClass)

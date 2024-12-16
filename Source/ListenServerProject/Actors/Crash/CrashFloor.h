@@ -1,21 +1,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "DestructibleActor.h"
 #include "CrashFloor.generated.h"
 
 UCLASS()
-class LISTENSERVERPROJECT_API ACrashFloor : public AActor
+class LISTENSERVERPROJECT_API ACrashFloor : public ADestructibleActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ACrashFloor();
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
@@ -23,7 +23,7 @@ public:
 	class USceneComponent* Root;
 
 	UPROPERTY(EditAnywhere)
-	class UDestructibleComponent* DestructibleMesh;
+	class UDestructibleMesh* DestructibleMesh;
 
 	UPROPERTY(EditAnywhere)
 	UMaterialInstanceDynamic* DynamicMaterial;
